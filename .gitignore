@@ -79,6 +79,8 @@ GSYMS
 /egs/*/*/data
 /egs/*/*/wav
 /egs/*/*/enhan
+/egs/*/*/rirs_noises.zip
+/egs/*/*/RIRS_NOISES/
 
 # /tools/
 /tools/pocolm/
