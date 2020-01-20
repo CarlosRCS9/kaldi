@@ -3,7 +3,9 @@
 # Copyright 2019 Carlos Castillo
 # Apache 2.0.
 
-import numpy as np
+import argparse
+import sys
+import numpy
 
 class Segment:
   def __init__(self, rttm_line):
@@ -38,6 +40,12 @@ class Speaker:
     self.begining = self.begining if self.begining < speaker.begining else speaker.begining
     self.ending = self.ending if self.ending > speaker.ending else speaker.ending
     self.duration = self.ending - self.begining
+  def json(self):
+    self_json = self.__dict__
+    self_json['begining'] = round(self_json['begining'], 2)
+    self_json['ending'] = round(self_json['ending'], 2)
+    self_json['duration'] = round(self_json['duration'], 2)
+    return self_json
 
 class Segment_complex:
   def __init__(self, begining, ending, segment):
@@ -61,7 +69,7 @@ class Segment_complex:
     self_speakers.sort()
     target_speakers = [speaker.speaker_id for speaker in segment_complex.speakers]
     target_speakers.sort()
-    return np.array_equal(self_speakers, target_speakers)
+    return numpy.array_equal(self_speakers, target_speakers)
   def mix_segment_complex(self, segment_complex):
     self.begining = self.begining if self.begining < segment_complex.begining else segment_complex.begining
     self.ending = self.ending if self.ending > segment_complex.ending else segment_complex.ending
@@ -70,14 +78,32 @@ class Segment_complex:
     segment_complex.speakers.sort(key = lambda speaker: speaker.speaker_id)
     for i in range(len(self.speakers)):
       self.speakers[i].mix_speaker(segment_complex.speakers[i])
-  def print_rttm(self):
-    print(' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, self.speakers[0].speaker_id if len(self.speakers) == 1 else 'Z', self.conf, self.slat]))
+  def print_rttm(self, overlap = False):
+    if overlap:
+      for speaker in self.speakers:
+        print(' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, speaker.speaker_id, self.conf, self.slat]))
+    else:
+      print(' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, self.speakers[0].speaker_id if len(self.speakers) == 1 else 'Z', self.conf, self.slat]))
+  def json(self):
+    self_json = self.__dict__
+    self_json['begining'] = round(self_json['begining'], 2)
+    self_json['ending'] = round(self_json['ending'], 2)
+    self_json['duration'] = round(self_json['duration'], 2)
+    self_json['speakers'] = [speaker.json() for speaker in self.speakers]
+    return self_json
+
+def get_args():
+  parser = argparse.ArgumentParser(description='This script splits a NIST RTTM file.')
+  parser.add_argument('output_mode', type=str, help='json or rttm.')
+  parser.add_argument('--rttm-mode', type=str, default='full', help='full or no-overlap')
+  args = parser.parse_args()
+  return args
 
 def get_stdin():
-  import sys
   return sys.stdin
 
 def main():
+  args = get_args()
   stdin = get_stdin()
   segments = [Segment(line) for line in stdin]
   recording_ids = []
@@ -108,8 +134,14 @@ def main():
         else:
           segments_complex_reduced.append(segments_complex[i])
 
-    for segment_complex in segments_complex_reduced:
-      segment_complex.print_rttm()
+    if args.output_mode == 'json':
+      import json
+      recording_json = { 'recording_id': recording_id }
+      recording_json['segments'] = [segment_complex.json() for segment_complex in segments_complex_reduced]
+      print(json.dumps(recording_json))
+    else:
+      for segment in segments_complex_reduced:
+        segment.print_rttm(args.rttm_mode == 'full')
 
 if __name__ == '__main__':
   main()
