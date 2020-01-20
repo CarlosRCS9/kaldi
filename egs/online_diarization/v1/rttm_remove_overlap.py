@@ -111,6 +111,7 @@ def main():
     if segment.recording_id not in recording_ids:
       recording_ids.append(segment.recording_id)
   # ----- Recording ----- #
+  recordings_data = []
   for recording_id in recording_ids:
     recording_segments = [segment for segment in segments if segment.recording_id == recording_id]
     times_beginings = [segment.begining for segment in recording_segments]
@@ -134,13 +135,14 @@ def main():
         else:
           segments_complex_reduced.append(segments_complex[i])
 
-    if args.output_mode == 'json':
-      import json
-      recording_json = { 'recording_id': recording_id }
-      recording_json['segments'] = [segment_complex.json() for segment_complex in segments_complex_reduced]
-      print(json.dumps(recording_json))
-    else:
-      for segment in segments_complex_reduced:
+    recordings_data.append((recording_id, segments_complex_reduced))
+
+  if args.output_mode == 'json':
+    import json
+    print(json.dumps([{ 'recording_id': data[0], 'segments': [segment.json() for segment in data[1]] } for data in recordings_data]))
+  else:
+    for data in recordings_data:
+      for segment in data[1]:
         segment.print_rttm(args.rttm_mode == 'full')
 
 if __name__ == '__main__':
