@@ -134,7 +134,7 @@ def main():
           segments_complex_reduced[-1].mix_segment_complex(segments_complex[i])
         else:
           segments_complex_reduced.append(segments_complex[i])
-
+    segments_complex_reduced = [segment for segment in segments_complex_reduced if segment.duration > 0.5]
     recordings_data.append((recording_id, segments_complex_reduced))
 
   if args.output_mode == 'json':
