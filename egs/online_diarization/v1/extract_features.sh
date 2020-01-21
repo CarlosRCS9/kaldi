@@ -5,7 +5,7 @@
 set -e
 num_components=2048
 ivector_dim=128
-stage=0
+stage=5
 
 datadir=$1
 outputdir=$2
@@ -51,4 +51,3 @@ if [ $stage -le 4 ]; then
     ark,t:$outputdir/make_xvectors/xvector.txt
   echo $outputdir/make_xvectors/xvector.txt
 fi
-
