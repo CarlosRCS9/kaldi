@@ -84,14 +84,6 @@ def main():
       # ----- Extract features ----- #
       subprocess.run(['./extract_features.sh', data_dir, output_dir])
       # ----- Insert features ----- #
-      '''f = open(output_dir + '/make_ivectors/ivector.txt')
-      ivectors = [line for line in f.readlines()]
-      f.close()
-      f = open(output_dir + '/make_xvectors/xvector.txt')
-      xvectors = [line for line in f.readlines()]
-      f.close()
-      print(len(ivectors))
-      print(len(xvectors))'''
       recording_count = 0
       for recording in recordings:
         recording_id = recording['recording_id']
