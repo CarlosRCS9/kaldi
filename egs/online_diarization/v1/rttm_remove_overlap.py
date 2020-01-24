@@ -96,6 +96,7 @@ def get_args():
   parser = argparse.ArgumentParser(description='This script splits a NIST RTTM file.')
   parser.add_argument('output_mode', type=str, help='json or rttm.')
   parser.add_argument('--rttm-mode', type=str, default='full', help='full or no-overlap')
+  parser.add_argument('--json-mode', type=str, default='full', help='full or segments')
   args = parser.parse_args()
   return args
 
@@ -139,7 +140,12 @@ def main():
 
   if args.output_mode == 'json':
     import json
-    print(json.dumps([{ 'recording_id': data[0], 'segments': [segment.json() for segment in data[1]] } for data in recordings_data]))
+    if args.json_mode == 'full':
+      print(json.dumps([{ 'recording_id': data[0], 'segments': [segment.json() for segment in data[1]] } for data in recordings_data]))
+    else:
+      for recording_data in recordings_data:
+        for segment in recording_data[1]:
+          print(json.dumps(segment.json()))
   else:
     for data in recordings_data:
       for segment in data[1]:
