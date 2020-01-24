@@ -69,7 +69,7 @@ def main():
           ending = begining + args.length
           new_segment = Segment_complex(begining, segment['ending'] if ending > segment['ending'] else ending, segment)
           if new_segment.duration >= args.min_segment:
-            print(new_segment.json())
+            print(json.dumps(new_segment.json()))
           begining = ending - args.overlap
   else:
     exit('Not implemented mode.')
