@@ -76,4 +76,4 @@ RUN conda install -y -c menpo opencv3=3.1.0 \
 RUN pip install jupyter
 
 # Excecute jupyter notebook
-CMD ["sh", "-c", "jupyter notebook --no-browser --ip=0.0.0.0 --port=8080"]
+CMD ["sh", "-c", "jupyter notebook --no-browser --ip=0.0.0.0 --port=8888"]
