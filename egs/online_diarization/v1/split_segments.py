@@ -71,7 +71,6 @@ def main():
           if new_segment.duration >= args.min_segment:
             print(new_segment.json())
           begining = ending - args.overlap
-        break
   else:
     exit('Not implemented mode.')
 
