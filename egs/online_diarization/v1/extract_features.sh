@@ -5,7 +5,7 @@
 set -e
 num_components=2048
 ivector_dim=128
-stage=5
+stage=0
 
 datadir=$1
 outputdir=$2
