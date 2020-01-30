@@ -75,5 +75,8 @@ RUN conda install -y -c menpo opencv3=3.1.0 \
 # Install Jupyter
 RUN pip install jupyter
 
+# Install Matplotlib
+RUN pip install matplotlib
+
 # Excecute jupyter notebook
 CMD ["sh", "-c", "jupyter notebook --no-browser --ip=0.0.0.0 --port=8888"]
