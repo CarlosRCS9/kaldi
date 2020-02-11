@@ -128,9 +128,6 @@ def main():
         for segment in time_segments[1:]:
           segment_complex.add_segment(segment)
         segments_complex.append(segment_complex)
-    for i in segments_complex:
-    	i.print_rttm(True)
-    exit(1)
     segments_complex_reduced = [segments_complex[0]]
     for i in range(len(segments_complex)):
       if (i != 0):
