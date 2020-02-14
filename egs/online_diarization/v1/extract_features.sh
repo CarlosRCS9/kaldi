@@ -7,6 +7,7 @@ num_components=2048
 ivector_dim=128
 stage=0
 
+mfccdir=$(pwd)/mfcc
 datadir=$1
 outputdir=$2
 
@@ -42,7 +43,7 @@ fi
 
 # Extract x-vectors
 if [ $stage -le 4 ]; then
-  diarization/nnet3/xvector/extract_xvectors.sh --cmd "$train_cmd --mem 5G" --nj 40 --window 1.5 --period 0.75 --apply-cmn false --min-segment 0.5 \
+  diarization/nnet3/xvector/extract_xvectors.sh --cmd "$train_cmd --mem 20G" --nj 40 --window 1.5 --period 0.75 --apply-cmn false --min-segment 0.5 \
     exp/xvector_nnet_1a \
     $datadir \
     $outputdir/make_xvectors
