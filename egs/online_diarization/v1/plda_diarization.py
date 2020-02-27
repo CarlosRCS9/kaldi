@@ -1,4 +1,4 @@
-conf_vector = 'ivectors'
+conf_vector = 'xvectors'
 conf_vector_length = 128
 conf_models_generation_length = 3
 conf_models_container_length = 2
