@@ -30,6 +30,7 @@ if [ $stage -le 2 ]; then
     $outputdir/make_ivectors
 fi
 
+# Copy vectors
 if [ $stage -le 3 ]; then
   copy-vector \
     scp:$outputdir/make_ivectors/ivector.scp \
@@ -50,25 +51,24 @@ fi
 # Extract x-vectors
 if [ $stage -le 5 ]; then
   rm -rf $outputdir/make_xvectors
-  diarization/nnet3/xvector/extract_xvectors.sh --cmd "$train_cmd --mem 20G" --nj 40 --window 1.5 --period 0.75 --apply-cmn false --min-segment 0.5 \
-    exp/xvector_nnet_1a \
+  diarization/nnet3/xvector/extract_xvectors.sh --cmd "$train_cmd --mem 20G" --nj 40 --window 1.0 --period 0.75 --apply-cmn false --min-segment 0.5 \
+    exp/xvector_nnet_1a_pre \
     $datadir \
     $outputdir/make_xvectors
 fi
 
-#if [ $stage -le 6 ]; then
-#  "$train_cmd" $outputdir/make_xvectors/log/plda.log \
-#    ivector-compute-plda ark:$outputdir/make_xvectors/spk2utt \
-#      "ark:ivector-subtract-global-mean \
-#      scp:$outputdir/make_xvectors/xvector.scp ark:- \
-#      | transform-vec $outputdir/make_xvectors/transform.mat ark:- ark:- \
-#      | ivector-normalize-length ark:- ark:- |" \
-#    $outputdir/make_xvectors/plda || exit 1;
-#fi
+# Normalize x-vectors
+if [ $stage -le 6 ]; then
+  ivector-subtract-global-mean \
+    scp:$outputdir/make_xvectors/xvector.scp ark:- \
+    | transform-vec $outputdir/make_xvectors/transform.mat ark:- ark:- \
+    | ivector-normalize-length ark:- ark:$outputdir/make_xvectors/norm_xvector.ark
+fi
 
+# Copy vectors
 if [ $stage -le 7 ]; then
   copy-vector \
-    scp:$outputdir/make_xvectors/xvector.scp \
+    ark:$outputdir/make_xvectors/norm_xvector.ark \
     ark,t:$outputdir/make_xvectors/xvector.txt
   echo $outputdir/make_xvectors/xvector.txt
 fi
