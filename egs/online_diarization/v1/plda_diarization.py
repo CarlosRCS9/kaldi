@@ -1,6 +1,6 @@
 conf_vector = 'xvectors'
 conf_vector_length = 128
-conf_models_generation_length = 3
+conf_models_generation_length = 1
 conf_models_container_length = 2
 conf_permutations_include_zeros = False
 
@@ -136,12 +136,12 @@ class Recordings_dataset(Dataset):
 import subprocess
 import re
 
-def plda_score(ref_vector, test_vector):
+def plda_score(plda_filepath, ref_vector, test_vector):
     ref_string = str(list(ref_vector)).replace(',', '').replace('[', '[ ').replace(']', ' ]')
     test_string = str(list(test_vector)).replace(',', '').replace('[', '[ ').replace(']', ' ]')
 
     bin = './plda_score.sh'
-    p = subprocess.Popen([bin, ref_string, test_string], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen([bin, plda_filepath, ref_string, test_string], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
     rc = p.returncode
     if rc == 0:
@@ -164,7 +164,7 @@ def md_eval(ref_filepath, res_filepath):
     else:
         exit('md-eval.pl fail')
 
-def test_diarization(groundtruth_rttm_filepath, recordings_segments, recordings_ids):
+def test_diarization(groundtruth_rttm_filepath, plda_filepath,  recordings_segments, recordings_ids):
     results = {}
     results_reduced = {}
     for recording_id in recordings_ids:
@@ -179,7 +179,7 @@ def test_diarization(groundtruth_rttm_filepath, recordings_segments, recordings_
         results[recording_id] = []
         for segment in recordings_segments[recording_id]:
             vector = np.asarray(segment[conf_vector][0]['value'])
-            output = [plda_score(speaker_model, vector) for speaker_model in speakers_models]
+            output = [plda_score(plda_filepath, speaker_model, vector) for speaker_model in speakers_models]
             index = np.argmax(output)
             #print(output, index)
             results[recording_id].append({ 'begining': segment['begining'], 'ending': segment['ending'], 'speaker_id': index })
@@ -214,7 +214,6 @@ def test_diarization(groundtruth_rttm_filepath, recordings_segments, recordings_
                 result_rttm = 'SPEAKER ' + recording_id + ' 0 ' + str(segment['begining']) + ' ' + str(round(segment['ending'] - segment['begining'], 2)) + ' <NA> <NA> ' + str(segment['speaker_id']) + ' <NA> <NA>'
                 results_rttm += result_rttm + '\n'
         print(recording_id)
-                        
 
     #groundtruth_rttm_filepath = '../callhome1_1.0_0.5.rttm'
     file = open(groundtruth_rttm_filepath, 'r')
@@ -229,13 +228,17 @@ def test_diarization(groundtruth_rttm_filepath, recordings_segments, recordings_
     file = open('test_groundtruth.rttm', 'w')
     file.write(groundtruth_rttm)
     file.close()
-    
+
     return md_eval('test_groundtruth.rttm', 'test_results.rttm')
 
-callhome2_segments = load_recordings_segments('exp/callhome2/json')
+recordings_segments_directory = 'exp/callhome2/json'
+groundtruth_rttm_filepath = './callhome2_1.0_0.5.rttm'
+plda_filepath = ' exp/callhome1/xvectors_plda'
+
+recordings_segments = load_recordings_segments(recordings_segments_directory)
 print()
-callhome2_valid_segments = balance_segments(callhome2_segments, 2, 0)
-callhome2_recording_ids = [recording_id for recording_id in callhome2_valid_segments]
-callhome2_recording_ids.sort()
-der = test_diarization('./callhome2_1.0_0.5.rttm', callhome2_segments, callhome2_recording_ids)
+recordings_valid_segments = balance_segments(recordings_segments, 2, 0)
+recording_ids = [recording_id for recording_id in recordings_valid_segments]
+recording_ids.sort()
+der = test_diarization(groundtruth_rttm_filepath, plda_filepath, recordings_segments, recording_ids)
 print(der)
