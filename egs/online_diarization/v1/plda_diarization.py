@@ -1,6 +1,6 @@
 conf_vector = 'xvectors'
 conf_vector_length = 128
-conf_models_generation_length = 1
+conf_models_generation_length = 2
 conf_models_container_length = 2
 conf_permutations_include_zeros = False
 
@@ -168,6 +168,7 @@ def test_diarization(groundtruth_rttm_filepath, plda_filepath,  recordings_segme
     results = {}
     results_reduced = {}
     for recording_id in recordings_ids:
+        print(recording_id, 'diarization start.')
         # Getting the speaker's models
         recording_dataset = Recordings_dataset(recordings_segments, recording_id)
         speakers_models = recording_dataset.recordings_data[recording_id]['speakers_models']
@@ -213,7 +214,6 @@ def test_diarization(groundtruth_rttm_filepath, plda_filepath,  recordings_segme
             for segment in results_reduced[recording_id]:
                 result_rttm = 'SPEAKER ' + recording_id + ' 0 ' + str(segment['begining']) + ' ' + str(round(segment['ending'] - segment['begining'], 2)) + ' <NA> <NA> ' + str(segment['speaker_id']) + ' <NA> <NA>'
                 results_rttm += result_rttm + '\n'
-        print(recording_id)
 
     #groundtruth_rttm_filepath = '../callhome1_1.0_0.5.rttm'
     file = open(groundtruth_rttm_filepath, 'r')
@@ -231,9 +231,9 @@ def test_diarization(groundtruth_rttm_filepath, plda_filepath,  recordings_segme
 
     return md_eval('test_groundtruth.rttm', 'test_results.rttm')
 
-recordings_segments_directory = 'exp/callhome2/json'
+recordings_segments_directory = 'exp/pre_norm_callhome2/json'
 groundtruth_rttm_filepath = './callhome2_1.0_0.5.rttm'
-plda_filepath = ' exp/callhome1/xvectors_plda'
+plda_filepath = ' exp/plda/xvectors_callhome1_plda'
 
 recordings_segments = load_recordings_segments(recordings_segments_directory)
 print()
