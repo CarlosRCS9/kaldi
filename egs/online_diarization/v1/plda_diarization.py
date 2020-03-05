@@ -1,6 +1,6 @@
 conf_vector = 'xvectors'
 conf_vector_length = 128
-conf_models_generation_length = 2
+conf_models_generation_length = 30
 conf_models_container_length = 2
 conf_permutations_include_zeros = False
 
@@ -152,6 +152,22 @@ def plda_score(plda_filepath, ref_vector, test_vector):
         print(err)
         exit('plda_socre.sh fail')
 
+def xvectors_plda(plda_filepath, ref_vector, test_vector):
+    ref_string = str(list(ref_vector)).replace(',', '').replace('[', '[ ').replace(']', ' ]')
+    test_string = str(list(test_vector)).replace(',', '').replace('[', '[ ').replace(']', ' ]')
+
+    bin = './xvectors_plda.sh'
+    p = subprocess.Popen([bin, plda_filepath, ref_string, test_string], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    rc = p.returncode
+    if rc == 0:
+        lines =  output.decode("utf-8").split('\n')
+        pldaLine = lines[0]
+        return float(re.findall('\d+\.\d+', pldaLine)[0])
+    else:
+        print(err)
+        exit('xvectors_plda.sh fail')
+
 def md_eval(ref_filepath, res_filepath):
     bin = '../../../tools/sctk-2.4.10/src/md-eval/md-eval.pl'
     p = subprocess.Popen([bin, '-r', ref_filepath, '-s', res_filepath], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -180,7 +196,7 @@ def test_diarization(groundtruth_rttm_filepath, plda_filepath,  recordings_segme
         results[recording_id] = []
         for segment in recordings_segments[recording_id]:
             vector = np.asarray(segment[conf_vector][0]['value'])
-            output = [plda_score(plda_filepath, speaker_model, vector) for speaker_model in speakers_models]
+            output = [xvectors_plda(plda_filepath, speaker_model, vector) for speaker_model in speakers_models]
             index = np.argmax(output)
             #print(output, index)
             results[recording_id].append({ 'begining': segment['begining'], 'ending': segment['ending'], 'speaker_id': index })
@@ -231,9 +247,9 @@ def test_diarization(groundtruth_rttm_filepath, plda_filepath,  recordings_segme
 
     return md_eval('test_groundtruth.rttm', 'test_results.rttm')
 
-recordings_segments_directory = 'exp/pre_norm_callhome2/json'
-groundtruth_rttm_filepath = './callhome2_1.0_0.5.rttm'
-plda_filepath = ' exp/plda/xvectors_callhome1_plda'
+recordings_segments_directory = 'exp/pre_norm/callhome2/json'
+groundtruth_rttm_filepath = 'data/callhome2_1.0_0.5.rttm'
+plda_filepath = 'exp/plda/callhome1/xvectors.plda'
 
 recordings_segments = load_recordings_segments(recordings_segments_directory)
 print()
