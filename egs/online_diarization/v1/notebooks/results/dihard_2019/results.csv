@@ -1,4 +1,10 @@
 conf_vector,conf_vector_length,conf_models_generation_length,conf_models_container_length,conf_permutations_include_zeros,callhome1_der,callhome2_der,callhome_der
+xvectors,512,1,2,True,27.54,26.71,27.125
+xvectors,512,2,2,True,25.06,25.21,25.134999999999998
+xvectors,512,3,2,True,26.18,20.86,23.52
+xvectors,512,4,2,True,20.5,21.54,21.02
+xvectors,512,5,2,True,20.11,18.75,19.43
+xvectors,512,6,2,True,14.96,13.17,14.065000000000001
 xvectors,512,7,2,True,14.42,14.57,14.495000000000001
 xvectors,512,8,2,True,12.22,11.87,12.045
 xvectors,512,9,2,True,14.4,16.93,15.665
