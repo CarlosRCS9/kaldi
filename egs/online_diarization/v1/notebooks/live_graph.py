@@ -22,7 +22,7 @@ class Live_graph:
         self.ax.set_ylim(0, 0.5)
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
-    def step(self, training, validation, test):
+    def step(self, training, validation, test = -1):
         self.plt_count += 1
         self.plt_thr[0].append(self.plt_count)
         self.plt_thr[1].append(self.validation_threshold)

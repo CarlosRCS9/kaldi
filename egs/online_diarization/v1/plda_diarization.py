@@ -1,6 +1,6 @@
 conf_vector = 'xvectors'
 conf_vector_length = 512
-conf_models_generation_length = 10
+conf_models_generation_length = 20
 conf_models_container_length = 2
 conf_permutations_include_zeros = False
 
