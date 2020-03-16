@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ..
+
 . ./cmd.sh
 . ./path.sh
 set -e
@@ -21,3 +23,5 @@ if [ $stage -le 1 ]; then
     exp/plda_scores
   cat exp/plda_scores
 fi
+
+cd notebooks
