@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd ..
+
 . ./cmd.sh
 . ./path.sh
 set -e
@@ -35,3 +37,6 @@ cat $tmpdir/scores.1.ark | grep -Eo '[0-9]+\.[0-9]+' | sed -n 2p
 if $cleanup ; then
   rm -rf $tmpdir || exit 1;
 fi
+
+cd notebooks
+
