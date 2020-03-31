@@ -158,3 +158,5 @@ GSYMS
 # They are added here to avoid accidently checkin.
 /src/**/CMakeLists.txt
 /build*
+
+egs/online_diarization/v1/notebooks/batch
