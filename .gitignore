@@ -159,4 +159,4 @@ GSYMS
 /src/**/CMakeLists.txt
 /build*
 
-egs/online_diarization/v1/notebooks/batch
+/egs/online_diarization/v1/notebooks/batch
