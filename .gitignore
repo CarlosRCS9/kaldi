@@ -81,6 +81,7 @@ GSYMS
 /egs/*/*/enhan
 /egs/*/*/rirs_noises.zip
 /egs/*/*/RIRS_NOISES/
+/egs/*/*/notebooks/batch
 
 # /tools/
 /tools/pocolm/
