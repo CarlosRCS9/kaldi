@@ -120,6 +120,7 @@ def main():
       sox_overlap(filepath, str(segment['speakers'][0]['begining']), str(segment['speakers'][0]['duration']),
                   filepath, str(segment['speakers'][1]['begining']), str(segment['speakers'][1]['duration']),
                   new_filepath)
+      segment['new_recording_id'] = new_recording_id
       segment['filepath'] = new_filepath
       print(segment)
       break
