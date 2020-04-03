@@ -122,8 +122,7 @@ def main():
                   new_filepath)
       segment['filepath'] = new_filepath
       print(segment)
-
-
+      break
 
 if __name__ == '__main__':
   main()
