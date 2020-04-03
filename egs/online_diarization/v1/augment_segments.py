@@ -8,9 +8,13 @@ import sys
 import json
 from functools import reduce
 import itertools
+import re
+import subprocess
 
 def get_args():
   parser = argparse.ArgumentParser(description='This script is used augment segments by overlapping speakers.')
+  parser.add_argument('scp', type=str, help='The audio files locations in scp format.')
+  parser.add_argument('output_folder', type=str, help='The folder where the generated audios will be placed.')
   args = parser.parse_args()
   return args
 
@@ -23,9 +27,27 @@ def is_valid_segment(segment, maximum_speakers_length = 2, valid_speakers_ids = 
   return len(speakers_ids) <= maximum_speakers_length and \
       all(speaker_id in valid_speakers_ids for speaker_id in speakers_ids)
 
+def sox_overlap(input1, input1_start, input1_duration, input2, input2_start, input2_duration, output_filepath):
+  bin = './sox_overlap.sh'
+  p = subprocess.Popen([bin,
+    input1, input1_start, input1_duration,
+    input2, input2_start, input2_duration,
+    output_filepath], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc == 0:
+    output = output.decode("utf-8")
+    print(output, end = '')
+  else:
+    exit('sox_overlap.sh fail')
+
 def main():
   args = get_args()
   stdin = get_stdin()
+
+  f = open(args.scp, 'r')
+  scp = dict([(line.split(' ')[0], re.search(r'(\/\w*)+\.\w+', line)[0]) for line in f.readlines()])
+
   segments = []
   for line in stdin:
     segment_json = json.loads(line)
@@ -57,8 +79,7 @@ def main():
     min_single_speaker_segments_length = min([len(single_speaker_segments_indexes[speaker_id]) for speaker_id in single_speaker_segments_indexes])
     single_speaker_combinations = [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in single_speaker_segments_indexes], 2))]
     
-
-
+    combination_segments = []
     for combination in single_speaker_combinations:
       combination_speakers_segments_lengths = [len(single_speaker_segments_indexes[speaker_id]) for speaker_id in combination]
 
@@ -89,7 +110,17 @@ def main():
         new_segment['begining'] = 0
         new_segment['duration'] = min_combination_speakers_length
         new_segment['ending'] = round(new_segment['begining'] + new_segment['duration'], 2)
-        print(new_segment)
+        new_segment['filepath'] = scp[new_segment['recording_id']]
+        combination_segments.append(new_segment)
+
+    for index, segment in enumerate(combination_segments):
+      new_recording_id = recording_id + '_combination_' + str(index).zfill(3)
+      filepath = segment['filepath']
+      extension = '.' + filepath.split('.')[1]
+      sox_overlap(filepath, str(segment['speakers'][0]['begining']), str(segment['speakers'][0]['duration']),
+                  filepath, str(segment['speakers'][1]['begining']), str(segment['speakers'][1]['duration']),
+                  args.output_folder + new_recording_id + extension)
+
 
 if __name__ == '__main__':
   main()
