@@ -58,7 +58,7 @@ def main():
     for segment in segments:
       if segment['recording_id'] not in recordings_ids:
         recordings_ids[segment['recording_id']] = { 'count': 0, 'segments_ids': [] }
-      segment_id = ''.join([segment['recording_id'], '_', str(recordings_ids[segment['recording_id']]['count']).zfill(3)])
+      segment_id = ''.join([segment['recording_id'], '_', str(recordings_ids[segment['recording_id']]['count']).zfill(5)])
       file_segments += ' '.join([segment_id, segment['recording_id'], str(segment['begining']), str(segment['ending'])]) + '\n'
       file_utt2spk += ' '.join([segment_id, segment['recording_id']]) + '\n'
       recordings_ids[segment['recording_id']]['segments_ids'].append(segment_id)

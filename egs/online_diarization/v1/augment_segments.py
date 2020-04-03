@@ -45,7 +45,7 @@ def main():
   stdin = get_stdin()
 
   f = open(args.scp, 'r')
-  scp = dict([(line.split(' ')[0], re.search(r'(\/\w*)+\.\w+', line)[0]) for line in f.readlines()])
+  scp = dict([(line.split(' ')[0], re.findall(r'(\/.*?\.[\w:]+)', line)[0]) for line in f.readlines()])
 
   segments = []
   for line in stdin:
