@@ -45,7 +45,11 @@ def main():
   stdin = get_stdin()
 
   f = open(args.scp, 'r')
-  scp = dict([(line.split(' ')[0], re.findall(r'(\/.*?\.[\w:]+)', line)[0]) for line in f.readlines()])
+  scp = [line.split(' ') for line in f.readlines()]
+  f.close()
+  scp_line = scp[0]
+  scp_filepath_index = [re.match(r'(\/.*?\.[\w:]+)', word) is not None for word in scp_line].index(True)
+  scp = dict([(line[0], line[scp_filepath_index]) for line in scp])
 
   segments = []
   for line in stdin:
@@ -59,6 +63,7 @@ def main():
       recordings_segments_indexes[segment['recording_id']] = []
     recordings_segments_indexes[segment['recording_id']].append(index)
 
+  file_wav_scp = ''
   for recording_id in recordings_segments_indexes:
     recording_segments_indexes = recordings_segments_indexes[recording_id]
     speakers_segments_indexes = {}
@@ -120,10 +125,19 @@ def main():
       sox_overlap(filepath, str(segment['speakers'][0]['begining']), str(segment['speakers'][0]['duration']),
                   filepath, str(segment['speakers'][1]['begining']), str(segment['speakers'][1]['duration']),
                   new_filepath)
-      segment['new_recording_id'] = new_recording_id
-      segment['filepath'] = new_filepath
-      print(segment)
+      new_scp_line = scp_line.copy()
+      new_scp_line[0] = new_recording_id
+      new_scp_line[scp_filepath_index] = new_filepath
+      file_wav_scp += ' '.join(new_scp_line)
+      segment['original_recording_id'] = segment['recording_id']
+      segment['recording_id'] = new_recording_id
+      del segment['filepath']
+      print(json.dumps(segment))
       break
+
+  f = open(args.output_folder + 'wav.scp', 'w')
+  f.write(file_wav_scp)
+  f.close()
 
 if __name__ == '__main__':
   main()
