@@ -37,7 +37,6 @@ def sox_overlap(input1, input1_start, input1_duration, input2, input2_start, inp
   rc = p.returncode
   if rc == 0:
     output = output.decode("utf-8")
-    print(output, end = '')
   else:
     exit('sox_overlap.sh fail')
 
@@ -114,12 +113,16 @@ def main():
         combination_segments.append(new_segment)
 
     for index, segment in enumerate(combination_segments):
-      new_recording_id = recording_id + '_combination_' + str(index).zfill(3)
       filepath = segment['filepath']
       extension = '.' + filepath.split('.')[1]
+      new_recording_id = recording_id + '_combination_' + str(index).zfill(3)
+      new_filepath = args.output_folder + new_recording_id + extension
       sox_overlap(filepath, str(segment['speakers'][0]['begining']), str(segment['speakers'][0]['duration']),
                   filepath, str(segment['speakers'][1]['begining']), str(segment['speakers'][1]['duration']),
-                  args.output_folder + new_recording_id + extension)
+                  new_filepath)
+      segment['filepath'] = new_filepath
+      print(segment)
+
 
 
 if __name__ == '__main__':
