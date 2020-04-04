@@ -14,8 +14,8 @@ def get_args():
   parser = argparse.ArgumentParser(description='This script is used to split a NIST RTTM file into \
                                                 a series of non-overlapping pure single-speaker and \
                                                 multiple-speakers segments.')
+  parser.add_argument('--overlap-speaker', type=str, default='true', help='If true multiple-speakers segments get the "Z" speaker id in the output.')
   parser.add_argument('--min-segment', type=float, default=0.5, help='The minimal segment length required in the output.')
-  parser.add_argument('--overlap-speaker', type=bool, default=False, help='If true multiple-speakers segments get the "Z" speaker id in the output.')
   args = parser.parse_args()
   return args
 
@@ -30,6 +30,7 @@ def get_recordings_segments(acc, segment):
 
 def main():
   args = get_args()
+  args.overlap_speaker = args.overlap_speaker.lower() == 'true'
   stdin = get_stdin()
   segments = [Segment(line) for line in stdin]
   recordings_segments = reduce(get_recordings_segments, segments, {})
@@ -52,7 +53,7 @@ def main():
         segments_complex_reduced.append(segments_complex[index])
     segments_complex_reduced = [segment for segment in segments_complex_reduced if segment.duration > args.min_segment]
     for segment in segments_complex_reduced:
-      print(segment.get_rttm(args.overlap_speaker), end = '')
+      print(segment.get_rttm(args.overlap_speaker))
 
 if __name__ == '__main__':
   main()
