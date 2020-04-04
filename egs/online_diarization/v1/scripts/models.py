@@ -4,6 +4,7 @@
 # Apache 2.0.
 
 import numpy as np
+import json
 
 class Segment:
   def __init__(self, data):
@@ -80,12 +81,20 @@ class Segment_complex:
     for index in range(len(self.speakers)):
       self.speakers[index].mix_speaker(segment_complex.speakers[index])
   def get_rttm(self, overlap_speaker = False):
-    rttm = ''
+    output_rttm = ''
     if overlap_speaker:
-      rttm += ' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, self.speakers[0].speaker_id if len(self.speakers) == 1 else 'Z', self.conf, self.slat]) + '\n'
+      output_rttm += ' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, self.speakers[0].speaker_id if len(self.speakers) == 1 else 'Z', self.conf, self.slat]) + '\n'
     else:
       for speaker in self.speakers:
-        rttm += ' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, speaker.speaker_id, self.conf, self.slat]) + '\n'
-    return rttm    
+        output_rttm += ' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, speaker.speaker_id, self.conf, self.slat]) + '\n'
+    return output_rttm[:-1]
+  def get_json(self):
+    output_json = self.__dict__
+    output_json['begining'] = round(output_json['begining'], 2)
+    output_json['ending'] = round(output_json['ending'], 2)
+    output_json['duration'] = round(output_json['duration'], 2)
+    output_json['speakers'] = [speaker.json() for speaker in self.speakers]
+    return json.dumps(output_json)
+
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
