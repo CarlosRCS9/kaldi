@@ -54,7 +54,7 @@ def main():
         segments_complex_reduced.append(segments_complex[index])
     segments_complex_reduced = [segment for segment in segments_complex_reduced if segment.duration > args.min_segment]
     for segment in segments_complex_reduced:
-      if args.output_mode == 'rttm';
+      if args.output_mode == 'rttm':
         print(segment.get_rttm(args.overlap_speaker))
       elif args.output_mode == 'json':
         print(segment.get_json())
