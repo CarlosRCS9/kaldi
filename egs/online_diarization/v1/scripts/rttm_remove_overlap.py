@@ -14,6 +14,7 @@ def get_args():
   parser = argparse.ArgumentParser(description='This script is used to split a NIST RTTM file into \
                                                 a series of non-overlapping pure single-speaker and \
                                                 multiple-speakers segments.')
+  parser.add_argument('--output-mode', type=str, default='rttm', help='The output format (rttm or json).')
   parser.add_argument('--overlap-speaker', type=str, default='true', help='If true multiple-speakers segments get the "Z" speaker id in the output.')
   parser.add_argument('--min-segment', type=float, default=0.5, help='The minimal segment length required in the output.')
   args = parser.parse_args()
@@ -53,7 +54,13 @@ def main():
         segments_complex_reduced.append(segments_complex[index])
     segments_complex_reduced = [segment for segment in segments_complex_reduced if segment.duration > args.min_segment]
     for segment in segments_complex_reduced:
-      print(segment.get_rttm(args.overlap_speaker))
+      if args.output_mode == 'rttm';
+        print(segment.get_rttm(args.overlap_speaker))
+      elif args.output_mode == 'json':
+        print(segment.get_json())
+      else:
+        print('Invalid --output-mode.')
+        exit(1)
 
 if __name__ == '__main__':
   main()
