@@ -50,6 +50,13 @@ class Speaker:
     self.begining = self.begining if self.begining < speaker.begining else speaker.begining
     self.ending = self.ending if self.ending > speaker.ending else speaker.ending
     self.duration = self.ending - self.begining
+  def get_json(self, to_dict = False):
+    output_json = self.__dict__
+    output_json['begining'] = round(float(output_json['begining']), 2)
+    output_json['ending'] = round(float(output_json['ending']), 2)
+    output_json['duration'] = round(float(output_json['duration']), 2)
+    return output_json if to_dict else json.dumps(output_json)
+
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
 
@@ -90,10 +97,10 @@ class Segment_complex:
     return output_rttm[:-1]
   def get_json(self):
     output_json = self.__dict__
-    output_json['begining'] = round(output_json['begining'], 2)
-    output_json['ending'] = round(output_json['ending'], 2)
-    output_json['duration'] = round(output_json['duration'], 2)
-    output_json['speakers'] = [speaker.json() for speaker in self.speakers]
+    output_json['begining'] = round(float(output_json['begining']), 2)
+    output_json['ending'] = round(float(output_json['ending']), 2)
+    output_json['duration'] = round(float(output_json['duration']), 2)
+    output_json['speakers'] = [speaker.get_json(True) for speaker in self.speakers]
     return json.dumps(output_json)
 
   def __str__(self):
