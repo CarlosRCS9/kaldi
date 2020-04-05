@@ -69,7 +69,7 @@ def main():
     print(scp[recording_id])
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
-      timestamps = [(round(segment.begining, 2), round(segment.ending, 2)) for segment in speaker_segments]
+      timestamps = [(round(segment.begining, 2), round(segment.duration, 2)) for segment in speaker_segments]
       sox_sitch_audio(scp[recording_id], timestamps, args.output_folder + recording_id + '_' + speaker_id + '.' + scp[recording_id].split('.')[1])
     break
 
