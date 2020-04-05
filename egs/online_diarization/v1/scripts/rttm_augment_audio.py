@@ -45,6 +45,7 @@ def get_speakers_segments(acc, segment, valid_speakers = None):
 def sox_sitch_audio(input_filepath, timestamps, output_filepath):
   trims = ['|sox ' + input_filepath + ' -t sph - trim ' + str(timestamp[0]) + ' ' + str(timestamp[1]) + '' for timestamp in timestamps]
   command = ['sox'] + trims + [output_filepath]
+  print(' '.join(command))
   p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   output, err = p.communicate()
   rc = p.returncode
