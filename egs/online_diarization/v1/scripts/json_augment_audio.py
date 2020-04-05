@@ -8,8 +8,9 @@ import argparse
 import re
 import subprocess
 import sys
+import json
 
-from models import Segment
+from models import Segment_complex
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -36,10 +37,10 @@ def get_recordings_segments(acc, segment):
   return acc
 
 def get_speakers_segments(acc, segment, valid_speakers = None):
-  if valid_speakers is None or segment.speaker_id in valid_speakers:
-    if segment.speaker_id not in acc:
-      acc[segment.speaker_id] = []
-    acc[segment.speaker_id].append(segment)
+  if len(segment.speakers) == 1 and (valid_speakers is None or segment.speakers[0].speaker_id in valid_speakers):
+    if segment.speakers[0].speaker_id not in acc:
+      acc[segment.speakers[0].speaker_id] = []
+    acc[segment.speakers[0].speaker_id].append(segment)
   return acc
 
 def sox_sitch_audio(input_filepath, timestamps, output_filepath):
@@ -58,15 +59,15 @@ def main():
   args = get_args()
   stdin = get_stdin()
   scp = read_scp(args.scp)
-  segments = [Segment(line) for line in stdin]
+  segments = [Segment_complex(json.loads(line)) for line in stdin]
   recordings_segments = reduce(get_recordings_segments, segments, {})
   for recording_id in sorted(list(recordings_segments.keys())):
+    print(recording_id)
     recording_segments = recordings_segments[recording_id]
     speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
-    print(recording_id)
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
-      timestamps = [(round(segment.begining, 2), round(segment.duration, 2)) for segment in speaker_segments]
+      timestamps = sorted([(round(segment.begining, 2), round(segment.duration, 2)) for segment in speaker_segments], key = lambda tuple: tuple[0])
       sox_sitch_audio(scp[recording_id], timestamps, args.output_folder + recording_id + '_' + speaker_id + '.' + scp[recording_id].split('.')[1])
 
 if __name__ == '__main__':
