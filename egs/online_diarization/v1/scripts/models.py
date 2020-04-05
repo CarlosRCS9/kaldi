@@ -39,10 +39,15 @@ class Segment:
     return str(self.__class__) + ": " + str(self.__dict__)
 
 class Speaker:
-  def __init__(self, segment_complex, segment):
-    self.speaker_id = segment.speaker_id
-    self.begining = segment.begining if segment.begining > segment_complex.begining else segment_complex.begining
-    self.ending = segment.ending if segment.ending < segment_complex.ending else segment_complex.ending
+  def __init__(self, segment_complex, data):
+    if isinstance(data, Segment):
+      self.speaker_id = data.speaker_id
+      self.begining = data.begining if data.begining > segment_complex.begining else segment_complex.begining
+      self.ending = data.ending if data.ending < segment_complex.ending else segment_complex.ending
+    else:
+      self.speaker_id = data['speaker_id']
+      self.begining = data['begining'] if data['begining'] > segment_complex.begining else segment_complex.begining
+      self.ending = data['ending'] if data['ending'] < segment_complex.ending else segment_complex.ending
     self.duration = self.ending - self.begining
   def mix_speaker(self, speaker):
     if self.speaker_id != speaker.speaker_id:
@@ -61,18 +66,30 @@ class Speaker:
     return str(self.__class__) + ": " + str(self.__dict__)
 
 class Segment_complex:
-  def __init__(self, segment, begining = None, ending = None):
-    self.type = segment.type
-    self.recording_id = segment.recording_id
-    self.channel = segment.channel
-    self.begining = segment.begining if begining is None else begining
-    self.ending = segment.ending if ending is None else ending
+  def __init__(self, data, begining = None, ending = None):
+    if isinstance(data, Segment):
+      self.type = data.type
+      self.recording_id = data.recording_id
+      self.channel = data.channel
+      self.begining = data.begining if begining is None else begining
+      self.ending = data.ending if ending is None else ending
+      self.ortho = data.ortho
+      self.stype = data.stype
+      self.speakers = [Speaker(self, data)]
+      self.conf = data.conf
+      self.slat = data.slat
+    else:
+      self.type = data['type']
+      self.recording_id = data['recording_id']
+      self.channel = data['channel']
+      self.begining = data['begining'] if begining is None else begining
+      self.ending = data['ending'] if ending is None else ending
+      self.ortho = data['ortho']
+      self.stype = data['stype']
+      self.speakers = [Speaker(self, speaker) for speaker in data['speakers']]
+      self.conf = data['conf']
+      self.slat = data['slat']
     self.duration = self.ending - self.begining
-    self.ortho = segment.ortho
-    self.stype = segment.stype
-    self.speakers = [Speaker(self, segment)]
-    self.conf = segment.conf
-    self.slat = segment.slat
   def add_segment(self, segment):
     self.speakers.append(Speaker(self, segment))
   def same_speakers(self, segment_complex):
