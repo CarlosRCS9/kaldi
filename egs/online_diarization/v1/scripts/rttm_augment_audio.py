@@ -62,7 +62,7 @@ def main():
   scp = read_scp(args.scp)
   segments = [Segment(line) for line in stdin]
   recordings_segments = reduce(get_recordings_segments, segments, {})
-  for recording_id in recordings_segments:
+  for recording_id in sorted(list(recordings_segments.keys())):
     recording_segments = recordings_segments[recording_id]
     speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
     print(recording_id)
