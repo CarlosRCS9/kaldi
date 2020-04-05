@@ -92,7 +92,7 @@ def main():
       filepath = args.output_folder + recording_id + '_' + speaker_id + '.' + scp[recording_id].split('.')[1]
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
       speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': duration }
-    for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))
+    for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
       print(combination)
 
 if __name__ == '__main__':
