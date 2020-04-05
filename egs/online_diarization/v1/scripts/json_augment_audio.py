@@ -43,7 +43,7 @@ def get_speakers_segments(acc, segment, valid_speakers = None):
     acc[segment.speakers[0].speaker_id].append(segment)
   return acc
 
-def sox_sitch_audio(input_filepath, timestamps, output_filepath):
+def sox_stich_audio(input_filepath, timestamps, output_filepath):
   trims = ['|sox ' + input_filepath + ' -t sph - trim ' + str(timestamp[0]) + ' ' + str(timestamp[1]) + '' for timestamp in timestamps]
   command = ['sox'] + trims + [output_filepath]
   '''p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -84,11 +84,14 @@ def main():
     print(recording_id)
     recording_segments = recordings_segments[recording_id]
     speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
+    speakers_stiched = {}
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
       timestamps = sorted([(round(segment.begining, 2), round(segment.duration, 2)) for segment in speaker_segments], key = lambda tuple: tuple[0])
       filepath = args.output_folder + recording_id + '_' + speaker_id + '.' + scp[recording_id].split('.')[1]
-      print(sox_sitch_audio(scp[recording_id], timestamps, filepath))
+      filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
+      speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': duration }
+    print(speakers_stiched)
 
 if __name__ == '__main__':
   main()
