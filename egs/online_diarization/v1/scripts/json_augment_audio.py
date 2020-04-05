@@ -69,7 +69,7 @@ def sox_sitch_audio(input_filepath, timestamps, output_filepath):
   rc = p.returncode
   if rc == 0:
     length = float(output.decode("utf-8"))
-    return (output_filepath, output)
+    return (output_filepath, length)
   else:
     print(err)
     exit(1)
