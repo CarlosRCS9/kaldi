@@ -93,7 +93,9 @@ def main():
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
       speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': duration }
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
-      print(combination)
+      durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
+      min_duration = min(durations)
+      print(min_duration)
 
 if __name__ == '__main__':
   main()
