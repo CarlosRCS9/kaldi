@@ -5,12 +5,13 @@
 
 from functools import reduce
 import argparse
+import itertools
+import json
+import math
+import os
 import re
 import subprocess
 import sys
-import json
-import itertools
-import math
 
 from models import Segment_complex
 
@@ -46,47 +47,47 @@ def get_speakers_segments(acc, segment, valid_speakers = None):
   return acc
 
 def sox_stich_audio(input_filepath, timestamps, output_filepath):
-  extension = input_filepath.split('.')[-1]
-  trims = ['|sox ' + input_filepath + ' -t ' + extension + ' - trim ' + str(timestamp[0]) + ' ' + str(timestamp[1]) for timestamp in timestamps]
-  command = ['sox'] + trims + [output_filepath]
-  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  output, err = p.communicate()
-  rc = p.returncode
-  if rc == 0:
-    command = ['soxi', '-D', output_filepath]
+  if not os.path.exists(output_filepath):
+    extension = input_filepath.split('.')[-1]
+    trims = ['|sox ' + input_filepath + ' -t ' + extension + ' - trim ' + str(timestamp[0]) + ' ' + str(timestamp[1]) for timestamp in timestamps]
+    command = ['sox'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
     rc = p.returncode
-    if rc == 0:
-      length = float(output.decode("utf-8"))
-      return (output_filepath, length)
-    else:
+    if rc != 0:
       print(err)
       exit(1)
-  else:
+  command = ['soxi', '-D', output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:
     print(err)
     exit(1)
+  else:
+    length = float(output.decode("utf-8"))
+    return (output_filepath, length)
 
 def sox_mix_audio(input_filepaths, min_duration, output_filepath):
-  trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(min_duration) for filepath in input_filepaths]
-  command = ['sox', '-m'] + trims + [output_filepath]
-  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  output, err = p.communicate()
-  rc = p.returncode
-  if rc == 0:
-    command = ['soxi', '-D', output_filepath]
+  if not os.path.exists(output_filepath):
+    trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(min_duration) for filepath in input_filepaths]
+    command = ['sox', '-m'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
     rc = p.returncode
-    if rc == 0:
-      length = float(output.decode("utf-8"))
-      return (output_filepath, length)
-    else:
+    if rc != 0:    
       print(err)
       exit(1)
-  else:
+  command = ['soxi', '-D', output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:
     print(err)
     exit(1)
+  else:
+    length = float(output.decode("utf-8"))
+    return (output_filepath, length)
 
 def main():
   args = get_args()
