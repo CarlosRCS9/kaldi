@@ -45,7 +45,7 @@ def get_speakers_segments(acc, segment, valid_speakers = None):
   return acc
 
 def sox_stich_audio(input_filepath, timestamps, output_filepath):
-  trims = ['|sox ' + input_filepath + ' -t sph - trim ' + str(timestamp[0]) + ' ' + str(timestamp[1]) + '' for timestamp in timestamps]
+  trims = ['|sox ' + input_filepath + ' -t sph - trim ' + str(timestamp[0]) + ' ' + str(timestamp[1]) for timestamp in timestamps]
   command = ['sox'] + trims + [output_filepath]
   '''p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   output, err = p.communicate()
@@ -75,6 +75,11 @@ def sox_stich_audio(input_filepath, timestamps, output_filepath):
     print(err)
     exit(1)
 
+def sox_mix_audio(input_filepaths, min_duration, output_filepath):
+  trims = ['|sox ' + filepath + ' -t sph - trim 0 ' + str(min_duration) for filepath in input_filepaths]
+  command = ['sox'] + trims + [output_filepath]
+  print(command)
+
 def main():
   args = get_args()
   stdin = get_stdin()
@@ -93,9 +98,11 @@ def main():
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
       speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': duration }
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
+      filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
-      print(min_duration)
+      filepath = args.output_folder + recording_id + '_'.join(combination) + '.' + scp[recording_id].split('.')[1]
+      sox_mix_audio(filepaths, min_duration, filepath)
 
 if __name__ == '__main__':
   main()
