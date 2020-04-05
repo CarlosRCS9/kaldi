@@ -98,7 +98,7 @@ def main():
   for recording_id in sorted(list(recordings_segments.keys())):
     recording_extension = scp[recording_id].split('.')[-1]
     recording_segments = recordings_segments[recording_id]
-    speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment), recording_segments, {})
+    speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
     speakers_stiched = {}
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
@@ -110,8 +110,8 @@ def main():
       filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
-      print(min_duration)
       filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
       print(sox_mix_audio(filepaths, min_duration, filepath))
+
 if __name__ == '__main__':
   main()
