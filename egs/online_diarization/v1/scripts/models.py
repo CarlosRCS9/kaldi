@@ -11,16 +11,16 @@ class Segment:
     if isinstance(data, str):
       data = data.split()
       data = {
-        "type": data[0],
-        "recording_id": data[1],
-        "channel": data[2],
-        "begining": np.float32(data[3]),
-        "duration": np.float32(data[4]),
-        "ortho": data[5],
-        "stype": data[6],
-        "speaker_id": data[7],
-        "conf": data[8],
-        "slat": data[9],
+        'type': data[0],
+        'recording_id': data[1],
+        'channel': data[2],
+        'begining': np.float32(data[3]),
+        'duration': np.float32(data[4]),
+        'ortho': data[5],
+        'stype': data[6],
+        'speaker_id': data[7],
+        'conf': data[8],
+        'slat': data[9],
       }
     self.type = data['type']
     self.recording_id = data['recording_id']
