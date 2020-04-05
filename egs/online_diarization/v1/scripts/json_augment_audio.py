@@ -79,7 +79,23 @@ def sox_stich_audio(input_filepath, timestamps, output_filepath):
 def sox_mix_audio(input_filepaths, min_duration, output_filepath):
   trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(min_duration) for filepath in input_filepaths]
   command = ['sox', '-m'] + trims + [output_filepath]
-  print(command)
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc == 0:
+    command = ['soxi', '-D', output_filepath]
+    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    rc = p.returncode
+    if rc == 0:
+      length = float(output.decode("utf-8"))
+      return (output_filepath, length)
+    else:
+      print(err)
+      exit(1)
+  else:
+    print(err)
+    exit(1)
 
 def main():
   args = get_args()
@@ -103,7 +119,6 @@ def main():
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
       filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
-      sox_mix_audio(filepaths, min_duration, filepath)
-
+      print(sox_mix_audio(filepaths, min_duration, filepath))
 if __name__ == '__main__':
   main()
