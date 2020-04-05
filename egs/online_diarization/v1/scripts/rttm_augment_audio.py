@@ -5,17 +5,28 @@
 
 import argparse
 import sys
+import re
 from functools import reduce
 
 from models import Segment
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
+  parser.add_argument('scp', type=str, help='The audio files locations in scp format.')
+  parser.add_argument('output_folder', type=str, help='The folder where the generated audios will be placed.')
   args = parser.parse_args()
   return args
 
 def get_stdin():
   return sys.stdin
+
+def read_scp(filepath):
+  f = open(filepath, 'r')
+  scp = [line.split(' ') for line in f.readlines()]
+  f.close()
+  scp_line = scp[0]
+  scp_filepath_index = [re.match(r'(\/.*?\.[\w:]+)', word) is not None for word in scp_line].index(True)
+  return dict([(line[0], line[scp_filepath_index]) for line in scp])
 
 def get_recordings_segments(acc, segment):
   if segment.recording_id not in acc:
@@ -30,19 +41,27 @@ def get_speakers_segments(acc, segment, valid_speakers = None):
     acc[segment.speaker_id].append(segment)
   return acc
 
+def sox_sitch_audio(input_filepath, timestamps, output_filepath):
+  trims = ['"|sox ' + input_filepath + ' -t sph - trim ' + str(timestamp[0]) + ' ' + str(timestamp[1]) + '"' for timestamp in timestamps]
+  command = ['sox'] + trims + [output_filepath]
+  print(command)
+
 def main():
   args = get_args()
   stdin = get_stdin()
+  scp = read_scp(args.scp)
   segments = [Segment(line) for line in stdin]
   recordings_segments = reduce(get_recordings_segments, segments, {})
   for recording_id in recordings_segments:
     recording_segments = recordings_segments[recording_id]
     speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
     print(recording_id)
+    print(scp[recording_id])
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
       timestamps = [(round(segment.begining, 2), round(segment.ending, 2)) for segment in speaker_segments]
-      print(speaker_id, timestamps)
+      sox_sitch_audio(scp[recording_id], timestamps, args.output_folder + recording_id + '_' + speaker_id + '.' + scp[recording_id].split('.')[1])
+    break
 
 if __name__ == '__main__':
   main()
