@@ -78,7 +78,7 @@ def sox_stich_audio(input_filepath, timestamps, output_filepath):
 
 def sox_mix_audio(input_filepaths, min_duration, output_filepath):
   trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(min_duration) for filepath in input_filepaths]
-  command = ['sox'] + trims + [output_filepath]
+  command = ['sox', '-m'] + trims + [output_filepath]
   print(command)
 
 def main():
