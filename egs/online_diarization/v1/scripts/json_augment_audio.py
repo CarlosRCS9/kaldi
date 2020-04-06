@@ -204,6 +204,5 @@ def main():
     print(sox_stich_trims(trims, filepath))
     break
 
-
 if __name__ == '__main__':
   main()
