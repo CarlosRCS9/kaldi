@@ -130,15 +130,22 @@ def main():
       combinations_timestamps.append((combination, filepath, split_timestamps))
 
     combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
-    combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
+    
+    combinations_segments = []
+    for combination, filepath, timestamps in combinations_timestamps:
+      for timestamp in timestamps:
+        print(timestamp)
+
+
+    '''combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     combinations_timestamps_mix = []
     while sum(combinations_timestamps_lengths) > 0:
       combinations_indexes = list(chain(*[[index] * len(combination_timestamps) for index, combination_timestamps in enumerate(combinations_timestamps)]))
       combination_index = random.choice(combinations_indexes)
       combinations_timestamps_mix.append(combinations_timestamps[combination_index].pop(0))
-      combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
+      combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]'''
     
-    recording_segments_index = 0
+    '''recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
     options = [recording_segments_copy, combinations_timestamps_mix]
     options_lengths = [len(option) for option in options]
@@ -155,17 +162,9 @@ def main():
         recording_segments_index += 1
         new_recording_segments.append(option)
       else:
-        filepath = option['filepath']
-        begining = option['timestamp'][0]
-        duration = option['timestamp'][1]
-        speakers_ids = option['combination']
-        last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
-        segment = deepcopy(recording_segments[0].get_json(True))
-        print('last_ending', last_ending)
-        print(segment)
-        print('$$$$$$$$$$')
+        print(option)
       options_lengths = [len(option) for option in options]
-    print(new_recording_segments)
+    print(new_recording_segments)'''
 
 
 if __name__ == '__main__':
