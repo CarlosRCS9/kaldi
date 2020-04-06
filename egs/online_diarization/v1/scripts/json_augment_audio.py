@@ -125,7 +125,7 @@ def main():
       split_segments = []
       for timestamp in split_timestamps:
         ending = round(timestamp[0] + timestamp[1], 2)
-        segment = speaker_segments[0].to_json(True).copy()
+        segment = speaker_segments[0].get_json(True).copy()
         segment['begining'] = timestamp[0]
         segment['duration'] = timestamp[1]
         segment['ending'] = ending
