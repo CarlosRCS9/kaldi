@@ -131,7 +131,6 @@ def main():
     print(recording_id)
     combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
-    print(combinations_timestamps)
     combinations_timestamps_mix = []
     while sum(combinations_timestamps_lengths) > 0:
       combinations_indexes = list(chain(*[[index] * len(combination_timestamps) for index, combination_timestamps in enumerate(combinations_timestamps)]))
