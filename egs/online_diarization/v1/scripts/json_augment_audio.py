@@ -3,17 +3,18 @@
 # Copyright 2019 Carlos Castillo
 # Apache 2.0.
 
-from functools import reduce
 import argparse
 import itertools
 import json
 import math
 import os
+import random
 import re
 import subprocess
 import sys
-import random
 
+from copy import deepcopy
+from functools import reduce
 from itertools import chain
 from models import Segment_complex
 
@@ -137,8 +138,10 @@ def main():
       combinations_timestamps_mix.append(combinations_timestamps[combination_index].pop(0))
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     
+
+    new_recording_segments = deepcopy(recording_segments)
     print(recording_id)
-    print(len(recording_segments))
+    print(len(new_recording_segments))
     print(len(combinations_timestamps_mix))
 
 if __name__ == '__main__':
