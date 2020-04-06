@@ -122,19 +122,8 @@ def main():
       split_durations.append(round(left_duration, 2))
       split_beginings = [round(sum(split_durations[:index]), 2) for index, duration in enumerate(split_durations)]
       split_timestamps = list(zip(split_beginings, split_durations))
-      split_segments = []
-      for timestamp in split_timestamps:
-        ending = round(timestamp[0] + timestamp[1], 2)
-        segment = json.loads(speaker_segments[0].get_json())
-        segment['begining'] = timestamp[0]
-        segment['duration'] = timestamp[1]
-        segment['ending'] = ending
-        segment['speakers'] = [{ 'speaker_id': speaker_id, 'begining': timestamp[0], 'duration': timestamp[1], 'ending': ending } for speaker_id in combination]
-        split_segments.append(Segment_complex(segment))
 
-      print(filepath)
-      for segment in split_segments:
-        print(segment)
+      print(filepath, min_duration, split_timestamps)
 
 if __name__ == '__main__':
   main()
