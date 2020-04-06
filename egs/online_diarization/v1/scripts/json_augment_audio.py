@@ -148,6 +148,7 @@ def main():
       combinations_segments_mix.append(combinations_segments[combination_index].pop(0))
       combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
 
+    print(recording_id)
     print(combinations_segments_mix)
     
     '''recording_segments_index = 0
