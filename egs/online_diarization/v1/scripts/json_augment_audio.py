@@ -153,7 +153,9 @@ def main():
         print('begining:', segment.begining, 'duration:', segment.duration, 'ending:', segment.ending)
         print('copy begining:', segment_copy.begining, 'copy duration:', segment_copy.duration, 'copy ending:', segment_copy.ending)
         recording_segments_index += 1
-
+      else:
+        segment = option
+        print(segment)
       new_recording_segments.append(option)
       options_lengths = [len(option) for option in options]
     print(new_recording_segments)
