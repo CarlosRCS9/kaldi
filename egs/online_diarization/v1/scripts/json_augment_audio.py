@@ -119,7 +119,7 @@ def main():
         duration = math.floor(math.sqrt(left_duration) * 100) / 100.0
         split_durations.append(duration)
         left_duration -= duration
-      split_durations.append(left_duration)
+      split_durations.append(math.floor(math.sqrt(left_duration) * 100) / 100.0)
 
       print(filepath, min_duration, split_durations)
 
