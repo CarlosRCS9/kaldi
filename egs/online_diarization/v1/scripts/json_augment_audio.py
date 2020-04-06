@@ -138,7 +138,7 @@ def main():
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     
     print(recording_id)
-    print(len(speaker_segments))
+    print(len(recording_segments))
     print(len(combinations_timestamps_mix))
 
 if __name__ == '__main__':
