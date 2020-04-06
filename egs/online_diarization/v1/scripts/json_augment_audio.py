@@ -150,8 +150,8 @@ def main():
       if option_index == 0:
         segment = recording_segments[recording_segments_index]
         segment_copy = option
-        print('segment begining:', segment.begining, 'segment ending:', segment.ending)
-        print('segment_copy begining:', segment_copy.begining, 'segment_copy ending:', segment_copy.ending)
+        print('begining:', segment.begining, 'duration:', segment.duration, 'ending:', segment.ending)
+        print('copy begining:', segment_copy.begining, 'copy duration:', segment_copy.duration, 'copy ending:', segment_copy.ending)
         recording_segments_index += 1
 
       new_recording_segments.append(option)
