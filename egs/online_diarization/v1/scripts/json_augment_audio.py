@@ -185,12 +185,12 @@ def main():
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment_copy.add_offset(last_ending)
         new_recording_segments.append(segment_copy)
-        trims.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(recordings_segments_last_ending) + ' ' + str(round(segment.duration, 2)))
+        trims.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(round(recordings_segments_last_ending, 2)) + ' ' + str(round(segment.duration, 2)))
         recordings_segments_last_ending = segment.ending
         recording_segments_index += 1
       else:
         segment = option
-        trims.append('|sox ' + segment.filepath + ' -t ' + segment.filepath.split('.')[-1] + ' - trim ' + str(segment.begining) + ' ' + str(round(segment.duration, 2)))
+        trims.append('|sox ' + segment.filepath + ' -t ' + segment.filepath.split('.')[-1] + ' - trim ' + str(round(segment.begining, 2)) + ' ' + str(round(segment.duration, 2)))
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment.add_offset(last_ending)
         new_recording_segments.append(segment)
