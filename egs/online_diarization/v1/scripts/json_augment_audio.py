@@ -166,7 +166,7 @@ def main():
         recording_segments_index += 1
       else:
         segment = option
-        last_ending = new_recording_segments[-1].ending len(new_recording_segments) > 0 else 0
+        last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         print(last_ending)
       options_lengths = [len(option) for option in options]
     print(new_recording_segments)
