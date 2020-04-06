@@ -120,8 +120,9 @@ def main():
         split_durations.append(duration)
         left_duration -= duration
       split_durations.append(round(left_duration, 2))
+      split_beginings = [0] + [sum(split_durations[:index]) for index, duration in enum(split_durations[:-1])]
 
-      print(filepath, min_duration, split_durations)
+      print(filepath, min_duration, split_durations, split_beginings)
 
 if __name__ == '__main__':
   main()
