@@ -92,6 +92,25 @@ def sox_mix_audio(input_filepaths, min_duration, output_filepath):
     length = float(output.decode("utf-8"))
     return (output_filepath, length)
 
+def sox_stich_trims(trims, output_filepath):
+  command = ['sox', '-m'] + trims + [output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:    
+    print(err)
+    exit(1)
+  command = ['soxi', '-D', output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:
+    print(err)
+    exit(1)
+  else:
+    length = float(output.decode("utf-8"))
+    return (output_filepath, length)
+
 def main():
   args = get_args()
   stdin = get_stdin()
@@ -148,9 +167,8 @@ def main():
       combination_index = random.choice(combinations_indexes)
       combinations_segments_mix.append(combinations_segments[combination_index].pop(0))
       combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
-    
-    print(recording_id)
-    command = ['sox']
+
+    trims = []
     recordings_segments_last_ending = 0
     recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
@@ -167,21 +185,21 @@ def main():
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment_copy.add_offset(last_ending)
         new_recording_segments.append(segment_copy)
-        command.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(recordings_segments_last_ending) + ' ' + str(round(segment.duration, 2)))
+        trims.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(recordings_segments_last_ending) + ' ' + str(round(segment.duration, 2)))
         recordings_segments_last_ending = segment.ending
         recording_segments_index += 1
       else:
         segment = option
-        command.append('|sox ' + segment.filepath + ' -t ' + segment.filepath.split('.')[-1] + ' - trim ' + str(segment.begining) + ' ' + str(round(segment.duration, 2)))
+        trims.append('|sox ' + segment.filepath + ' -t ' + segment.filepath.split('.')[-1] + ' - trim ' + str(segment.begining) + ' ' + str(round(segment.duration, 2)))
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment.add_offset(last_ending)
         new_recording_segments.append(segment)
       options_lengths = [len(option) for option in options]
     
-    print(command)
-    #for segment in new_recording_segments:
-    #  print(segment.begining, segment.ending, ' '.join([speaker.speaker_id for speaker in segment.speakers]))
-
+    print(recording_id)
+    filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
+    print(sox_stich_trims(trims, ))
+    break
 
 if __name__ == '__main__':
   main()
