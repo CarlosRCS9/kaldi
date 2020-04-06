@@ -160,7 +160,7 @@ def main():
         duration = option['timestamp'][1]
         speakers_ids = option['combination']
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
-        segment = recording_segments[0].get_json(True)
+        segment = deepcopy(recording_segments[0])
         print('last_ending', last_ending)
         print(segment)
         print('$$$$$$$$$$')
