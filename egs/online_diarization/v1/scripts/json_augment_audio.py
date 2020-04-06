@@ -111,7 +111,8 @@ def main():
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
       filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
-      print(sox_mix_audio(filepaths, min_duration, filepath))
+      filepath, min_duration = (sox_mix_audio(filepaths, min_duration, filepath))
+      print(filepath, min_duration)
 
 if __name__ == '__main__':
   main()
