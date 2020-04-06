@@ -129,7 +129,9 @@ def main():
     print(recording_id)
     print(combinations_timestamps)
     combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
+    combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     print(combinations_timestamps)
+    print(combinations_timestamps_lengths)
 
 if __name__ == '__main__':
   main()
