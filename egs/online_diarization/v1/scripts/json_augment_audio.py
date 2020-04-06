@@ -99,7 +99,8 @@ def main():
   segments = [Segment_complex(json.loads(line)) for line in stdin]
   recordings_segments = reduce(get_recordings_segments, segments, {})
   for recording_id in sorted(list(recordings_segments.keys())):
-    recording_extension = scp[recording_id].split('.')[-1]
+    recording_filepath = scp[recording_id]
+    recording_extension = recording_filepath.split('.')[-1]
     recording_segments = sorted(recordings_segments[recording_id], key = lambda segment: segment.begining)
     speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
     speakers_stiched = {}
@@ -149,7 +150,7 @@ def main():
       combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
     
     print(recording_id)
-    
+    command = ['sox']
     recordings_segments_last_ending = 0
     recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
@@ -166,7 +167,8 @@ def main():
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment_copy.add_offset(last_ending)
         new_recording_segments.append(segment_copy)
-        print('sox', recordings_segments_last_ending, segment.ending)
+
+        command.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(recordings_segments_last_ending) + ' ' + str(segment.ending))
 
         recordings_segments_last_ending = segment.ending
         recording_segments_index += 1
@@ -177,6 +179,7 @@ def main():
         new_recording_segments.append(segment)
       options_lengths = [len(option) for option in options]
     
+    print(command)
     #for segment in new_recording_segments:
     #  print(segment.begining, segment.ending, ' '.join([speaker.speaker_id for speaker in segment.speakers]))
 
