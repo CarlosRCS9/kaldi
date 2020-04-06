@@ -121,7 +121,7 @@ def main():
         left_duration -= duration
       split_durations.append(round(left_duration, 2))
 
-      print(filepath, min_duration, split_durations, sum(split_durations))
+      print(filepath, min_duration, split_durations)
 
 if __name__ == '__main__':
   main()
