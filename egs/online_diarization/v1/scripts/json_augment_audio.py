@@ -105,14 +105,22 @@ def main():
       timestamps = sorted([(round(segment.begining, 2), round(segment.duration, 2)) for segment in speaker_segments], key = lambda tuple: tuple[0])
       filepath = args.output_folder + recording_id + '_' + speaker_id + '.' + recording_extension
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
-      speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': math.floor(duration * 100)/100.0 }
+      speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': math.floor(duration * 100) / 100.0 }
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
       filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
       filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
       filepath, min_duration = (sox_mix_audio(filepaths, min_duration, filepath))
-      print(filepath, min_duration, math.sqrt(min_duration))
+      
+      split_duration = min_duration
+      split_durations = []
+      while split_duration > 1.5:
+        split_duration = math.floor(math.sqrt(min_duration) * 100) / 100.0
+        split_durations.append(split_duration)
+      split_durations.append(split_duration)
+
+      print(filepath, min_duration, split_durations)
 
 if __name__ == '__main__':
   main()
