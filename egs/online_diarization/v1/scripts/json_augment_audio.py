@@ -121,7 +121,7 @@ def main():
         left_duration -= duration
       split_durations.append(round(left_duration, 2))
       split_beginings = [round(sum(split_durations[:index]), 2) for index, duration in enumerate(split_durations)]
-      split_timestamps = zip(split_beginings, split_durations)
+      split_timestamps = list(zip(split_beginings, split_durations))
 
       print(filepath, min_duration, split_timestamps)
 
