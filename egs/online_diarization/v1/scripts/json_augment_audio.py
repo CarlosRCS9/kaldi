@@ -7,7 +7,7 @@ from functools import reduce
 import argparse
 import itertools
 import json
-import math
+import numpy as np
 import os
 import re
 import subprocess
@@ -105,7 +105,7 @@ def main():
       timestamps = sorted([(round(segment.begining, 2), round(segment.duration, 2)) for segment in speaker_segments], key = lambda tuple: tuple[0])
       filepath = args.output_folder + recording_id + '_' + speaker_id + '.' + recording_extension
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
-      speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': math.floor(duration * 100) / 100.0 }
+      speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': np.floor(duration * 100) / 100.0 }
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
       filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
@@ -116,12 +116,12 @@ def main():
       left_duration = min_duration
       split_durations = []
       while left_duration > 1.5:
-        duration = math.floor(math.sqrt(left_duration) * 100) / 100.0
+        duration = np.floor(np.sqrt(left_duration) * 100) / 100.0
         split_durations.append(duration)
         left_duration -= duration
-      split_durations.append(math.floor(math.sqrt(left_duration) * 100) / 100.0)
+      split_durations.append(np.floor(np.sqrt(left_duration) * 100) / 100.0)
 
-      print(filepath, min_duration, split_durations)
+      print(filepath, min_duration, split_durations, np.sum(split_durations))
 
 if __name__ == '__main__':
   main()
