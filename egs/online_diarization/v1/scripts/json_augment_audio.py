@@ -132,9 +132,8 @@ def main():
     combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     
     combinations_segments = []
-    for combination, filepath, timestamps in combinations_timestamps:
-      for timestamp in timestamps:
-        print(timestamp)
+    for combination in combinations_timestamps:
+      print(combination)
 
 
     '''combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
