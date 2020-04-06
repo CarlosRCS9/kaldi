@@ -116,7 +116,7 @@ def main():
       left_duration = min_duration
       split_durations = []
       while left_duration > 1.5:
-        duration = math.floor(math.sqrt(min_duration) * 100) / 100.0
+        duration = math.floor(math.sqrt(left_duration) * 100) / 100.0
         split_durations.append(duration)
         left_duration -= duration
       split_durations.append(left_duration)
