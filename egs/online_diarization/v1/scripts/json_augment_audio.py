@@ -170,7 +170,10 @@ def main():
         segment.add_offset(last_ending)
         new_recording_segments.append(segment)
       options_lengths = [len(option) for option in options]
-    print(new_recording_segments)
+    
+    print(recording_id)
+    for segment in new_recording_segments:
+      print(segment.begining, segment.ending)
 
 
 if __name__ == '__main__':
