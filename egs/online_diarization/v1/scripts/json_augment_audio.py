@@ -187,7 +187,7 @@ def main():
         new_recording_segments.append(segment_copy)
         trims.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(round(recordings_segments_last_ending, 2)) + ' ' + str(round(segment.duration, 2)))
         #recordings_segments_last_ending = segment.ending
-        recordings_segments_last_ending = recording_segments[recording_segments_index + 1].ending if (recording_segments_index + 1) < len(recording_segments) else segment.ending 
+        recordings_segments_last_ending = recording_segments[recording_segments_index + 1].begining if (recording_segments_index + 1) < len(recording_segments) else segment.ending 
         recording_segments_index += 1
       else:
         segment = option
