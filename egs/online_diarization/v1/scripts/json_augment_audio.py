@@ -198,7 +198,7 @@ def main():
     
     print(recording_id)
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
-    print(sox_stich_trims(trims, ))
+    print(sox_stich_trims(trims, filepath))
     break
 
 if __name__ == '__main__':
