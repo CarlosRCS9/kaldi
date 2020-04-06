@@ -117,6 +117,7 @@ def main():
   scp = read_scp(args.scp)
   segments = [Segment_complex(json.loads(line)) for line in stdin]
   recordings_segments = reduce(get_recordings_segments, segments, {})
+  segments_json = ''
   for recording_id in sorted(list(recordings_segments.keys())):
     recording_filepath = scp[recording_id]
     recording_extension = recording_filepath.split('.')[-1]
@@ -197,12 +198,15 @@ def main():
         new_recording_segments.append(segment)
       options_lengths = [len(option) for option in options]
     
-    print(recording_id)
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
+    print(sox_stich_trims(trims, filepath))
     for segment in new_recording_segments:
-      print(segment.get_json())
-    #print(sox_stich_trims(trims, filepath))
-    break
+      segments_json += segment.get_json()
+
+  filepath = args.output_folder + 'segments_augmented.json'
+  f = open()
+  f.write(segments_json)
+  f.close()
 
 if __name__ == '__main__':
   main()
