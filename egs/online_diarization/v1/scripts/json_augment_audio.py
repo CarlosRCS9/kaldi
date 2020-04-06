@@ -12,7 +12,6 @@ import os
 import re
 import subprocess
 import sys
-import copy
 
 from models import Segment_complex
 
@@ -126,7 +125,7 @@ def main():
       split_segments = []
       for timestamp in split_timestamps:
         ending = round(timestamp[0] + timestamp[1], 2)
-        segment = copy.deepcopy(peaker_segments[0].get_json(False))
+        segment = json.loads(speaker_segments[0].get_json()
         segment['begining'] = timestamp[0]
         segment['duration'] = timestamp[1]
         segment['ending'] = ending
