@@ -137,7 +137,7 @@ def main():
         ending = round(begining + duration, 2)
         segment = recording_segments[0].get_json(True)
         segment['speakers'] = [{'speaker_id': speaker_id, 'begining': begining, 'duration': duration, 'ending': ending} for speaker_id in combination]
-        segment = Segment_complex(segment, begining, ending)
+        segment = Segment_complex(segment, begining, ending, filepath)
         print(segment)
 
     '''combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
