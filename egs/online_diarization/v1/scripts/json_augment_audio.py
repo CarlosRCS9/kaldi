@@ -125,11 +125,9 @@ def main():
   stdin = get_stdin()
   scp = read_scp(args.scp)
   scp_template = get_scp_template(args.scp)
-  print(scp_template)
   segments = [Segment_complex(json.loads(line)) for line in stdin]
   recordings_segments = reduce(get_recordings_segments, segments, {})
   segments_json = ''
-  new_scp = ''
   for recording_id in sorted(list(recordings_segments.keys())):
     recording_filepath = scp[recording_id]
     recording_extension = recording_filepath.split('.')[-1]
@@ -211,20 +209,13 @@ def main():
       options_lengths = [len(option) for option in options]
     
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
-    filepath, duration = sox_stich_trims(trims, filepath)
-    scp_copy = deepcopy(scp_template)
-    print(scp_copy)
+    print(sox_stich_trims(trims, filepath))
     for segment in new_recording_segments:
       segments_json += segment.get_json() + '\n'
 
   filepath = args.output_folder + 'segments_augmented.json'
   f = open(filepath, 'w')
   f.write(segments_json)
-  f.close()
-
-  filepath = args.output_folder + 'wav.scp'
-  f = open(filepath, 'w')
-  f.write(new_scp)
   f.close()
 
 if __name__ == '__main__':
