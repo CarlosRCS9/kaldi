@@ -198,8 +198,8 @@ def main():
     
     print(recording_id)
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
-    for segment in new_recording_segments:
-      print(segment.get_rttm(True))
+    for index, segment in enumerate(new_recording_segments):
+      print(segment.get_rttm(True), trims[index])
     print(sox_stich_trims(trims, filepath))
     break
 
