@@ -149,7 +149,8 @@ def main():
       combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
 
     print(recording_id)
-    print(combinations_segments_mix)
+    for segment in combinations_segments_mix:
+      print(segment)
     
     '''recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
