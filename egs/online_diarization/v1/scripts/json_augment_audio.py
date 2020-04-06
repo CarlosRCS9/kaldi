@@ -133,8 +133,9 @@ def main():
     
     combinations_segments = []
     for combination, filepath, timestamps in combinations_timestamps:
-      for timestamp in timestamps:
-        print(timestamp)
+      for begining, duration in timestamps:
+        segment = recording_segments[0].get_json(True)
+        print(segment)
 
 
     '''combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
