@@ -67,7 +67,7 @@ class Speaker:
     return str(self.__class__) + ": " + str(self.__dict__)
 
 class Segment_complex:
-  def __init__(self, data, begining = None, ending = None):
+  def __init__(self, data, begining = None, ending = None, filepath = None):
     if isinstance(data, Segment):
       self.type = data.type
       self.recording_id = data.recording_id
@@ -91,6 +91,7 @@ class Segment_complex:
       self.conf = data['conf']
       self.slat = data['slat']
     self.duration = self.ending - self.begining
+    self.filepath = filepath
   def add_segment(self, segment):
     self.speakers.append(Speaker(self, segment))
   def same_speakers(self, segment_complex):
