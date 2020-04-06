@@ -147,14 +147,10 @@ def main():
       combination_index = random.choice(combinations_indexes)
       combinations_segments_mix.append(combinations_segments[combination_index].pop(0))
       combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
-
-    print(recording_id)
-    for segment in combinations_segments_mix:
-      print(segment)
     
-    '''recording_segments_index = 0
+    recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
-    options = [recording_segments_copy, combinations_timestamps_mix]
+    options = [recording_segments_copy, combinations_segments_mix]
     options_lengths = [len(option) for option in options]
     new_recording_segments = []
     while sum(options_lengths) > 0:
@@ -166,12 +162,14 @@ def main():
         segment_copy = option
         print('begining:', segment.begining, 'duration:', segment.duration, 'ending:', segment.ending)
         print('copy begining:', segment_copy.begining, 'copy duration:', segment_copy.duration, 'copy ending:', segment_copy.ending)
-        recording_segments_index += 1
         new_recording_segments.append(option)
+        recording_segments_index += 1
       else:
-        print(option)
+        segment = option
+        last_ending = new_recording_segments[-1].ending len(new_recording_segments) > 0 else 0
+        print(last_ending)
       options_lengths = [len(option) for option in options]
-    print(new_recording_segments)'''
+    print(new_recording_segments)
 
 
 if __name__ == '__main__':
