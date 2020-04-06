@@ -128,25 +128,27 @@ def main():
       split_beginings = [round(sum(split_durations[:index]), 2) for index, duration in enumerate(split_durations)]
       split_timestamps = list(zip(split_beginings, split_durations))
       combinations_timestamps.append((combination, filepath, split_timestamps))
-
-    #combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     
     combinations_segments = []
     for combination, filepath, timestamps in combinations_timestamps:
+      combination_segments = []
       for begining, duration in timestamps:
         ending = round(begining + duration, 2)
         segment = recording_segments[0].get_json(True)
         segment['speakers'] = [{'speaker_id': speaker_id, 'begining': begining, 'duration': duration, 'ending': ending} for speaker_id in combination]
         segment = Segment_complex(segment, begining, ending, filepath)
-        print(segment)
+        combination_segments.append(segment)
+      combinations_segments.append(combination_segments)
 
-    '''combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
-    combinations_timestamps_mix = []
-    while sum(combinations_timestamps_lengths) > 0:
-      combinations_indexes = list(chain(*[[index] * len(combination_timestamps) for index, combination_timestamps in enumerate(combinations_timestamps)]))
+    combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
+    combinations_segments_mix = []
+    while sum(combinations_segments_lengths) > 0:
+      combinations_indexes = list(chain(*[[index] * len(combination_segments) for index, combination_segments in enumerate(combinations_segments)]))
       combination_index = random.choice(combinations_indexes)
-      combinations_timestamps_mix.append(combinations_timestamps[combination_index].pop(0))
-      combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]'''
+      combinations_segments_mix.append(combinations_segments[combination_index].pop(0))
+      combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
+
+    print(combinations_segments_mix)
     
     '''recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
