@@ -106,6 +106,9 @@ class Segment_complex:
     segment_complex.speakers.sort(key = lambda speaker: speaker.speaker_id)
     for index in range(len(self.speakers)):
       self.speakers[index].mix_speaker(segment_complex.speakers[index])
+  def add_offset(self, begining):
+    self.begining += begining
+    self.ending += begining
   def get_rttm(self, overlap_speaker = False):
     output_rttm = ''
     if overlap_speaker:
