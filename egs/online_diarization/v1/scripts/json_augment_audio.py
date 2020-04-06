@@ -125,13 +125,13 @@ def main():
     speakers_stiched = {}
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
-      timestamps = sorted([(round(segment.begining, 2), round(segment.duration, 2)) for segment in speaker_segments], key = lambda tuple: tuple[0])
+      timestamps = sorted([((segment.begining), (segment.duration)) for segment in speaker_segments], key = lambda tuple: tuple[0])
       filepath = args.output_folder + recording_id + '_' + speaker_id + '.' + recording_extension
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
       speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': math.floor(duration * 100) / 100.0 }
 
     combinations_timestamps = []
-    for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
+    for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched]))]:
       filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
@@ -144,8 +144,8 @@ def main():
         duration = math.floor(math.sqrt(left_duration) * 100) / 100.0
         split_durations.append(duration)
         left_duration -= duration
-      split_durations.append(round(left_duration, 2))
-      split_beginings = [round(sum(split_durations[:index]), 2) for index, duration in enumerate(split_durations)]
+      split_durations.append((left_duration))
+      split_beginings = [(sum(split_durations[:index])) for index, duration in enumerate(split_durations)]
       split_timestamps = list(zip(split_beginings, split_durations))
       combinations_timestamps.append((combination, filepath, split_timestamps))
     
@@ -153,7 +153,7 @@ def main():
     for combination, filepath, timestamps in combinations_timestamps:
       combination_segments = []
       for begining, duration in timestamps:
-        ending = round(begining + duration, 2)
+        ending = (begining + duration)
         segment = recording_segments[0].get_json(True)
         segment['speakers'] = [{'speaker_id': speaker_id, 'begining': begining, 'duration': duration, 'ending': ending} for speaker_id in combination]
         segment = Segment_complex(segment, begining, ending, filepath)
@@ -185,12 +185,12 @@ def main():
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment_copy.add_offset(last_ending)
         new_recording_segments.append(segment_copy)
-        trims.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(recordings_segments_last_ending) + ' ' + str(round(segment.duration, 2)))
+        trims.append('|sox ' + recording_filepath + ' -t ' + recording_extension + ' - trim ' + str(recordings_segments_last_ending) + ' ' + str((segment.duration)))
         recordings_segments_last_ending = segment.ending
         recording_segments_index += 1
       else:
         segment = option
-        trims.append('|sox ' + segment.filepath + ' -t ' + segment.filepath.split('.')[-1] + ' - trim ' + str(segment.begining) + ' ' + str(round(segment.duration, 2)))
+        trims.append('|sox ' + segment.filepath + ' -t ' + segment.filepath.split('.')[-1] + ' - trim ' + str(segment.begining) + ' ' + str((segment.duration)))
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment.add_offset(last_ending)
         new_recording_segments.append(segment)
