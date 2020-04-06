@@ -131,7 +131,12 @@ def main():
     combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     print(combinations_timestamps)
-    print(combinations_timestamps_lengths)
+    combinations_timestamps_mix = []
+    while sum(combinations_timestamps_lengths) > 0:
+      weigthed_indexes = [index for weigth in range(len(combination_timestamps)) for index, combination_timestamps in enumerate(combinations_timestamps)]
+      print(weigthed_indexes)
+      combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
+      break
 
 if __name__ == '__main__':
   main()
