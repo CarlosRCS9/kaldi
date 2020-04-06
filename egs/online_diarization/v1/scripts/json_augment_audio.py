@@ -12,6 +12,7 @@ import os
 import re
 import subprocess
 import sys
+import random
 
 from itertools import chain
 from models import Segment_complex
@@ -134,8 +135,10 @@ def main():
     print(combinations_timestamps)
     combinations_timestamps_mix = []
     while sum(combinations_timestamps_lengths) > 0:
-      weigthed_indexes = list(chain(*[[index] * len(combination_timestamps) for index, combination_timestamps in enumerate(combinations_timestamps)]))
-      print(weigthed_indexes)
+      combinations_indexes = list(chain(*[[index] * len(combination_timestamps) for index, combination_timestamps in enumerate(combinations_timestamps)]))
+      combination_index = random.choice(combinations_indexes)
+      print(combinations_indexes)
+      print(combination_index)
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
       break
 
