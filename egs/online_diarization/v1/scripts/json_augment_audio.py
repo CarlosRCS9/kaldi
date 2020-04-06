@@ -173,7 +173,7 @@ def main():
     
     print(recording_id)
     for segment in new_recording_segments:
-      print(segment.begining, segment.ending)
+      print(segment.begining, segment.ending, ' '.join([speaker.speaker_id for speaker in segment.speakers]))
 
 
 if __name__ == '__main__':
