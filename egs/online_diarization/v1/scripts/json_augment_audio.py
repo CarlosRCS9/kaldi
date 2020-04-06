@@ -148,6 +148,9 @@ def main():
       combinations_segments_mix.append(combinations_segments[combination_index].pop(0))
       combinations_segments_lengths = [len(combination_segments) for combination_segments in combinations_segments]
     
+    print(recording_id)
+    
+    recordings_segments_last_ending = 0
     recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
     options = [recording_segments_copy, combinations_segments_mix]
@@ -163,6 +166,9 @@ def main():
         last_ending = new_recording_segments[-1].ending if len(new_recording_segments) > 0 else 0
         segment_copy.add_offset(last_ending)
         new_recording_segments.append(segment_copy)
+        print('sox', recordings_segments_last_ending, segment.ending)
+
+        recordings_segments_last_ending = segment.ending
         recording_segments_index += 1
       else:
         segment = option
@@ -171,9 +177,8 @@ def main():
         new_recording_segments.append(segment)
       options_lengths = [len(option) for option in options]
     
-    print(recording_id)
-    for segment in new_recording_segments:
-      print(segment.begining, segment.ending, ' '.join([speaker.speaker_id for speaker in segment.speakers]))
+    #for segment in new_recording_segments:
+    #  print(segment.begining, segment.ending, ' '.join([speaker.speaker_id for speaker in segment.speakers]))
 
 
 if __name__ == '__main__':
