@@ -106,6 +106,8 @@ def main():
       filepath = args.output_folder + recording_id + '_' + speaker_id + '.' + recording_extension
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
       speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': math.floor(duration * 100) / 100.0 }
+
+    combinations_timestamps = []
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
       filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
@@ -122,8 +124,9 @@ def main():
       split_durations.append(round(left_duration, 2))
       split_beginings = [round(sum(split_durations[:index]), 2) for index, duration in enumerate(split_durations)]
       split_timestamps = list(zip(split_beginings, split_durations))
+      combinations_timestamps.append(combination, filepath, split_timestamps)
 
-      print(filepath, min_duration, split_timestamps)
+    prrint(combinations_timestamps)
 
 if __name__ == '__main__':
   main()
