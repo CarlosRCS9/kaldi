@@ -138,6 +138,7 @@ def main():
       combinations_timestamps_mix.append(combinations_timestamps[combination_index].pop(0))
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     
+    recording_segments_index = 0
     recording_segments_copy = deepcopy(recording_segments)
     options = [recording_segments_copy, combinations_timestamps_mix]
     options_lengths = [len(option) for option in options]
@@ -145,7 +146,14 @@ def main():
     while sum(options_lengths) > 0:
       options_indexes = list(chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
-      new_recording_segments.append(options[option_index].pop(0))
+      option = options[option_index].pop(0)
+      if option_index == 0:
+        print('----------')
+        print(option.get_json())
+        print(recording_segments[recording_segments_index].get_json())
+        print('$$$$$$$$$$')
+        recording_segments_index += 1
+      new_recording_segments.append(option)
       options_lengths = [len(option) for option in options]
     print(new_recording_segments)
 
