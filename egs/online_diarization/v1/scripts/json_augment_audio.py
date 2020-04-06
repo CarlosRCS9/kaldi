@@ -213,8 +213,7 @@ def main():
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
     filepath, duration = sox_stich_trims(trims, filepath)
     scp_copy = deepcopy(scp_template)
-    scp_copy[0][scp_copy[1]] = filepath
-    new_scp += ' '.join(scp_copy)
+    print(scp_copy)
     for segment in new_recording_segments:
       segments_json += segment.get_json() + '\n'
 
