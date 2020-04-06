@@ -129,7 +129,6 @@ def main():
       combinations_timestamps.append((combination, filepath, split_timestamps))
 
     print(recording_id)
-    print(combinations_timestamps)
     combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     print(combinations_timestamps)
@@ -137,10 +136,9 @@ def main():
     while sum(combinations_timestamps_lengths) > 0:
       combinations_indexes = list(chain(*[[index] * len(combination_timestamps) for index, combination_timestamps in enumerate(combinations_timestamps)]))
       combination_index = random.choice(combinations_indexes)
-      print(combinations_indexes)
-      print(combination_index)
+      combinations_timestamps_mix.append(combinations_timestamps[combination_index].pop(0))
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
-      break
+    print(combinations_timestamps_mix)
 
 if __name__ == '__main__':
   main()
