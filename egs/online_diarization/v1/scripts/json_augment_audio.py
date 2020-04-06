@@ -210,6 +210,7 @@ def main():
     
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
     print(sox_stich_trims(trims, filepath))
+    print(scp_template)
     for segment in new_recording_segments:
       segments_json += segment.get_json() + '\n'
 
