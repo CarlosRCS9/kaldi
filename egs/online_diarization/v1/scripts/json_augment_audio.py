@@ -204,7 +204,7 @@ def main():
       segments_json += segment.get_json()
 
   filepath = args.output_folder + 'segments_augmented.json'
-  f = open(filepath)
+  f = open(filepath, 'w')
   f.write(segments_json)
   f.close()
 
