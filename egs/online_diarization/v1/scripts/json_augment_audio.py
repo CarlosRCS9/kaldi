@@ -113,12 +113,13 @@ def main():
       filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
       filepath, min_duration = (sox_mix_audio(filepaths, min_duration, filepath))
       
-      split_duration = min_duration
+      left_duration = min_duration
       split_durations = []
-      while split_duration > 1.5:
-        split_duration = math.floor(math.sqrt(min_duration) * 100) / 100.0
-        split_durations.append(split_duration)
-      split_durations.append(split_duration)
+      while left_duration > 1.5:
+        duration = math.floor(math.sqrt(min_duration) * 100) / 100.0
+        split_durations.append(duration)
+        left_duration -= duration
+      split_durations.append(left_duration)
 
       print(filepath, min_duration, split_durations)
 
