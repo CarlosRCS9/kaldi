@@ -98,7 +98,7 @@ def main():
   for recording_id in sorted(list(recordings_segments.keys())):
     recording_extension = scp[recording_id].split('.')[-1]
     recording_segments = sorted(recordings_segments[recording_id], key = lambda segment: segment.begining)
-    speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
+    speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B', 'B1']), recording_segments, {})
     speakers_stiched = {}
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
@@ -128,7 +128,7 @@ def main():
 
     print(recording_id)
     print(combinations_timestamps)
-    combinations_timestamps = [{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps for combination, filepath, timestamps in combinations_timestamps]
+    combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     print(combinations_timestamps)
 
 if __name__ == '__main__':
