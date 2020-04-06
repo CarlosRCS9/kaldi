@@ -133,7 +133,7 @@ def main():
     print(combinations_timestamps)
     combinations_timestamps_mix = []
     while sum(combinations_timestamps_lengths) > 0:
-      weigthed_indexes = [index for weigth in range(len(combination_timestamps)) for index, combination_timestamps in enumerate(combinations_timestamps)]
+      weigthed_indexes = [[index] * len(combination_timestamps) for index, combination_timestamps in enumerate(combinations_timestamps)]
       print(weigthed_indexes)
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
       break
