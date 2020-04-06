@@ -131,7 +131,7 @@ def main():
       speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': math.floor(duration * 100) / 100.0 }
 
     combinations_timestamps = []
-    for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched]))]:
+    for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_id for speaker_id in speakers_stiched], 2))]:
       filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
