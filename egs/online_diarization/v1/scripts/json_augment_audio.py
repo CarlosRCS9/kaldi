@@ -128,7 +128,6 @@ def main():
       split_timestamps = list(zip(split_beginings, split_durations))
       combinations_timestamps.append((combination, filepath, split_timestamps))
 
-    print(recording_id)
     combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     combinations_timestamps_mix = []
@@ -137,7 +136,10 @@ def main():
       combination_index = random.choice(combinations_indexes)
       combinations_timestamps_mix.append(combinations_timestamps[combination_index].pop(0))
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
-    print(combinations_timestamps_mix)
+    
+    print(recording_id)
+    print(len(speaker_segments))
+    print(len(combinations_timestamps_mix))
 
 if __name__ == '__main__':
   main()
