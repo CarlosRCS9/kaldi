@@ -126,6 +126,7 @@ def main():
       split_timestamps = list(zip(split_beginings, split_durations))
       combinations_timestamps.append((combination, filepath, split_timestamps))
 
+    print(recording_id)
     print(combinations_timestamps)
 
 if __name__ == '__main__':
