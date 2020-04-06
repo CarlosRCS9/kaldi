@@ -138,11 +138,15 @@ def main():
       combinations_timestamps_mix.append(combinations_timestamps[combination_index].pop(0))
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     
-
     new_recording_segments = deepcopy(recording_segments)
-    print(recording_id)
-    print(len(new_recording_segments))
-    print(len(combinations_timestamps_mix))
+    options = [new_recording_segments, combinations_timestamps_mix]
+    options_lengths = [len(option) for option in options]
+    while sum(options_lengths) > 0:
+      options_indexes = list(chain(*[[index] * len(option) for index, option in enumerate(options)]))
+      print(options_indexes)
+      options_lengths = [len(option) for option in options]
+      break
+
 
 if __name__ == '__main__':
   main()
