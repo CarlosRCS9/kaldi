@@ -93,7 +93,7 @@ def sox_mix_audio(input_filepaths, min_duration, output_filepath):
     return (output_filepath, length)
 
 def sox_stich_trims(trims, output_filepath):
-  command = ['sox', '-m'] + trims + [output_filepath]
+  command = ['sox'] + trims + [output_filepath]
   p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   output, err = p.communicate()
   rc = p.returncode
