@@ -148,11 +148,12 @@ def main():
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
       if option_index == 0:
-        print('----------')
-        print(option.get_json())
-        print(recording_segments[recording_segments_index].get_json())
-        print('$$$$$$$$$$')
+        segment = recording_segments[recording_segments_index]
+        segment_copy = option
+        print('segment begining:', segment.begining, 'segment ending:', segment.ending)
+        print('segment_copy begining:', segment_copy.begining, 'segment_copy ending:', segment_copy.ending)
         recording_segments_index += 1
+
       new_recording_segments.append(option)
       options_lengths = [len(option) for option in options]
     print(new_recording_segments)
