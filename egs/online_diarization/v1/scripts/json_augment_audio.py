@@ -128,7 +128,7 @@ def main():
 
     print(recording_id)
     print(combinations_timestamps)
-    combinations_timestamps = [timestamps for combination, filepath, timestamps in combinations_timestamps]
+    combinations_timestamps = [timestamp for timestamp in timestamps for combination, filepath, timestamps in combinations_timestamps]
     print(combinations_timestamps)
 
 if __name__ == '__main__':
