@@ -129,11 +129,12 @@ def main():
       split_timestamps = list(zip(split_beginings, split_durations))
       combinations_timestamps.append((combination, filepath, split_timestamps))
 
-    combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
+    #combinations_timestamps = [[{ 'combination': combination, 'filepath': filepath, 'timestamp': timestamp } for timestamp in timestamps] for combination, filepath, timestamps in combinations_timestamps]
     
     combinations_segments = []
-    for combination in combinations_timestamps:
-      print(combination)
+    for combination, filepath, timestamps in combinations_timestamps:
+      for timestamp in timestamps:
+        print(timestamp)
 
 
     '''combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
