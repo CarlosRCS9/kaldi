@@ -127,7 +127,7 @@ def main():
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
       timestamps = sorted([((segment.begining), (segment.duration)) for segment in speaker_segments], key = lambda tuple: tuple[0])
-      filepath = args.output_folder + recording_id + '_' + speaker_id + '.' + recording_extension
+      filepath = args.output_folder + '/speakers/' + recording_id + '_' + speaker_id + '.' + recording_extension
       filepath, duration = sox_stich_audio(scp[recording_id], timestamps, filepath)
       speakers_stiched[speaker_id] = { 'filepath': filepath, 'duration': math.floor(duration * 100) / 100.0 }
 
@@ -136,7 +136,7 @@ def main():
       filepaths = [speakers_stiched[speaker_id]['filepath'] for speaker_id in combination]
       durations = [speakers_stiched[speaker_id]['duration'] for speaker_id in combination]
       min_duration = min(durations)
-      filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
+      filepath = args.output_folder + '/speakers/' + recording_id + '_'.join([''] + combination) + '.' + recording_extension
       filepath, min_duration = (sox_mix_audio(filepaths, min_duration, filepath))
       
       left_duration = min_duration
@@ -201,7 +201,7 @@ def main():
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
     print(sox_stich_trims(trims, filepath))
     for segment in new_recording_segments:
-      segments_json += segment.get_json()
+      segments_json += segment.get_json() + '\n'
 
   filepath = args.output_folder + 'segments_augmented.json'
   f = open(filepath, 'w')
