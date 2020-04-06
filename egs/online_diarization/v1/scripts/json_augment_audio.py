@@ -129,7 +129,7 @@ def main():
         segment['begining'] = timestamp[0]
         segment['duration'] = timestamp[1]
         segment['ending'] = ending
-        segment['speakers'] = [{ 'speaker_id': speaker_id: 'begining': timestamp[0], 'duration': timestamp[1], 'ending': ending } for speaker_id in combination]
+        segment['speakers'] = [{ 'speaker_id': speaker_id, 'begining': timestamp[0], 'duration': timestamp[1], 'ending': ending } for speaker_id in combination]
         split_segments.append(Segment_complex(segment))
 
       print(filepath)
