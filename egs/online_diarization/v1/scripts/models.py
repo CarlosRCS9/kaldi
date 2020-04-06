@@ -5,6 +5,7 @@
 
 import numpy as np
 import json
+from copy import deepcopy
 
 class Segment:
   def __init__(self, data):
@@ -56,7 +57,7 @@ class Speaker:
     self.ending = self.ending if self.ending > speaker.ending else speaker.ending
     self.duration = self.ending - self.begining
   def get_json(self, to_dict = False):
-    output_json = self.__dict__
+    output_json = deepcopy(self.__dict__)
     output_json['begining'] = round(float(output_json['begining']), 2)
     output_json['ending'] = round(float(output_json['ending']), 2)
     output_json['duration'] = round(float(output_json['duration']), 2)
@@ -113,7 +114,7 @@ class Segment_complex:
         output_rttm += ' '.join([self.type, self.recording_id, self.channel, str(round(self.begining, 2)), str(round(self.duration, 2)), self.ortho, self.stype, speaker.speaker_id, self.conf, self.slat]) + '\n'
     return output_rttm[:-1]
   def get_json(self, to_dict = False):
-    output_json = self.__dict__
+    output_json = deepcopy(self.__dict__)
     output_json['begining'] = round(float(output_json['begining']), 2)
     output_json['ending'] = round(float(output_json['ending']), 2)
     output_json['duration'] = round(float(output_json['duration']), 2)
