@@ -112,7 +112,7 @@ def main():
       min_duration = min(durations)
       filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
       filepath, min_duration = (sox_mix_audio(filepaths, min_duration, filepath))
-      print(filepath, min_duration)
+      print(filepath, min_duration, math.sqrt(min_duration))
 
 if __name__ == '__main__':
   main()
