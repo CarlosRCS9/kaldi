@@ -139,7 +139,7 @@ def main():
       combinations_timestamps_lengths = [len(combination_timestamps) for combination_timestamps in combinations_timestamps]
     
     recording_segments_copy = deepcopy(recording_segments)
-    options = [ecording_segments_copy, combinations_timestamps_mix]
+    options = [recording_segments_copy, combinations_timestamps_mix]
     options_lengths = [len(option) for option in options]
     new_recording_segments = []
     while sum(options_lengths) > 0:
