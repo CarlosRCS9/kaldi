@@ -214,9 +214,11 @@ def main():
     scp_template[0][scp_template[1]] = filepath
     scp_template[0][0] = recording_id
     new_scp += ' '.join(scp_template[0])
-    for segment in new_recording_segments:
+    for index, segment in enumerate(new_recording_segments):
       segments_json += segment.get_json() + '\n'
-      print(segment.get_rttm(True))
+      print(segment.get_rttm(True), trims[index])
+
+    break
 
   '''filepath = args.output_folder + 'segments_augmented.json'
   f = open(filepath, 'w')
