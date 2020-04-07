@@ -216,11 +216,8 @@ def main():
     new_scp += ' '.join(scp_template[0])
     for index, segment in enumerate(new_recording_segments):
       segments_json += segment.get_json() + '\n'
-      print(segment.get_rttm(True), trims[index])
 
-    break
-
-  '''filepath = args.output_folder + 'segments_augmented.json'
+  filepath = args.output_folder + 'segments_augmented.json'
   f = open(filepath, 'w')
   f.write(segments_json)
   f.close()
@@ -228,7 +225,7 @@ def main():
   filepath = args.output_folder + 'wav.scp'
   f = open(filepath, 'w')
   f.write(new_scp)
-  f.close()'''
+  f.close()
 
 if __name__ == '__main__':
   main()
