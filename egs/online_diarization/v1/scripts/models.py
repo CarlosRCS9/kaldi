@@ -56,6 +56,9 @@ class Speaker:
     self.begining = self.begining if self.begining < speaker.begining else speaker.begining
     self.ending = self.ending if self.ending > speaker.ending else speaker.ending
     self.duration = self.ending - self.begining
+  def add_offset(self, begining):
+    self.begining = self.begining + begining
+    self.ending = self.ending + begining
   def get_json(self, to_dict = False):
     output_json = deepcopy(self.__dict__)
     output_json['begining'] = round(float(output_json['begining']), 2)
@@ -109,6 +112,8 @@ class Segment_complex:
   def add_offset(self, begining):
     self.begining = self.begining + begining
     self.ending = self.ending + begining
+    for speaker in self.speakers:
+      speaker.add_offset(begining)
   def get_rttm(self, overlap_speaker = False):
     output_rttm = ''
     if overlap_speaker:
