@@ -213,6 +213,7 @@ def main():
     filepath, duration = sox_stich_trims(trims, filepath)
     print(filepath, duration)
     scp_template[0][scp_template[1]] = filepath
+    scp_template[0][0] = recording_id
     new_scp += ' '.join(scp_template[0])
     for segment in new_recording_segments:
       segments_json += segment.get_json() + '\n'
