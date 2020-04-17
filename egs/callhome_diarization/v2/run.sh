@@ -17,7 +17,7 @@ set -e
 mfccdir=`pwd`/mfcc
 vaddir=`pwd`/mfcc
 data_root=/export/corpora5/LDC
-stage=5
+stage=0
 nnet_dir=exp/xvector_nnet_1a/
 num_components=1024 # the number of UBM components (used for VB resegmentation)
 ivector_dim=400 # the dimension of i-vector (used for VB resegmentation)
