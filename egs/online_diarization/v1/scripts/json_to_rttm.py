@@ -12,11 +12,11 @@ from models import Segment_complex
 # is_valid_segment [VALIDATED]
 # validates if a segment meets a maximum number of speakers,
 # and that all the speakers in the segment belong to a list.
-def is_valid_segment(segment_complex, maximum_speakers_length = 2, valid_speakers_ids = ['A', 'B']):
+def is_valid_segment(segment_complex, maximum_speakers_length = None, valid_speakers_ids = None):
     speakers_ids = [speaker.speaker_id for speaker in segment_complex.speakers]
     speakers_ids = list(set(speakers_ids))
-    return len(speakers_ids) <= maximum_speakers_length and \
-        all(speaker_id in valid_speakers_ids for speaker_id in speakers_ids)
+    return (maximum_speakers_length is None or len(speakers_ids) <= maximum_speakers_length) and \
+        (valid_speakers_ids is None or all(speaker_id in valid_speakers_ids for speaker_id in speakers_ids))
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
