@@ -82,7 +82,8 @@ GSYMS
 /egs/*/*/rirs_noises.zip
 /egs/*/*/RIRS_NOISES/
 /egs/*/*/notebooks/batch
-
+/egs/*/*/data2
+ 
 # /tools/
 /tools/pocolm/
 /tools/ATLAS/

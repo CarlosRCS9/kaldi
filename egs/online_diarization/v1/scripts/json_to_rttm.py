@@ -21,6 +21,8 @@ def is_valid_segment(segment_complex, maximum_speakers_length = None, valid_spea
 def get_args():
   parser = argparse.ArgumentParser(description='')
   parser.add_argument('--overlap-speaker', type=str, default='true', help='If true multiple-speakers segments get the "Z" speaker id in the output.')
+  parser.add_argument('--maximum-speakers', type=str, default='None', help='The maximum number of speakers for each segment.')
+  parser.add_argument('--valid-speakers', type=str, default='None', help='Comma separated valid speaker ids.')
   args = parser.parse_args()
   return args
 
@@ -30,9 +32,11 @@ def get_stdin():
 def main():
   args = get_args()
   args.overlap_speaker = args.overlap_speaker.lower() == 'true'
+  args.maximum_speakers = None if args.maximum_speakers == 'None' else int(args.maximum_speakers)
+  args.valid_speakers = None if args.valid_speakers == 'None' else args.valid_speakers.split(',')
   stdin = get_stdin()
   segments = [Segment_complex(json.loads(line)) for line in stdin]
-  segments = filter(is_valid_segment, segments)
+  segments = filter(lambda segment: is_valid_segment(segment, args.maximum_speakers, args.valid_speakers), segments)
   for segment in segments:
     print(segment.get_rttm(args.overlap_speaker))
 
