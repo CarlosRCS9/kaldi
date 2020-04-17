@@ -17,6 +17,8 @@ fi
 if [ $stage -le 2 ]; then
   cat $1/segments_augmented.json \
     | python3 split_segments.py json --length=1.0 --overlap=0.5 --min-segment=0.5 > $1/segments_augmented_1.0_0.5.json
+  cat $1/segments_augmented.json \
+    | python3 scripts/json_to_rttm.py --overlap-speaker=false > $1/segments_augmented.rttm
 fi
 
 if [ $stage -le 3 ]; then

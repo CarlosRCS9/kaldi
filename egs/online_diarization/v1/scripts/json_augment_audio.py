@@ -87,7 +87,7 @@ def sox_mix_audio(input_filepaths, min_duration, output_filepath):
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
     rc = p.returncode
-    if rc != 0:    
+    if rc != 0:
       print(err)
       exit(1)
   command = ['soxi', '-D', output_filepath]
@@ -102,13 +102,14 @@ def sox_mix_audio(input_filepaths, min_duration, output_filepath):
     return (output_filepath, length)
 
 def sox_stich_trims(trims, output_filepath):
-  command = ['sox'] + trims + [output_filepath]
-  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  output, err = p.communicate()
-  rc = p.returncode
-  if rc != 0:    
-    print(err)
-    exit(1)
+  if not os.path.exists(output_filepath):
+    command = ['sox'] + trims + [output_filepath]
+    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    rc = p.returncode
+    if rc != 0:
+      print(err)
+      exit(1)
   command = ['soxi', '-D', output_filepath]
   p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   output, err = p.communicate()
@@ -133,7 +134,7 @@ def main():
     recording_filepath = scp[recording_id]
     recording_extension = recording_filepath.split('.')[-1]
     recording_segments = sorted(recordings_segments[recording_id], key = lambda segment: segment.begining)
-    speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment, ['A', 'B']), recording_segments, {})
+    speakers_segments = reduce(lambda acc, segment: get_speakers_segments(acc, segment), recording_segments, {})
     speakers_stiched = {}
     for speaker_id in speakers_segments:
       speaker_segments = speakers_segments[speaker_id]
@@ -149,7 +150,7 @@ def main():
       min_duration = min(durations)
       filepath = args.output_folder + recording_id + '_'.join([''] + combination) + '.' + recording_extension
       filepath, min_duration = (sox_mix_audio(filepaths, min_duration, filepath))
-      
+
       left_duration = min_duration
       split_durations = []
       while left_duration > 1.5:
@@ -160,7 +161,7 @@ def main():
       split_beginings = [(sum(split_durations[:index])) for index, duration in enumerate(split_durations)]
       split_timestamps = list(zip(split_beginings, split_durations))
       combinations_timestamps.append((combination, filepath, split_timestamps))
-    
+
     combinations_segments = []
     for combination, filepath, timestamps in combinations_timestamps:
       combination_segments = []
@@ -207,7 +208,7 @@ def main():
         segment.add_offset(last_ending)
         new_recording_segments.append(segment)
       options_lengths = [len(option) for option in options]
-    
+
     filepath = args.output_folder + recording_id + '_augmented.' + recording_extension
     filepath, duration = sox_stich_trims(trims, filepath)
     print(filepath, duration)
