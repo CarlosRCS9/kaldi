@@ -65,24 +65,18 @@ def main():
           print(segment.get_json())
   elif args.output_mode == 'info':
     overlap_segments = {}
-    overlap_duration = 0
-    non_overlap_segments = {}
-    non_overlap_duration = 0
+    non_overlap_recording_segments = {}
     for recording_id in recordings_complex_segments:
       for segment in recordings_complex_segments[recording_id]:
-        if len(segment.speakers) > 1:
+	if len(segment.speakers) > 1:
           if recording_id not in overlap_segments:
             overlap_segments[recording_id] = []
           overlap_segments[recording_id].append(segment)
-          overlap_duration += segment.duration
         else:
-          if recording_id not in non_overlap_segments:
-            non_overlap_segments[recording_id] = []
-          non_overlap_segments[recording_id].append(segment)
-          non_overlap_duration += segment.duration
-    print('non overlap time:', non_overlap_duration)
-    print('overlap time:', overlap_duration)
-    print('overlap time / non overlap time:', overlap_duration / (overlap_duration + non_overlap_duration))
+          if recording_id not in non_overlap_recording_segments:
+            non_overlap_recording_segments[recording_id] = []
+          non_overlap_recording_segments[recording_id].append(segment)
+    
   else:
     print('Invalid --output-mode.')
     exit(1)
