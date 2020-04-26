@@ -38,7 +38,7 @@ def eer_score(res_filepath, log_directory = None):
   else:
       exit(err)
 
-def md_eval(ref_filepath, res_filepath, save_dir = None):
+def md_eval(ref_filepath, res_filepath, log_directory = None):
   bin = '../../../../tools/sctk-2.4.10/src/md-eval/md-eval.pl'
   command = [bin, '-r', ref_filepath, '-s', res_filepath]
   p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -46,8 +46,8 @@ def md_eval(ref_filepath, res_filepath, save_dir = None):
   rc = p.returncode
   if rc == 0:
       output = output.decode("utf-8")
-      if save_dir is not None:
-          file = open(save_dir + '/der.log', 'w')
+      if log_directory is not None:
+          file = open(log_directory + '/der.log', 'w')
           file.write(output)
           file.close()
       lines =  output.split('\n')
