@@ -7,6 +7,7 @@ import subprocess
 import re
 import sys
 
+# compute_eer [VALIDATED]
 def compute_eer(res_filepath, log_directory = None):
   bin = '../../../../src/ivectorbin/compute-eer'
   command = [bin, res_filepath]
@@ -23,6 +24,7 @@ def compute_eer(res_filepath, log_directory = None):
   else:
     sys.exit(err)
 
+# compute_min_dcf [VALIDATED]
 def compute_min_dcf(scores_filepath, trials_filepath, target_probability = 0.01, log_directory = None):
   bin = '../sid/compute_min_dcf.py'
   command = [bin, '--p-target', str(target_probability), scores_filepath, trials_filepath]
@@ -39,6 +41,7 @@ def compute_min_dcf(scores_filepath, trials_filepath, target_probability = 0.01,
   else:
     sys.exit(err)
 
+# ivector_plda_scoring [VALIDATED]
 def ivector_plda_scoring(plda_filepath, ref_vector, test_vector):
   ref_string = str(list(ref_vector)).replace(',', '').replace('[', '[ ').replace(']', ' ]')
   test_string = str(list(test_vector)).replace(',', '').replace('[', '[ ').replace(']', ' ]')
@@ -54,6 +57,7 @@ def ivector_plda_scoring(plda_filepath, ref_vector, test_vector):
   else:
     sys.exit(err)
 
+# md_eval [VALIDATED]
 def md_eval(ref_filepath, res_filepath, log_directory = None):
   bin = '../../../../tools/sctk-2.4.10/src/md-eval/md-eval.pl'
   command = [bin, '-r', ref_filepath, '-s', res_filepath]
