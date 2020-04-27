@@ -68,8 +68,6 @@ def md_eval(ref_filepath, res_filepath, log_directory = None):
       file.close()
     lines =  output.split('\n')
     derLine = [line for line in lines if 'OVERALL SPEAKER DIARIZATION ERROR' in line][0]
-    print(derLine)
-    print(re.findall('\d+\.?\d*', derLine))
     return float(re.findall('\d+\.?\d*', derLine)[0])
   else:
     sys.exit(err)
