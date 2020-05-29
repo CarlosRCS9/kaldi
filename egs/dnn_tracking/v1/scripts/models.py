@@ -110,8 +110,9 @@ class Segment:
   def print_rttm(self):
     for speaker in self.get_speakers():
       output = self.get_type() + ' ' + self.get_file_id() + ' ' + self.get_channel_id() + ' ' + \
-      str(speaker.get_turn_onset()) + ' ' + str(speaker.get_turn_duration()) + ' ' + self.get_orthography_field() + \
-      ' ' + speaker.get_type() + ' ' + speaker.get_name() + ' ' + self.get_confidence_score() + ' ' + self.get_signal_lookahead_time()
+      str(speaker.get_turn_onset()) + ' ' + str(speaker.get_turn_duration()) + ' ' + \
+      self.get_orthography_field() + ' ' + speaker.get_type() + ' ' + speaker.get_name() + \
+      ' ' + self.get_confidence_score() + ' ' + self.get_signal_lookahead_time()
       print(output)
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
