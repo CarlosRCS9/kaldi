@@ -19,5 +19,13 @@ class Segment:
       self.spekaer_name          = data[7]
       self.confidence_score      = data[8]
       self.signal_lookahead_time = data[9]
+  def get_file_id(self):
+    return self.file_id
+  def get_onset(self):
+    return self.turn_onset
+  def get_end(self):
+    return self.turn_onset + self.turn_duration
+  def is_within_timestamps(self, onset, end):
+    return not (end <= self.get_onset() or self.get_end() <= onset)
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
