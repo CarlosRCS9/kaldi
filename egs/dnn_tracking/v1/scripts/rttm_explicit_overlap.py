@@ -22,17 +22,20 @@ def main():
   stdin = get_stdin()
   segments = [Segment(line) for line in stdin]
   files_segments = functools.reduce(get_file_segments, segments, {})
+  new_segments = []
   for file_id in sorted(files_segments.keys()):
     file_segments = files_segments[file_id];
-    timestamps = sorted(itertools.chain.from_iterable([[segment.get_onset(), segment.get_end()] for segment in file_segments]))
+    timestamps = sorted(set(itertools.chain.from_iterable([[segment.get_turn_onset(), segment.get_turn_end()] for segment in file_segments])))
     timestamps_pairs = [(timestamps[i], timestamps[i + 1]) for i, _ in enumerate(timestamps[:-1])]
-
     for onset, end in timestamps_pairs:
       timestamps_segments = filter(lambda segment: segment.is_within_timestamps(onset, end), file_segments)
       if len(timestamps_segments) > 0:
-        print(onset, end)
-        for segment in timestamps_segments:
-          print(segment)
+        new_segment = Segment(timestamps_segments[0])
+        new_segment.add_speakers(list(itertools.chain.from_iterable([segment.get_speakers() for segment in timestamps_segments[1:]])))
+        new_segment.update_within_timestamps(onset, end)
+        new_segments.append(new_segment)
+  for segment in new_segments:
+    segment.print_rttm()
 
 if __name__ == '__main__':
   main()
