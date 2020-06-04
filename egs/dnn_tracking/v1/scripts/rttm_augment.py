@@ -115,7 +115,7 @@ def main():
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
       combinations_files[','.join(combination)] = { 'speakers_names': combination, 'filepath': combination_filepath, 'duration': duration, 'timestamps_pairs': timestamps_pairs }
-    #print(combinations_files)
+    print(combinations_files)
 
 if __name__ == '__main__':
   main()
