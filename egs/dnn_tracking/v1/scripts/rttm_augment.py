@@ -102,7 +102,18 @@ def main():
       min_duration = min(durations)
       combination_filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
       combination_filepath, duration = sox_mix_files(filepaths, min_duration, combination_filepath)
-      combinations_files[','.join(combination)] = { 'filepath': combination_filepath, 'duration': duration, 'speakers_names': combination }
+
+      left_duration = min_duration
+      cut_durations = []
+      while left_duration > 1.5:
+        cut_duration = math.sqrt(left_duration)
+        cut_durations.append(cut_duration)
+        left_duration -= cut_duration
+      cut_durations.append(cut_duration)
+      cut_onsets = [sum(cut_durations[:index]) for index, cut_duration in enumerate(cut_durations)]
+      timestamps_pairs = list(zip(cut_onsets, cut_durations))
+
+      combinations_files[','.join(combination)] = { 'speakers_names': combination, 'filepath': combination_filepath, 'duration': duration, 'timestamps_pairs': timestamps_pairs }
     print(combinations_files)
 
 if __name__ == '__main__':
