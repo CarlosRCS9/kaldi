@@ -95,12 +95,15 @@ def main():
       speaker_filepath, duration = sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
       single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration }
 
+    combinations_files = {}
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files.keys()], 2))]:
       filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
       min_duration = min(durations)
       combination_filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
-      print(min_duration, sox_mix_files(filepaths, min_duration, combination_filepath))
+      combination_filepath, duration = sox_mix_files(filepaths, min_duration, combination_filepath)
+      combinations_files[','.join(combination)] = { 'filepath': combination_filepath, 'duration': duration, 'speakers_names': combination }
+    print(combinations_files)
 
 if __name__ == '__main__':
   main()
