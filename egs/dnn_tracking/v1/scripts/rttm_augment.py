@@ -5,6 +5,9 @@
 
 import argparse
 import sys
+import os
+import numpy
+import subprocess
 
 from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap, sort_segments_by_speakers, filter_by_speakers_length, Scp, sort_scps_by_file_id
 
@@ -26,9 +29,25 @@ def read_scp(scp_filepath):
   return scps
 
 def sox_cut_and_stitch(scp, timestamps_pairs, output_filepath):
-  trims = ['|sox ' + scp.get_filepath() + ' -t ' + scp.get_format() + ' - trim ' + str(onset) + ' ' + str(duration) for onset, duration in timestamps_pairs]
-  command = ['sox'] + trims + [output_filepath]
-  print(command)
+  if not os.path.exists(output_filepath):
+    trims = ['|sox ' + scp.get_filepath() + ' -t ' + scp.get_format() + ' - trim ' + str(onset) + ' ' + str(duration) for onset, duration in timestamps_pairs]
+    command = ['sox'] + trims + [output_filepath]
+    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    rc = p.returncode
+    if rc != 0:
+      print(err)
+      exit(1)
+  command = ['soxi', '-D', output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:
+    print(err)
+    exit(1)
+  else:
+    duration = numpy.float32(output.decode("utf-8"))
+    return (output_filepath, duration)
 
 def main():
   args = get_args()
@@ -49,7 +68,7 @@ def main():
       speaker_filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
       segments = single_speakers_segments[speaker_name]
       timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in segments]
-      sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
+      print(sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath))
     break
 
 if __name__ == '__main__':
