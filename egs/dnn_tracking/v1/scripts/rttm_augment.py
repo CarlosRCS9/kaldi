@@ -75,7 +75,9 @@ def main():
       single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration }
 
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files.keys()], 2))]:
-      print(combination)
+      filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
+      durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
+      print(filepaths, durations)
 
 if __name__ == '__main__':
   main()
