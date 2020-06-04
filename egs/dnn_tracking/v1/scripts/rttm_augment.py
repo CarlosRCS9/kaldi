@@ -59,7 +59,8 @@ def main():
   segments = [Segment(line) for line in stdin]
   files_segments = sort_segments_by_file_id(segments)
   files_segments = get_segments_explicit_overlap(files_segments)
-  for file_id in sorted(files_segments.keys()):
+  for index, file_id in enumerate(sorted(files_segments.keys())):
+    print(index, '/', len(files_segments.keys()))
     file_scp = scps[file_id]
     file_segments = files_segments[file_id]
     speakers_segments = sort_segments_by_speakers(file_segments)
