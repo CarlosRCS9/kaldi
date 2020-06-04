@@ -100,7 +100,7 @@ def main():
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
       min_duration = min(durations)
       combination_filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
-      print(sox_mix_files(filepaths, min_duration, combination_filepath))
+      print(min_duration, sox_mix_files(filepaths, min_duration, combination_filepath))
 
 if __name__ == '__main__':
   main()
