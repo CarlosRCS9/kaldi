@@ -50,6 +50,27 @@ def sox_cut_and_stitch(scp, timestamps_pairs, output_filepath):
     duration = numpy.float32(output.decode("utf-8"))
     return (output_filepath, duration)
 
+def sox_mix_files(input_filepaths, min_duration, output_filepath):
+  if not os.path.exists(output_filepath):
+    trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(min_duration) for filepath in input_filepaths]
+    command = ['sox', '-m'] + trims + [output_filepath]
+    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    rc = p.returncode
+    if rc != 0:
+      print(err)
+      exit(1)
+  command = ['soxi', '-D', output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:
+    print(err)
+    exit(1)
+  else:
+    duration = numpy.float32(output.decode("utf-8"))
+    return (output_filepath, duration)
+
 def main():
   args = get_args()
   stdin = get_stdin()
@@ -79,7 +100,7 @@ def main():
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
       min_duration = min(durations)
       combination_filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
-      print(filepaths, durations, min_duration, combination_filepath)
+      print(sox_mix_files(filepaths, min_duration, combination_filepath))
 
 if __name__ == '__main__':
   main()
