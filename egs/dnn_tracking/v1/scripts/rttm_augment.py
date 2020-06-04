@@ -64,12 +64,14 @@ def main():
     file_segments = files_segments[file_id]
     speakers_segments = sort_segments_by_speakers(file_segments)
     single_speakers_segments = filter_by_speakers_length(speakers_segments, 1)
+    single_speakers_files = {}
     for speaker_name in single_speakers_segments.keys():
       speaker_filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
       segments = single_speakers_segments[speaker_name]
       timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in segments]
       speaker_filepath, duration = sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
-      print(speaker_filepath, duration)
+      single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration }
+    print(single_speakers_files)
     break
 
 if __name__ == '__main__':
