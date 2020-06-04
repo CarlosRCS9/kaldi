@@ -72,7 +72,6 @@ def main():
       speaker_filepath, duration = sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
       single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration }
     print(single_speakers_files)
-    break
 
 if __name__ == '__main__':
   main()
