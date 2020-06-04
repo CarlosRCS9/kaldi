@@ -9,6 +9,7 @@ import os
 import numpy
 import subprocess
 import itertools
+import math
 
 from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap, sort_segments_by_speakers, filter_by_speakers_length, Scp, sort_scps_by_file_id
 
