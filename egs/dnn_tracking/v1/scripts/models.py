@@ -3,7 +3,78 @@
 # Copyright 2019 Carlos Castillo
 # Apache 2.0.
  
-import numpy as np
+import numpy
+import functools
+import itertools
+import re
+
+def reduce_segments_by_file_id(output, segment):
+  if segment.get_file_id() not in output:
+    output[segment.get_file_id()] = []
+  output[segment.get_file_id()].append(segment)
+  return output
+
+def sort_segments_by_file_id(segments):
+  return functools.reduce(reduce_segments_by_file_id, segments, {})
+
+def reduce_segments_by_speakers(output, segment):
+  speakers_names = ','.join(sorted(map(lambda speaker: speaker.get_name(), segment.get_speakers())))
+  if speakers_names not in output:
+    output[speakers_names] = []
+  output[speakers_names].append(segment)
+  return output
+
+def sort_segments_by_speakers(segments):
+  return functools.reduce(reduce_segments_by_speakers, segments, {})
+
+def filter_by_speakers_length(speakers_segments, length):
+  new_speakers_segments = {}
+  for speakers_names in speakers_segments:
+    if len(speakers_names.split(',')) == length:
+      new_speakers_segments[speakers_names] = speakers_segments[speakers_names]
+  return new_speakers_segments
+
+def get_segments_explicit_overlap(files_segments):
+  new_files_segments = {}
+  for file_id in sorted(files_segments.keys()):
+    new_files_segments[file_id] = []
+    file_segments = files_segments[file_id]
+    new_file_segments = new_files_segments[file_id]
+    timestamps = sorted(set(itertools.chain.from_iterable([[segment.get_turn_onset(), segment.get_turn_end()] for segment in file_segments])))
+    timestamps_pairs = [(timestamps[i], timestamps[i + 1]) for i, _ in enumerate(timestamps[:-1])]
+    for onset, end in timestamps_pairs:
+      timestamps_segments = list(filter(lambda segment: segment.is_within_timestamps(onset, end), file_segments))
+      if len(timestamps_segments) > 0:
+        new_segment = Segment(timestamps_segments[0])
+        new_segment.add_speakers(list(itertools.chain.from_iterable([segment.get_speakers() for segment in timestamps_segments[1:]])))
+        new_segment.update_within_timestamps(onset, end)
+        new_file_segments.append(new_segment)
+  return new_files_segments
+
+def reduce_scps_by_file_id(output, scp):
+  if scp.get_file_id() not in output:
+    output[scp.get_file_id()] = scp
+  return output
+
+def sort_scps_by_file_id(scps):
+  return functools.reduce(reduce_scps_by_file_id, scps, {})
+
+class Scp:
+  def __init__(self, data):
+    if isinstance(data, str):
+      data = data.split()
+      filepath_index = [re.match(r'(\/.*?\.[\w:]+)', string) is not None for string in data].index(True)
+      self.file_id = data[0]
+      self.filepath = data[filepath_index]
+      self.format = self.filepath.split('.')[-1]
+  def get_file_id(self):
+    return self.file_id
+  def get_filepath(self):
+    return self.filepath
+  def get_format(self):
+    return self.format
+  def __str__(self):
+    return str(self.__class__) + ": " + str(self.__dict__)
 
 class Speaker:
   def __init__(self, data):
@@ -51,8 +122,8 @@ class Segment:
       self.type                  = data[0]
       self.file_id               = data[1]
       self.channel_id            = data[2]
-      self.turn_onset            = np.float32(data[3])
-      self.turn_duration         = np.float32(data[4])
+      self.turn_onset            = numpy.float32(data[3])
+      self.turn_duration         = numpy.float32(data[4])
       self.orthography_field     = data[5]
       self.speakers              = [Speaker([data[6], data[7], self.turn_onset, self.turn_duration])]
       self.confidence_score      = data[8]
