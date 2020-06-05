@@ -149,7 +149,7 @@ def main():
       left_duration = min_duration
       cut_durations = []
       while left_duration > 1.5:
-        cut_duration = math.floor(math.sqrt(left_duration) * 1000.0) / 1000.0
+        cut_duration = round(left_duration, 3)
         cut_durations.append(cut_duration)
         left_duration -= cut_duration
       cut_durations.append(left_duration)
