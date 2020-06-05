@@ -84,7 +84,8 @@ def segment_factory(data):
   data[3] = str(onset)
   data[4] = str(duration)
   line = ' '.join(data)
-  return line
+  segment = Segment(line)
+  return segment
 
 def main():
   args = get_args()
