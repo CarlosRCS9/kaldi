@@ -83,7 +83,6 @@ def main():
   files_segments = sort_segments_by_file_id(segments)
   files_segments = get_segments_explicit_overlap(files_segments)
   for index, file_id in enumerate(sorted(files_segments.keys())):
-    print(index, '/', len(files_segments.keys()))
     file_scp = scps[file_id]
     file_segments = files_segments[file_id]
     speakers_segments = sort_segments_by_speakers(file_segments)
@@ -115,6 +114,8 @@ def main():
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
       combinations_files[','.join(combination)] = { 'speakers_names': combination, 'filepath': combination_filepath, 'duration': duration, 'timestamps_pairs': timestamps_pairs }
+
+    print(index + 1, '/', len(files_segments.keys()), file_id)
 
 if __name__ == '__main__':
   main()
