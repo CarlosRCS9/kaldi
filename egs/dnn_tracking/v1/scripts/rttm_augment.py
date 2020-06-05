@@ -77,8 +77,7 @@ def sox_mix_files(input_filepaths, min_duration, output_filepath):
     return (output_filepath, duration)
 
 def sox_stitch_trims(trims, output_filepath):
-  #if not os.path.exists(output_filepath):
-  if True:
+  if not os.path.exists(output_filepath):
     command = ['sox'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
@@ -123,6 +122,7 @@ def main():
   segments = [Segment(line) for line in stdin]
   files_segments = sort_segments_by_file_id(segments)
   files_segments = get_segments_explicit_overlap(files_segments)
+  output_rttm = ''
   for index, file_id in enumerate(sorted(files_segments.keys())):
     file_scp = scps[file_id]
     file_segments = files_segments[file_id]
@@ -194,9 +194,13 @@ def main():
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
 
-    if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.05:
-      print(sum([segment.get_turn_duration() for segment in new_file_segments]))
-      print(new_filepath, duration, new_file_segments[-1].get_turn_end())
+    for segment in new_file_segments:
+      output_rttm += segment.get_rttm()
+
+  output_rttm_filepath = output_folder + 'ref_augmented_' + str(random_seed) + '.rttm'
+  f = open(output_rttm_filepath, 'w')
+  f.write(output_rttm)
+  f.close()
 
 if __name__ == '__main__':
   main()
