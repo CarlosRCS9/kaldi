@@ -156,7 +156,7 @@ def main():
         new_file_segments.append(new_segment)
       options_lengths = [len(option) for option in options]
     for segment in new_file_segments:
-      print(segment)
+      segment.print_rttm()
 
 if __name__ == '__main__':
   main()
