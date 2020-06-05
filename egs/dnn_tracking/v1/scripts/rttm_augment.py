@@ -116,6 +116,8 @@ def main():
       combinations_files[','.join(combination)] = { 'speakers_names': combination, 'filepath': combination_filepath, 'duration': duration, 'timestamps_pairs': timestamps_pairs }
 
     print(index + 1, '/', len(files_segments.keys()), file_id)
+    print(len(file_segments))
+    print(combinations_files)
 
 if __name__ == '__main__':
   main()
