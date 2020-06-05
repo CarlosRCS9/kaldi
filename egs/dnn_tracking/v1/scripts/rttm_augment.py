@@ -134,7 +134,7 @@ def main():
       segments = single_speakers_segments[speaker_name]
       timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in segments]
       speaker_filepath, duration = sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
-      single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration }
+      single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': math.floor(duration * 100.0) / 100.0 }
 
     combinations_files = {}
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files.keys()], 2))]:
