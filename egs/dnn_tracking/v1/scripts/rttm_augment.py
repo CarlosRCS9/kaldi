@@ -128,12 +128,20 @@ def main():
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
+    new_file_duration = 0
+    new_file_segments = []
     while sum(options_lengths) > 0:
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
-      print(option)
+      if option_index == 0:
+        original_segment = option
+        original_segment.add_turn_onset(new_file_duration)
+        new_file_segments.append(original_segment)
       options_lengths = [len(option) for option in options]
+
+    for segment in new_file_segments:
+      segment.print_rttm()
 
 if __name__ == '__main__':
   main()
