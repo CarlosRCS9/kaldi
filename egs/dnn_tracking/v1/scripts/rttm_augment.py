@@ -170,6 +170,7 @@ def main():
 
     original_file_pointer = 0
     new_file_displacement = 0
+    silence = 0
     while sum(options_lengths) > 0:
       # DONE -----
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
@@ -180,6 +181,7 @@ def main():
         original_segment = option
         if original_segment.get_turn_onset() != original_file_pointer:
           #print('WARNING: silence before segment. segment turn onset:', original_segment.get_turn_onset(), 'original_file_pointer', original_file_pointer)
+          silence += original_segment.get_turn_onset() - original_file_pointer
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
         else:
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_segment.get_turn_onset()) + ' ' + str(original_segment.get_turn_duration()))
@@ -214,7 +216,7 @@ def main():
 
     if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.1:
       print(sum([segment.get_turn_duration() for segment in new_file_segments]))
-      print(new_filepath, duration, new_file_segments[-1].get_turn_end())
+      print(new_filepath, duration, new_file_segments[-1].get_turn_end(), silence)
 
 if __name__ == '__main__':
   main()
