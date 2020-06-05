@@ -139,22 +139,25 @@ def main():
     for _, combination in combinations_files.items():
       for onset, duration in combination['timestamps_pairs']:
         combinations_timestamps.append({ 'file_id': file_id, 'speakers_names': combination['speakers_names'], 'filepath': combination['filepath'], 'onset': onset, 'duration': duration })
-    #print(combinations_timestamps)
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
+    original_file_pointer = 0
     new_file_segments = []
+    print(file_segments[-1].get_end())
     while sum(options_lengths) > 0:
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
       if option_index == 0:
         original_segment = option
+        original_file_pointer = original_segment.get_end()
         new_file_segments.append(original_segment)
       else:
         new_segment = segment_factory(option)
         new_file_segments.append(new_segment)
       options_lengths = [len(option) for option in options]
+    print(original_file_pointer)
     for segment in new_file_segments:
       segment.print_rttm()
 
