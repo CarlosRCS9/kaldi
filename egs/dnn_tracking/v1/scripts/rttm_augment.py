@@ -85,7 +85,7 @@ def segment_factory(data):
   data[4] = str(duration)
   line = ' '.join(data)
   segment = Segment(line)
-  speakers = [Speaker(['<NA>', speaker_name, onset, duration]) for speaker_name in speakers_names]
+  speakers = [Speaker(['<NA>', 'speaker_name', onset, duration]) for speaker_name in speakers_names]
   segment.set_speakers(speakers)
   return segment
 
