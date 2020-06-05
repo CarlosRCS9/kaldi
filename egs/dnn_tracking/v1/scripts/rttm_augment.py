@@ -117,14 +117,14 @@ def main():
 
       combinations_files[','.join(combination)] = { 'speakers_names': combination, 'filepath': combination_filepath, 'duration': duration, 'timestamps_pairs': timestamps_pairs }
 
-    print('##################################################')
-    print(index + 1, '/', len(files_segments.keys()), file_id)
+    #print('##################################################')
+    #print(index + 1, '/', len(files_segments.keys()), file_id)
 
     combinations_timestamps = []
     for _, combination in combinations_files.items():
       for onset, duration in combination['timestamps_pairs']:
         combinations_timestamps.append({ 'speakers_names': combination['speakers_names'], 'filepath': combination['filepath'], 'onset': onset, 'duration': duration })
-    print(combinations_timestamps)
+    #print(combinations_timestamps)
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
