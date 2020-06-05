@@ -137,6 +137,8 @@ def main():
         original_segment = option
         original_segment.add_turn_onset(new_file_duration)
         new_file_segments.append(original_segment)
+      else:
+        print(option)
       options_lengths = [len(option) for option in options]
 
     for segment in new_file_segments:
