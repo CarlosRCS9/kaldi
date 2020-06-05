@@ -169,6 +169,7 @@ def main():
     # ----------
 
     original_file_pointer = 0
+    new_file_displacement = 0
     while sum(options_lengths) > 0:
       # DONE -----
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
@@ -184,6 +185,7 @@ def main():
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_segment.get_turn_onset()) + ' ' + str(original_segment.get_turn_duration()))
         original_file_pointer = original_segment.get_turn_end()
         updated_segment = original_segment
+        updated_segment.add_turn_onset(new_file_displacement)
         new_file_segments.append(updated_segment)
         '''original_segment = option
         trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
@@ -191,6 +193,12 @@ def main():
         original_segment.add_turn_onset(new_file_displacement)
         new_file_segments.append(original_segment)'''
       else:
+        new_segment = segment_factory(option)
+        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(new_segment.get_turn_onset()) + ' ' + str(new_segment.get_turn_duration()))
+        updated_segment = new_segment
+        updated_segment.update_turn_onset(new_file_segments[-1].get_turn_end() if len(new_file_segments) > 0 else 0)
+        new_file_segments.append(updated_segment)
+        new_file_displacement += updated_segment.get_turn_duration()
         '''new_segment = segment_factory(option)
         trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(new_segment.get_turn_onset()) + ' ' + str(new_segment.get_turn_duration()))
         new_segment.update_turn_onset(new_file_segments[-1].get_turn_onset() + new_file_segments[-1].get_turn_duration() if len(new_file_segments) > 0 else 0)
