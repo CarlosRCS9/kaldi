@@ -74,7 +74,7 @@ class Scp:
   def get_format(self):
     return self.format
   def get_template(self, filepath):
-    new_data = [item for item in data]
+    new_data = [item for item in self.data]
     new_data[self.filepath_index] = filepath
     return ' '.join(new_data) + '\n'
   def __str__(self):
