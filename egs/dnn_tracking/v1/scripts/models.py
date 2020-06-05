@@ -98,6 +98,8 @@ class Speaker:
     self.turn_onset = turn_onset
   def add_turn_onset(self, seconds):
     self.turn_onset += seconds
+  def update_turn_onset(self, onset):
+    self.turn_onset = onset
   def get_turn_duration(self):
     return self.turn_duration
   def set_turn_duration(self, turn_duration):
@@ -154,6 +156,10 @@ class Segment:
     self.turn_onset += seconds
     for speaker in self.get_speakers():
       speaker.add_turn_onset(seconds)
+  def update_turn_onset(self, onset):
+    self.turn_onset = onset
+    for speaker in self.get_speakers():
+      speaker.update_turn_onset(onset)
   def get_turn_duration(self):
     return self.turn_duration
   def set_turn_duration(self, turn_duration):
