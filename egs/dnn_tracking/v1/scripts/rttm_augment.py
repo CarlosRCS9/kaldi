@@ -12,6 +12,9 @@ import itertools
 import math
 import random
 
+random_seed = 0
+random.seed(random_seed)
+
 from models import Speaker, Segment, sort_segments_by_file_id, get_segments_explicit_overlap, sort_segments_by_speakers, filter_by_speakers_length, Scp, sort_scps_by_file_id
 
 def get_args():
@@ -56,6 +59,26 @@ def sox_mix_files(input_filepaths, min_duration, output_filepath):
   if not os.path.exists(output_filepath):
     trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(min_duration) for filepath in input_filepaths]
     command = ['sox', '-m'] + trims + [output_filepath]
+    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    rc = p.returncode
+    if rc != 0:
+      print(err)
+      exit(1)
+  command = ['soxi', '-D', output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:
+    print(err)
+    exit(1)
+  else:
+    duration = numpy.float32(output.decode("utf-8"))
+    return (output_filepath, duration)
+
+def sox_stitch_trims(trims, output_filepath):
+  if not os.path.exists(output_filepath):
+    command = ['sox'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
     rc = p.returncode
@@ -163,10 +186,9 @@ def main():
         new_file_segments.append(new_segment)
         new_file_displacement += new_segment.get_turn_duration()
       options_lengths = [len(option) for option in options]
-    print(trims)
-    #print(original_file_pointer)
-    #for segment in new_file_segments:
-    #  segment.print_rttm()
+
+    new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
+    print(new_filepath)
 
 if __name__ == '__main__':
   main()
