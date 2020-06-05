@@ -143,7 +143,6 @@ def main():
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
-    foo = 0
     new_file_segments = []
     while sum(options_lengths) > 0:
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
@@ -151,14 +150,10 @@ def main():
       option = options[option_index].pop(0)
       if option_index == 0:
         original_segment = option
-        original_segment.add_turn_onset(foo)
         new_file_segments.append(original_segment)
       else:
         new_segment = segment_factory(option)
-        new_file_duration = new_file_segments[-1].get_turn_onset() + new_file_segments[-1].get_turn_duration() if len(new_file_segments) > 0 else 0
-        new_segment.update_turn_onset(new_file_duration)
         new_file_segments.append(new_segment)
-        foo += new_segment.get_turn_duration()
       options_lengths = [len(option) for option in options]
     for segment in new_file_segments:
       print(segment)
