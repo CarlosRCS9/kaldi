@@ -161,27 +161,20 @@ def main():
       for onset, duration in combination['timestamps_pairs']:
         combinations_timestamps.append({ 'file_id': file_id, 'speakers_names': combination['speakers_names'], 'filepath': combination['filepath'], 'onset': onset, 'duration': duration })
 
-    # DONE
     trims = []
     new_file_segments = []
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
-    # ----------
 
     original_file_pointer = 0
     new_file_displacement = 0
-    silence = 0
     while sum(options_lengths) > 0:
-      # DONE -----
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
-      # ----------
       if option_index == 0:
         original_segment = option
         if original_segment.get_turn_onset() != original_file_pointer:
-          #print('WARNING: silence before segment. segment turn onset:', original_segment.get_turn_onset(), 'original_file_pointer', original_file_pointer)
-          silence += original_segment.get_turn_onset() - original_file_pointer
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_file_pointer, 2)) + ' ' + str(round(original_segment.get_turn_end() - original_file_pointer, 2)))
         else:
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_segment.get_turn_onset(), 2)) + ' ' + str(round(original_segment.get_turn_duration(), 2)))
@@ -189,11 +182,6 @@ def main():
         updated_segment = original_segment
         updated_segment.add_turn_onset(new_file_displacement)
         new_file_segments.append(updated_segment)
-        '''original_segment = option
-        trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
-        original_file_pointer = options[option_index][0].get_turn_onset() if len(options[option_index]) > 0 else original_segment.get_turn_end()
-        original_segment.add_turn_onset(new_file_displacement)
-        new_file_segments.append(original_segment)'''
       else:
         new_segment = segment_factory(option)
         trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(round(new_segment.get_turn_onset(), 2)) + ' ' + str(round(new_segment.get_turn_duration(), 2)))
@@ -201,22 +189,14 @@ def main():
         updated_segment.update_turn_onset(new_file_segments[-1].get_turn_end() if len(new_file_segments) > 0 else 0)
         new_file_segments.append(updated_segment)
         new_file_displacement += updated_segment.get_turn_duration()
-        '''new_segment = segment_factory(option)
-        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(new_segment.get_turn_onset()) + ' ' + str(new_segment.get_turn_duration()))
-        new_segment.update_turn_onset(new_file_segments[-1].get_turn_onset() + new_file_segments[-1].get_turn_duration() if len(new_file_segments) > 0 else 0)
-        new_file_segments.append(new_segment)
-        new_file_displacement += new_segment.get_turn_duration()'''
-      
-      # DONE
       options_lengths = [len(option) for option in options]
-      # ----------
 
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
 
     if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.1:
       print(sum([segment.get_turn_duration() for segment in new_file_segments]))
-      print(new_filepath, duration, new_file_segments[-1].get_turn_end(), silence)
+      print(new_filepath, duration, new_file_segments[-1].get_turn_end())
 
 if __name__ == '__main__':
   main()
