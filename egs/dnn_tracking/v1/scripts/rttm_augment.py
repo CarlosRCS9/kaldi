@@ -176,7 +176,7 @@ def main():
       if option_index == 0:
         original_segment = option
         trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
-        original_file_pointer = original_segment.get_turn_end()
+        original_file_pointer = options[option_index].get_turn_onset() if len(options[option_index]) > 0 else original_segment.get_turn_end()
         original_segment.add_turn_onset(new_file_displacement)
         new_file_segments.append(original_segment)
       else:
@@ -192,6 +192,8 @@ def main():
 
     if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.1:
       print(new_filepath, duration, new_file_segments[-1].get_turn_end())
+
+    break
 
 if __name__ == '__main__':
   main()
