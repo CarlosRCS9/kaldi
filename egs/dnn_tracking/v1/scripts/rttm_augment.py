@@ -177,6 +177,9 @@ def main():
       # ----------
       if option_index == 0:
         original_segment = option
+        if original_segment.get_turn_onset != original_file_pointer:
+          print('WARNING: silence before segment.')
+        original_file_pointer = original_segment.get_turn_end()
         updated_segment = original_segment
         new_file_segments.append(updated_segment)
         '''original_segment = option
