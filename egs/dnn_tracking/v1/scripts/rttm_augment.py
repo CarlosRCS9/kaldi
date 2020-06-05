@@ -10,6 +10,7 @@ import numpy
 import subprocess
 import itertools
 import math
+import random
 
 from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap, sort_segments_by_speakers, filter_by_speakers_length, Scp, sort_scps_by_file_id
 
@@ -124,6 +125,15 @@ def main():
       for onset, duration in combination['timestamps_pairs']:
         combinations_timestamps.append({ 'speakers_names': combination['speakers_names'], 'filepath': combination['filepath'], 'onset': onset, 'duration': duration })
     print(combinations_timestamps)
+
+    options = [file_segments, combinations_timestamps]
+    options_lengths = [len(option) for option in options]
+    while sum(options_lengths) > 0:
+      options_indexes = list(chain(*[[index] * len(option) for index, option in enumerate(options)]))
+      option_index = random.choice(options_indexes)
+      option = options[option_index].pop(0)
+      print(option)
+      options_lengths = [len(option) for option in options]
 
 if __name__ == '__main__':
   main()
