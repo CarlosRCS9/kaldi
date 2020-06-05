@@ -206,7 +206,7 @@ def main():
 
     if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.1:
       print(sum([segment.get_turn_duration() for segment in new_file_segments]))
-      print(new_filepath, duration, new_file_segments[-1].get_turn_end())'''
+      print(new_filepath, duration, new_file_segments[-1].get_turn_end())
 
     break
 
