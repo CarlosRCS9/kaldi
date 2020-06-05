@@ -143,6 +143,7 @@ def main():
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
     original_file_pointer = 0
+    new_file_displacement = 0
     new_file_segments = []
     print(file_segments[-1].get_turn_end())
     while sum(options_lengths) > 0:
@@ -152,14 +153,18 @@ def main():
       if option_index == 0:
         original_segment = option
         original_file_pointer = original_segment.get_turn_end()
+        original_segment.add_turn_onset(new_file_displacement)
         new_file_segments.append(original_segment)
       else:
         new_segment = segment_factory(option)
+        new_segment.update_turn_onset(new_file_segments[-1].get_turn_onset() + new_file_segments[-1].get_turn_duration() if len(new_file_segments) > 0 else 0)
         new_file_segments.append(new_segment)
+        new_file_displacement += new_segment.get_turn_duration()
+        print('displacement', new_file_displacement)
       options_lengths = [len(option) for option in options]
-    print(original_file_pointer)
-    #for segment in new_file_segments:
-    #  segment.print_rttm()
+    #print(original_file_pointer)
+    for segment in new_file_segments:
+      segment.print_rttm()
 
 if __name__ == '__main__':
   main()
