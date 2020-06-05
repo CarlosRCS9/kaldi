@@ -175,16 +175,16 @@ def main():
       if option_index == 0:
         original_segment = option
         if original_segment.get_turn_onset() != original_file_pointer:
-          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_file_pointer, 2)) + ' ' + str(round(original_segment.get_turn_end() - original_file_pointer, 2)))
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_file_pointer, 3)) + ' ' + str(round(original_segment.get_turn_end() - original_file_pointer, 3)))
         else:
-          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_segment.get_turn_onset(), 2)) + ' ' + str(round(original_segment.get_turn_duration(), 2)))
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_segment.get_turn_onset(), 3)) + ' ' + str(round(original_segment.get_turn_duration(), 3)))
         original_file_pointer = original_segment.get_turn_end()
         updated_segment = original_segment
         updated_segment.add_turn_onset(new_file_displacement)
         new_file_segments.append(updated_segment)
       else:
         new_segment = segment_factory(option)
-        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(round(new_segment.get_turn_onset(), 2)) + ' ' + str(round(new_segment.get_turn_duration(), 2)))
+        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(round(new_segment.get_turn_onset(), 3)) + ' ' + str(round(new_segment.get_turn_duration(), 3)))
         updated_segment = new_segment
         updated_segment.update_turn_onset(new_file_segments[-1].get_turn_end() if len(new_file_segments) > 0 else 0)
         new_file_segments.append(updated_segment)
