@@ -148,7 +148,7 @@ def main():
         original_segment.add_turn_onset(new_file_duration)
         new_file_segments.append(original_segment)
       else:
-        print(segment_factory(option))
+        print(segment_factory(stdin[0], option))
       options_lengths = [len(option) for option in options]
 
 if __name__ == '__main__':
