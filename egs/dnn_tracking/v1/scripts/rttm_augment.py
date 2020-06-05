@@ -73,7 +73,8 @@ def sox_mix_files(input_filepaths, min_duration, output_filepath):
     duration = numpy.float32(output.decode("utf-8"))
     return (output_filepath, duration)
 
-def segment_factory(rttm_line, data):
+def segment_factory(data):
+  rttm_line = 'SPEAKER a 0 0 0 <NA> <NA> a <NA> <NA>'
   speakers_names = data['speakers_names']
   onset = data['onset']
   duration = data['duration']
@@ -148,7 +149,7 @@ def main():
         original_segment.add_turn_onset(new_file_duration)
         new_file_segments.append(original_segment)
       else:
-        print(segment_factory(stdin[0], option))
+        print(segment_factory(option))
       options_lengths = [len(option) for option in options]
 
 if __name__ == '__main__':
