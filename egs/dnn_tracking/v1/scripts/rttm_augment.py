@@ -123,6 +123,7 @@ def main():
   files_segments = sort_segments_by_file_id(segments)
   files_segments = get_segments_explicit_overlap(files_segments)
   output_rttm = ''
+  output_scp = ''
   for index, file_id in enumerate(sorted(files_segments.keys())):
     file_scp = scps[file_id]
     file_segments = files_segments[file_id]
@@ -197,9 +198,16 @@ def main():
     for segment in new_file_segments:
       output_rttm += segment.get_rttm()
 
+    output_scp += file_scp.get_template(new_filepath)
+
   output_rttm_filepath = output_folder + 'ref_augmented_' + str(random_seed) + '.rttm'
   f = open(output_rttm_filepath, 'w')
   f.write(output_rttm)
+  f.close()
+
+  output_scp_filepath = output_folder + 'wav_augmented_' + str(random_seed) + '.scp'
+  f = open(output_scp_filepath, 'w')
+  f.write(output_scp)
   f.close()
 
 if __name__ == '__main__':

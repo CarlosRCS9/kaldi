@@ -62,10 +62,10 @@ def sort_scps_by_file_id(scps):
 class Scp:
   def __init__(self, data):
     if isinstance(data, str):
-      data = data.split()
-      filepath_index = [re.match(r'(\/.*?\.[\w:]+)', string) is not None for string in data].index(True)
-      self.file_id = data[0]
-      self.filepath = data[filepath_index]
+      self.data = data.split()
+      self.filepath_index = [re.match(r'(\/.*?\.[\w:]+)', string) is not None for string in self.data].index(True)
+      self.file_id = self.data[0]
+      self.filepath = self.data[self.filepath_index]
       self.format = self.filepath.split('.')[-1]
   def get_file_id(self):
     return self.file_id
@@ -73,6 +73,10 @@ class Scp:
     return self.filepath
   def get_format(self):
     return self.format
+  def get_template(self, filepath):
+    new_data = [item for item in data]
+    new_data[self.filepath_index] = filepath
+    return ' '.join(new_data) + '\n'
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
 
