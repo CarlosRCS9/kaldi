@@ -144,22 +144,22 @@ def main():
     options_lengths = [len(option) for option in options]
     original_file_pointer = 0
     new_file_segments = []
-    print(file_segments[-1].get_end())
+    print(file_segments[-1].get_turn_end())
     while sum(options_lengths) > 0:
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
       if option_index == 0:
         original_segment = option
-        original_file_pointer = original_segment.get_end()
+        original_file_pointer = original_segment.get_turn_end()
         new_file_segments.append(original_segment)
       else:
         new_segment = segment_factory(option)
         new_file_segments.append(new_segment)
       options_lengths = [len(option) for option in options]
     print(original_file_pointer)
-    for segment in new_file_segments:
-      segment.print_rttm()
+    #for segment in new_file_segments:
+    #  segment.print_rttm()
 
 if __name__ == '__main__':
   main()
