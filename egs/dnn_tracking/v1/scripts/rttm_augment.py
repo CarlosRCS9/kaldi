@@ -160,7 +160,8 @@ def main():
         new_file_segments.append(new_segment)
         foo += new_segment.get_turn_duration()
       options_lengths = [len(option) for option in options]
-    print(new_file_segments)
+    for segment in new_file_segments:
+      print(segment)
 
 if __name__ == '__main__':
   main()
