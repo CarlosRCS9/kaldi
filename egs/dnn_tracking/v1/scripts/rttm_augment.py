@@ -155,7 +155,7 @@ def main():
         new_file_segments.append(original_segment)
       else:
         new_segment = segment_factory(option)
-        new_file_duration = new_file_segments[-1].get_turn_onset() + new_file_segments[-1].get_turn_duration()
+        new_file_duration = new_file_segments[-1].get_turn_onset() + new_file_segments[-1].get_turn_duration() if len(new_file_segments) > 0 else 0
         new_segment.update_turn_onset(new_file_duration)
         new_file_segments.append(new_segment)
         foo += new_segment.get_turn_duration()
