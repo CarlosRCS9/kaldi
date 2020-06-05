@@ -121,7 +121,9 @@ def main():
 
     combinations_timestamps = []
     for _, combination in combinations_files.items():
-      print(combination)
+      for onset, duration in combination['timestamps_pairs']:
+        combinations_timestamps.append({ 'speakers_names': combination['speakers_names'], 'filepath': combination['filepath'], 'onset': onset, 'duration' })
+    print(combinations_timestamps)
 
 if __name__ == '__main__':
   main()
