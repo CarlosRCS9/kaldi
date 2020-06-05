@@ -190,7 +190,7 @@ def main():
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
 
-    new_file_segments[-1].print_rttm()
+    new_file_segments[-1].get_turn_end()
     print(new_filepath, duration)
 
 if __name__ == '__main__':
