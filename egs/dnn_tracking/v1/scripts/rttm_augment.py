@@ -182,9 +182,9 @@ def main():
         if original_segment.get_turn_onset() != original_file_pointer:
           #print('WARNING: silence before segment. segment turn onset:', original_segment.get_turn_onset(), 'original_file_pointer', original_file_pointer)
           silence += original_segment.get_turn_onset() - original_file_pointer
-          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_file_pointer, 2)) + ' ' + str(round(original_segment.get_turn_end() - original_file_pointer, 2))
         else:
-          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_segment.get_turn_onset()) + ' ' + str(original_segment.get_turn_duration()))
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_segment.get_turn_onset(), 2)) + ' ' + str(round(original_segment.get_turn_duration(), 2))
         original_file_pointer = original_segment.get_turn_end()
         updated_segment = original_segment
         updated_segment.add_turn_onset(new_file_displacement)
@@ -196,7 +196,7 @@ def main():
         new_file_segments.append(original_segment)'''
       else:
         new_segment = segment_factory(option)
-        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(new_segment.get_turn_onset()) + ' ' + str(new_segment.get_turn_duration()))
+        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(round(new_segment.get_turn_onset(), 2)) + ' ' + str(round(new_segment.get_turn_duration(), 2))
         updated_segment = new_segment
         updated_segment.update_turn_onset(new_file_segments[-1].get_turn_end() if len(new_file_segments) > 0 else 0)
         new_file_segments.append(updated_segment)
