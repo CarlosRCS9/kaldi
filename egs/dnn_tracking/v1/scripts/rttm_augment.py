@@ -179,8 +179,9 @@ def main():
         original_segment = option
         if original_segment.get_turn_onset() != original_file_pointer:
           print('WARNING: silence before segment. segment turn onset:', original_segment.get_turn_onset(), 'original_file_pointer', original_file_pointer)
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
         else:
-          print('GOOD')
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_segment.get_turn_onset()) + ' ' + str(original_segment.get_turn_duration()))
         original_file_pointer = original_segment.get_turn_end()
         updated_segment = original_segment
         new_file_segments.append(updated_segment)
@@ -199,6 +200,8 @@ def main():
       # DONE
       options_lengths = [len(option) for option in options]
       # ----------
+    
+    print(trims)
 
     '''new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
