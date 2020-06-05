@@ -152,7 +152,7 @@ def main():
         cut_duration = math.floor(math.sqrt(left_duration) * 100.0) / 100.0
         cut_durations.append(cut_duration)
         left_duration -= cut_duration
-      cut_durations.append(left_duration)
+      cut_durations.append(math.floor(left_duration * 100.0) / 100.0)
       cut_onsets = [sum(cut_durations[:index]) for index, cut_duration in enumerate(cut_durations)]
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
