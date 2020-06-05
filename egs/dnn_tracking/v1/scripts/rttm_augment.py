@@ -86,7 +86,6 @@ def main():
   for index, file_id in enumerate(sorted(files_segments.keys())):
     file_scp = scps[file_id]
     file_segments = files_segments[file_id]
-    print(len(file_segments))
     speakers_segments = sort_segments_by_speakers(file_segments)
     single_speakers_segments = filter_by_speakers_length(speakers_segments, 1)
     single_speakers_files = {}
