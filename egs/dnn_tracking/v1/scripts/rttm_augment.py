@@ -204,7 +204,7 @@ def main():
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
 
-    if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.1:
+    if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.0:
       print(sum([segment.get_turn_duration() for segment in new_file_segments]))
       print(new_filepath, duration, new_file_segments[-1].get_turn_end())
 
