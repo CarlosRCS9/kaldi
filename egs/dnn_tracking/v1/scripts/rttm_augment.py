@@ -75,15 +75,12 @@ def sox_mix_files(input_filepaths, min_duration, output_filepath):
 
 def segment_factory(data):
   rttm_line = 'SPEAKER a 0 0 0 <NA> <NA> a <NA> <NA>'
-  file_id = data['file_id']
-  onset = data['onset']
-  duration = data['duration']
-  speakers_names = data['speakers_names']
   data = rttm_line.split()
-  data[1] = file_id
-  data[3] = str(onset)
-  data[4] = str(duration)
+  data[1] = data['file_id']
+  data[3] = str(data['onset'])
+  data[4] = str(data['duration'])
   line = ' '.join(data)
+  speakers_names = data['speakers_names']
   return line
 
 def main():
