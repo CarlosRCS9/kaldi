@@ -200,10 +200,8 @@ def main():
       # DONE
       options_lengths = [len(option) for option in options]
       # ----------
-    
-    print(trims)
 
-    '''new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
+    new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
 
     if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.1:
