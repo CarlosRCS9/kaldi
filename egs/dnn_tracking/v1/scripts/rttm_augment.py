@@ -129,7 +129,7 @@ def main():
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
     while sum(options_lengths) > 0:
-      options_indexes = list(chain(*[[index] * len(option) for index, option in enumerate(options)]))
+      options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
       print(option)
