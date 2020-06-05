@@ -12,7 +12,7 @@ import itertools
 import math
 import random
 
-from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap, sort_segments_by_speakers, filter_by_speakers_length, Scp, sort_scps_by_file_id
+from models import Speaker, Segment, sort_segments_by_file_id, get_segments_explicit_overlap, sort_segments_by_speakers, filter_by_speakers_length, Scp, sort_scps_by_file_id
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -85,6 +85,8 @@ def segment_factory(data):
   data[4] = str(duration)
   line = ' '.join(data)
   segment = Segment(line)
+  speakers = [Speaker(['<NA>', speaker_name, onset, duration]) for speaker_name in speakers_names]
+  segment.set_speakers(speakers)
   return segment
 
 def main():

@@ -166,6 +166,8 @@ class Segment:
     return self.orthography_field
   def get_speakers(self):
     return self.speakers
+  def set_speakers(self, speakers):
+    self.speakers = speakers
   def add_speakers(self, speakers):
     self.speakers = [Speaker(speaker) for speaker in self.get_speakers() + speakers]
   def get_confidence_score(self):
