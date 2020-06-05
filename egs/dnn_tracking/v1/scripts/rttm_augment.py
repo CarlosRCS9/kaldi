@@ -125,7 +125,7 @@ def main():
   output_rttm = ''
   output_scp = ''
   for index, file_id in enumerate(sorted(files_segments.keys())):
-    print(index + 1, '/', len(file_segments.keys()), end = '\r')
+    print(index + 1, '/', len(files_segments.keys()), end = '\r')
     file_scp = scps[file_id]
     file_segments = files_segments[file_id]
     speakers_segments = sort_segments_by_speakers(file_segments)
