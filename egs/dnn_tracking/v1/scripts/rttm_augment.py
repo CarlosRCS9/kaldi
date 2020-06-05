@@ -188,7 +188,10 @@ def main():
       options_lengths = [len(option) for option in options]
 
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
-    print(new_filepath)
+    new_filepath, duration = sox_stitch_trims(trims, new_filepath)
+    print(new_filepath, duration)
+
+    break
 
 if __name__ == '__main__':
   main()
