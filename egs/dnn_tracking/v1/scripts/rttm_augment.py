@@ -118,8 +118,10 @@ def main():
 
     print('##################################################')
     print(index + 1, '/', len(files_segments.keys()), file_id)
-    print(len(file_segments))
-    print(combinations_files)
+
+    combinations_timestamps = []
+    for _, combination in combinations_files.items():
+      print(combination)
 
 if __name__ == '__main__':
   main()
