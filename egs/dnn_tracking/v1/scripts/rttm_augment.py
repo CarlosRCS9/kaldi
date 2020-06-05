@@ -179,7 +179,7 @@ def main():
       if option_index == 0:
         original_segment = option
         if original_segment.get_turn_onset() != original_file_pointer:
-          print('WARNING: silence before segment. segment turn onset:', original_segment.get_turn_onset(), 'original_file_pointer', original_file_pointer)
+          #print('WARNING: silence before segment. segment turn onset:', original_segment.get_turn_onset(), 'original_file_pointer', original_file_pointer)
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
         else:
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_segment.get_turn_onset()) + ' ' + str(original_segment.get_turn_duration()))
@@ -215,8 +215,6 @@ def main():
     if math.fabs(duration - new_file_segments[-1].get_turn_end()) > 0.1:
       print(sum([segment.get_turn_duration() for segment in new_file_segments]))
       print(new_filepath, duration, new_file_segments[-1].get_turn_end())
-
-    break
 
 if __name__ == '__main__':
   main()
