@@ -35,7 +35,7 @@ def read_scp(scp_filepath):
 
 def sox_cut_and_stitch(scp, timestamps_pairs, output_filepath):
   if not os.path.exists(output_filepath):
-    trims = ['|sox ' + scp.get_filepath() + ' -t ' + scp.get_format() + ' - trim ' + str(round(onset, 3)) + ' ' + str(round(duration, 3)) for onset, duration in timestamps_pairs]
+    trims = ['|sox ' + scp.get_filepath() + ' -t ' + scp.get_format() + ' - trim ' + str(round(onset, 2)) + ' ' + str(round(duration, 2)) for onset, duration in timestamps_pairs]
     command = ['sox'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
@@ -56,7 +56,7 @@ def sox_cut_and_stitch(scp, timestamps_pairs, output_filepath):
 
 def sox_mix_files(input_filepaths, min_duration, output_filepath):
   if not os.path.exists(output_filepath):
-    trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(round(min_duration, 3)) for filepath in input_filepaths]
+    trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(round(min_duration, 2)) for filepath in input_filepaths]
     command = ['sox', '-m'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
@@ -148,10 +148,10 @@ def main():
       left_duration = min_duration
       cut_durations = []
       while left_duration > 1.5:
-        cut_duration = numpy.floor(numpy.sqrt(left_duration) * 1000.0) / 1000.0
+        cut_duration = numpy.floor(numpy.sqrt(left_duration) * 100.0) / 100.0
         cut_durations.append(cut_duration)
         left_duration -= cut_duration
-      cut_durations.append(numpy.floor(left_duration * 1000.0) / 1000.0)
+      cut_durations.append(numpy.floor(left_duration * 100.0) / 100.0)
       cut_onsets = [sum(cut_durations[:index]) for index, cut_duration in enumerate(cut_durations)]
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
@@ -176,16 +176,16 @@ def main():
       if option_index == 0:
         original_segment = option
         if original_segment.get_turn_onset() != original_file_pointer:
-          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_file_pointer, 3)) + ' ' + str(round(original_segment.get_turn_end(), 3) - original_file_pointer))
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_file_pointer, 2)) + ' ' + str(round(original_segment.get_turn_end(), 2) - original_file_pointer))
         else:
-          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_segment.get_turn_onset(), 3)) + ' ' + str(round(original_segment.get_turn_duration(), 3)))
+          trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(round(original_segment.get_turn_onset(), 2)) + ' ' + str(round(original_segment.get_turn_duration(), 2)))
         original_file_pointer = original_segment.get_turn_end()
         updated_segment = original_segment
         updated_segment.add_turn_onset(new_file_displacement)
         new_file_segments.append(updated_segment)
       else:
         new_segment = segment_factory(option)
-        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(round(new_segment.get_turn_onset(), 3)) + ' ' + str(round(new_segment.get_turn_duration(), 3)))
+        trims.append('|sox ' + option['filepath'] + ' -t ' + option['filepath'].split('.')[-1] + ' - trim ' + str(round(new_segment.get_turn_onset(), 2)) + ' ' + str(round(new_segment.get_turn_duration(), 2)))
         updated_segment = new_segment
         updated_segment.update_turn_onset(new_file_segments[-1].get_turn_end() if len(new_file_segments) > 0 else 0)
         new_file_segments.append(updated_segment)
