@@ -36,7 +36,7 @@ def read_scp(scp_filepath):
 
 def sox_cut_and_stitch(scp, timestamps_pairs, output_filepath):
   if not os.path.exists(output_filepath):
-    trims = ['|sox ' + scp.get_filepath() + ' -t ' + scp.get_format() + ' - trim ' + str(onset) + ' ' + str(duration) for onset, duration in timestamps_pairs]
+    trims = ['|sox ' + scp.get_filepath() + ' -t ' + scp.get_format() + ' - trim ' + str(round(onset, 3)) + ' ' + str(round(duration, 3)) for onset, duration in timestamps_pairs]
     command = ['sox'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
@@ -57,7 +57,7 @@ def sox_cut_and_stitch(scp, timestamps_pairs, output_filepath):
 
 def sox_mix_files(input_filepaths, min_duration, output_filepath):
   if not os.path.exists(output_filepath):
-    trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(min_duration) for filepath in input_filepaths]
+    trims = ['|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim 0 ' + str(round(min_duration, 3)) for filepath in input_filepaths]
     command = ['sox', '-m'] + trims + [output_filepath]
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, err = p.communicate()
