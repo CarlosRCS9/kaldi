@@ -195,7 +195,7 @@ def main():
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
 
-    if numpy.abs(duration - new_file_segments[-1].get_turn_end()) >= 0.1:
+    if numpy.abs(duration - new_file_segments[-1].get_turn_end()) >= 0.01:
       print('WARNING:', new_filepath, 'real duration - computed duration:', duration - new_file_segments[-1].get_turn_end())
 
     for segment in new_file_segments:
