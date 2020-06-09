@@ -48,7 +48,7 @@ def get_segments_explicit_overlap(files_segments):
         new_segment = Segment(timestamps_segments[0])
         new_segment.add_speakers(list(itertools.chain.from_iterable([segment.get_speakers() for segment in timestamps_segments[1:]])))
         new_segment.update_within_timestamps(onset, end)
-        if new_segment.get_turn_duration > 0.0:
+        if new_segment.get_turn_duration() > 0.0:
           new_file_segments.append(new_segment)
   return new_files_segments
 
