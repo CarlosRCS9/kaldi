@@ -148,10 +148,10 @@ def main():
       left_duration = min_duration
       cut_durations = []
       while left_duration > 1.5:
-        cut_duration = numpy.sqrt(left_duration)
+        cut_duration = numpy.floor(numpy.sqrt(left_duration) * 1000.0) / 1000.0
         cut_durations.append(cut_duration)
         left_duration -= cut_duration
-      cut_durations.append(left_duration)
+      cut_durations.append(numpyp.floor(left_duration * 1000.0) / 1000.0)
       cut_onsets = [sum(cut_durations[:index]) for index, cut_duration in enumerate(cut_durations)]
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
