@@ -9,7 +9,6 @@ import os
 import numpy
 import subprocess
 import itertools
-import math
 import random
 
 random_seed = 0
@@ -149,10 +148,10 @@ def main():
       left_duration = min_duration
       cut_durations = []
       while left_duration > 1.5:
-        cut_duration = math.floor(math.sqrt(left_duration) * 1000.0) / 1000.0
+        cut_duration = numpy.floor(numpy.sqrt(left_duration) * 1000.0) / 1000.0
         cut_durations.append(cut_duration)
         left_duration -= cut_duration
-      cut_durations.append(math.floor(left_duration * 1000.0) / 1000.0)
+      cut_durations.append(numpy.floor(left_duration * 1000.0) / 1000.0)
       cut_onsets = [sum(cut_durations[:index]) for index, cut_duration in enumerate(cut_durations)]
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
@@ -196,7 +195,7 @@ def main():
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = sox_stitch_trims(trims, new_filepath)
 
-    if math.fabs(duration - new_file_segments[-1].get_turn_end()) >= 0.1:
+    if numpy.abs(duration - new_file_segments[-1].get_turn_end()) >= 0.1:
       print('WARNING:', new_filepath, 'real duration - computed duration:', duration - new_file_segments[-1].get_turn_end())
 
     for segment in new_file_segments:
