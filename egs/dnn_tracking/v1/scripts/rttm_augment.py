@@ -199,7 +199,7 @@ def main():
 
     if numpy.abs(duration - new_file_segments[-1].get_turn_end()) >= 0.1:
       print('WARNING:', new_filepath, 'real duration - computed duration:', duration - new_file_segments[-1].get_turn_end())
-      print(silence)
+      print('real duration:', duration, 'computed duration:', new_file_segments[-1].get_turn_end(), 'silence', silence)
 
     for segment in new_file_segments:
       output_rttm += segment.get_rttm()
