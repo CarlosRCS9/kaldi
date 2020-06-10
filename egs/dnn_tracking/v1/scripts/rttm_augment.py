@@ -169,6 +169,7 @@ def main():
 
     original_file_pointer = 0
     new_file_displacement = 0
+    silence = 0
     while sum(options_lengths) > 0:
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
@@ -176,6 +177,7 @@ def main():
       if option_index == 0:
         original_segment = option
         if original_segment.get_turn_onset() != original_file_pointer:
+          silence += original_segment.get_turn_onset() - original_file_pointer
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_file_pointer) + ' ' + str(original_segment.get_turn_end() - original_file_pointer))
         else:
           trims.append('|sox ' + file_scp.get_filepath() + ' -t ' + file_scp.get_format() + ' - trim ' + str(original_segment.get_turn_onset()) + ' ' + str(original_segment.get_turn_duration()))
@@ -197,6 +199,7 @@ def main():
 
     if numpy.abs(duration - new_file_segments[-1].get_turn_end()) >= 0.1:
       print('WARNING:', new_filepath, 'real duration - computed duration:', duration - new_file_segments[-1].get_turn_end())
+      print(silence)
 
     for segment in new_file_segments:
       output_rttm += segment.get_rttm()
