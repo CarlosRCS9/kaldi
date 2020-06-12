@@ -34,7 +34,7 @@ def filter_by_speakers_length(speakers_segments, length):
       new_speakers_segments[speakers_names] = speakers_segments[speakers_names]
   return new_speakers_segments
 
-def get_segments_explicit_overlap(files_segments):
+def get_segments_explicit_overlap(files_segments, min_length = 0.0005):
   new_files_segments = {}
   for file_id in sorted(files_segments.keys()):
     new_files_segments[file_id] = []
@@ -48,7 +48,7 @@ def get_segments_explicit_overlap(files_segments):
         new_segment = Segment(timestamps_segments[0])
         new_segment.add_speakers(list(itertools.chain.from_iterable([segment.get_speakers() for segment in timestamps_segments[1:]])))
         new_segment.update_within_timestamps(onset, end)
-        if new_segment.get_turn_duration() > 0.0005:
+        if new_segment.get_turn_duration() > min_length:
           new_file_segments.append(new_segment)
   return new_files_segments
 

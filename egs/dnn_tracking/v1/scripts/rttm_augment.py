@@ -120,7 +120,7 @@ def main():
 
   segments = [Segment(line) for line in stdin]
   files_segments = sort_segments_by_file_id(segments)
-  files_segments = get_segments_explicit_overlap(files_segments)
+  files_segments = get_segments_explicit_overlap(files_segments, 0.01)
   output_rttm = ''
   output_scp = ''
   for index, file_id in enumerate(sorted(files_segments.keys())):
