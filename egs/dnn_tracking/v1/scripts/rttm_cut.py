@@ -5,6 +5,7 @@
 
 import argparse
 import sys
+import copy
 
 from models import Segment, sort_segments_by_file_id
 
@@ -31,7 +32,7 @@ def main():
       turn_onset = segment.get_turn_onset()
       while turn_onset < segment.get_turn_end():
         turn_end = turn_onset + args.length
-        new_segment = Segment(segment)
+        new_segment = copy.deepcopy(segment)
         new_segment.set_turn_onset(turn_onset)
         new_segment.set_turn_end(turn_end)
         if new_segment.get_turn_duration() >= args.min_length:
