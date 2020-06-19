@@ -6,10 +6,12 @@
 import argparse
 import sys
 
-from models import Segment
+from models import Segment, sort_segments_by_file_id
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
+  parser.add_argument('segment_length', type=str, help='')
+  parser.add_argument('segment_overlap', type=str, help='')
   args = parser.parse_args()
   return args
 
@@ -21,8 +23,9 @@ def main():
   stdin = get_stdin()
 
   segments = [Segment(line) for line in stdin]
-  for segment in segments:
-    segment.print_rttm()
+  files_segments = sort_segments_by_file_id(segments)
+  for file_id in sorted(files_segments.keys()):
+    print(file_id)
 
 if __name__ == '__main__':
   main()
