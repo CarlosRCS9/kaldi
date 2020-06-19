@@ -98,11 +98,13 @@ def sox_stitch_trims(trims, output_filepath):
 def segment_factory(data):
   rttm_line = 'SPEAKER a 0 0 0 <NA> <NA> a <NA> <NA>'
   file_id = data['file_id']
+  channel_id = data['channel_id']
   onset = data['onset']
   duration = data['duration']
   speakers_names = data['speakers_names']
   data = rttm_line.split()
   data[1] = file_id
+  data[2] = channel_id
   data[3] = str(onset)
   data[4] = str(duration)
   line = ' '.join(data)
