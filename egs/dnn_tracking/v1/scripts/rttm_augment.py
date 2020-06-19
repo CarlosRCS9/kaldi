@@ -152,6 +152,7 @@ def main():
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
       segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
       print('$$$$$$$$$$$')
+      print('$$$$$$$$$$$')
       print(len(segments))
       segments = get_segments_explicit_overlap(segments)
       print(len(segments))
