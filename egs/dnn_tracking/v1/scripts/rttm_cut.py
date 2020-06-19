@@ -29,7 +29,14 @@ def main():
     file_segments = files_segments[file_id]
     for segment in file_segments:
       turn_onset = segment.get_turn_onset()
-      print(turn_onset)
+      while turn_onset < segment.get_turn_end():
+        turn_end = turn_onset + args.length
+        new_segment = Segment(segment)
+        new_segment.set_turn_onset(turn_onset)
+        new_segment.set_turn_end(turn_end)
+        if new_segment.get_turn_duration() >= args.min_length:
+          new_segment.print_rttm()
+        turn_onset = turn_end - args.overlap
 
 if __name__ == '__main__':
   main()
