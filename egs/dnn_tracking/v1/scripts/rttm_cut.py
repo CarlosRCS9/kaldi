@@ -36,7 +36,6 @@ def main():
         new_segment.set_turn_end(turn_end)
         if new_segment.get_turn_duration() >= args.min_length:
           new_segment.print_rttm()
-        print(turn_onset, turn_end)
         turn_onset = turn_end - args.overlap
 
 if __name__ == '__main__':
