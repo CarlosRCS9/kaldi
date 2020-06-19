@@ -154,7 +154,7 @@ def main():
       print('$$$$$$$$$$$')
       print('$$$$$$$$$$$')
       print(len(segments))
-      segments = get_segments_explicit_overlap(segments)
+      segments = get_segments_explicit_overlap({ 'a': segments })['a']
       print(len(segments))
 
       speakers_channels_ids = [speaker_name for speaker_name in combination]
