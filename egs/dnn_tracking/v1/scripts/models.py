@@ -113,6 +113,8 @@ class Speaker:
     return self.turn_onset + self.turn_duration
   def set_turn_end(self, turn_end):
     self.turn_duration = turn_end - self.get_turn_onset()
+  def update_turn_end(self, turn_end):
+    self.turn_duration = turn_end - self.get_turn_onset()
   def update_within_timestamps(self, onset, end):
     if onset < end:
       if self.get_turn_onset() < onset:
@@ -161,10 +163,10 @@ class Segment:
     self.turn_onset += seconds
     for speaker in self.get_speakers():
       speaker.add_turn_onset(seconds)
-  def update_turn_onset(self, onset):
-    self.turn_onset = onset
+  def update_turn_onset(self, turn_onset):
+    self.turn_onset = turn_onset
     for speaker in self.get_speakers():
-      speaker.update_turn_onset(onset)
+      speaker.update_turn_onset(turn_onset)
   def get_turn_duration(self):
     return self.turn_duration
   def set_turn_duration(self, turn_duration):
@@ -173,6 +175,10 @@ class Segment:
     return self.turn_onset + self.turn_duration
   def set_turn_end(self, turn_end):
     self.turn_duration = turn_end - self.get_turn_onset()
+  def update_turn_end(self, turn_end):
+    self.turn_duration = turn_end - self.get_turn_onset()
+    for speaker in self.get_speakers():
+      speaker.update_turn_end(turn_end)
   def get_orthography_field(self):
     return self.orthography_field
   def get_speakers(self):
