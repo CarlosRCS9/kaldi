@@ -10,8 +10,8 @@ from models import Segment, sort_segments_by_file_id
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
-  parser.add_argument('segment_length', type=str, help='')
-  parser.add_argument('segment_overlap', type=str, help='')
+  parser.add_argument('segment_length', type=float, help='')
+  parser.add_argument('segment_overlap', type=float, help='')
   args = parser.parse_args()
   return args
 
