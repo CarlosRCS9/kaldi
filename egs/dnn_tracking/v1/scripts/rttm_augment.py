@@ -136,14 +136,22 @@ def main():
       speaker_filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
       segments = single_speakers_segments[speaker_name]
       timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in segments]
+      channels_ids = sorted(set([segment.get_channel_id() for segment in segments]))
+      if (len(channels_ids) > 1):
+        print('ERROR: mixing channels.')
+      channel_id = channels_ids[0]
       speaker_filepath, duration = sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
-      single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration }
+      single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration, 'channel_id': channel_id }
 
     combinations_files = {}
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files.keys()], 2))]:
       filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
+      channels_ids = sorted(set([single_speakers_files[speaker_name]['channel_id'] for speaker_name in combination]))
       min_duration = min(durations)
+      if (len(channels_ids) > 1):
+        print('ERROR: mixing channels.')
+      channel_id = channels_ids[0]
       combination_filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
       combination_filepath, duration = sox_mix_files(filepaths, min_duration, combination_filepath)
 
@@ -157,12 +165,12 @@ def main():
       cut_onsets = [sum(cut_durations[:index]) for index, cut_duration in enumerate(cut_durations)]
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
-      combinations_files[','.join(combination)] = { 'speakers_names': combination, 'filepath': combination_filepath, 'duration': duration, 'timestamps_pairs': timestamps_pairs }
+      combinations_files[','.join(combination)] = { 'channel_id': channel_id, 'speakers_names': combination, 'filepath': combination_filepath, 'duration': duration, 'timestamps_pairs': timestamps_pairs }
 
     combinations_timestamps = []
     for _, combination in combinations_files.items():
       for onset, duration in combination['timestamps_pairs']:
-        combinations_timestamps.append({ 'file_id': file_id, 'speakers_names': combination['speakers_names'], 'filepath': combination['filepath'], 'onset': onset, 'duration': duration })
+        combinations_timestamps.append({ 'file_id': file_id, 'channel_id': combination['channel_id'], 'speakers_names': combination['speakers_names'], 'filepath': combination['filepath'], 'onset': onset, 'duration': duration })
 
     trims = []
     new_file_segments = []
