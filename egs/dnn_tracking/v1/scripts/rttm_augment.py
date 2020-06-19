@@ -150,7 +150,7 @@ def main():
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files.keys()], 2))]:
       filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
-      segments = itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination])
+      segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
       print('$$$$$$$$$$$')
       print(len(segments))
       segments = get_segments_explicit_overlap(segments)
