@@ -144,19 +144,20 @@ def main():
         new_segment.update_turn_onset(turn_onset)
         new_segments.append(new_segment)
         turn_onset = new_segment.get_turn_end()
-      print(speaker_filepath)
-      for segment in new_segments:
-        segment.print_rttm()
       single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': duration, 'segments': new_segments }
 
     combinations_files = {}
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files.keys()], 2))]:
       filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
-      channels_ids = sorted(set([single_speakers_files[speaker_name]['channel_id'] for speaker_name in combination]))
-      if (len(channels_ids) > 1):
-        print('ERROR: mixing channels.')
-      channel_id = channels_ids[0]
+      segments = itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination])
+      print('$$$$$$$$$$$')
+      print(len(segments))
+      segments = get_segments_explicit_overlap(segments)
+      print(len(segments))
+
+      speakers_channels_ids = [speaker_name for speaker_name in combination]
+
       min_duration = min(durations)
       combination_filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
       combination_filepath, duration = sox_mix_files(filepaths, min_duration, combination_filepath)
