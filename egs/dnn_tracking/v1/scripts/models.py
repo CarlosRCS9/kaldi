@@ -17,8 +17,6 @@ class Speaker:
     return self.type
   def get_name(self):
     return self.name
-  def __str__(self):
-    return str(self.__class__) + ": " + str(self.__dict__)
 
 class Segment:
   def __init__(self, data):
@@ -62,5 +60,3 @@ class Segment:
       self.get_confidence_score() + ' ' + \
       self.get_signal_lookahead_time() + '\n'
     return output
-  def __str__(self):
-    return str(self.__class__) + ": " + str(self.__dict__)
