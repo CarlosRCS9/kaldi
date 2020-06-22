@@ -43,10 +43,10 @@ def main():
     single_speakers_segments = filter_by_speakers_length(speakers_segments, 1)
     single_speakers_files = {}
     for speaker_name in single_speakers_segments:
-      speaker_filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
+      filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
       speaker_segments = single_speakers_segments[speaker_name]
       timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in speaker_segments]
-      speaker_filepath, speaker_filepath_duration = cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
+      filepath, duration = cut_and_stitch(file_scp, timestamps_pairs, filepath)
       turn_onset = 0
       new_speaker_segments = []
       for segment in speaker_segments:
@@ -57,14 +57,14 @@ def main():
           new_segment.set_turn_onset(turn_onset)
           new_speaker_segments.append(new_segment)
         turn_onset = new_speaker_segments[-1].get_turn_end()
-      print(speaker_filepath, speaker_filepath_duration, new_speaker_segments[-1].get_turn_end())
-      for segment in new_speaker_segments:
-        print(segment.get_rttm(), end = '')
-      single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': speaker_filepath_duration, 'segments': new_speaker_segments }
+      single_speakers_files[speaker_name] = { 'filepath': filepath, 'duration': duration, 'segments': new_speaker_segments }
 
-    '''combination_files = {}
+    combination_files = {}
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files], 2))]:
-      print(combination)'''
+      filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
+      durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
+      segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
+      print(len(segments))
 
 if __name__ == '__main__':
   main()
