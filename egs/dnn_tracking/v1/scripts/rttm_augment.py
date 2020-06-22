@@ -65,12 +65,12 @@ def main():
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
       min_duration = min(durations)
       speakers_segments = [list(filter(lambda segment: segment.get_turn_onset()) < min_duration, single_speakers_files[speaker_name]['segments']) for speaker_name in combination]
-      for segment in list(filter(lambda segment: segment.get_turn_end() > min_duration, speakers_segments)):
+      '''for segment in list(filter(lambda segment: segment.get_turn_end() > min_duration, speakers_segments)):
         segment.set_turn_end(min_duration)
       segments = list(itertools.chain(*speakers_segments))
       print(min_duration)
       for segment in segments:
-        print(segment.get_rttm(), end = '')
+        print(segment.get_rttm(), end = '')'''
 
       #segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
 
