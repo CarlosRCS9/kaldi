@@ -79,7 +79,7 @@ def main():
         print(segment.get_rttm(), end = '')
       segments = get_segments_explicit_overlap(segments)
       for segment in segments:
-        print(segment.get_rttm(), end = '')
+        print(segment.get_turn_end(), end = '')
       segments = list(filter(lambda segment: segment.get_turn_end() <= duration, segments))
       print(len(segments))
       print('\n', filepath, duration, segments[-1].get_turn_end())
