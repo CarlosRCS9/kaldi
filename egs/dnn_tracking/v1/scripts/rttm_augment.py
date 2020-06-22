@@ -6,7 +6,7 @@
 import argparse
 import sys
 
-from models import read_wav_scp
+from models import read_wav_scp, Segment, sort_segments_by_file_id, get_segments_explicit_overlap
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -23,8 +23,15 @@ def main():
   stdin = get_stdin()
 
   wav_scp = read_wav_scp(args.wav_scp)
-  for file_id in wav_scp:
-    print(wav_scp[file_id])
+  output_folder = args.output_folder
+
+  segments = [Segment(line) for line in stdin]
+  files_segments = sort_segments_by_file_id(segments)
+  for file_id in sorted(files_segments.keys()):
+    file_segments = files_segments[file_id]
+    file_segments = get_segments_explicit_overlap(file_segments)
+    for segment in file_segments:
+      print(segment.get_rttm(), end = '')
 
 if __name__ == '__main__':
   main()
