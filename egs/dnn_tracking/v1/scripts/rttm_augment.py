@@ -29,7 +29,7 @@ def main():
   files_segments = sort_segments_by_file_id(segments)
   for file_id in sorted(files_segments.keys()):
     file_segments = files_segments[file_id]
-    file_segments = get_segments_explicit_overlap(file_segments)
+    file_segments = get_segments_explicit_overlap(file_segments, 0.1)
     for segment in file_segments:
       print(segment.get_rttm(), end = '')
 
