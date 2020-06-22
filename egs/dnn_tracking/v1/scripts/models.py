@@ -94,6 +94,19 @@ class Segment:
   def has_timestamps_overlap(self, turn_onset, turn_end):
     return not (turn_end <= self.get_turn_onset() or self.get_turn_end() <= turn_onset)
 
+class Scp_file:
+  def __init__(self, data):
+    if isinstance(data, str):
+      self.data = data.split()
+      self.filepath_index = [re.match(r'(\/.*?\.[\w:]+)', string) is not None for string in self.data].index(True)
+      self.file_id = self.data[0]
+      self.filepath = self.data[self.filepath_index]
+      self.format = self.filepath.split('.')[-1]
+  def get_file_id(self):
+    return self.file_id
+  def __str__(self):
+    return str(self.__class__) + ": " + str(self.__dict__)
+
 def reduce_segments_by_file_id(accumulator, segment):
   if segment.get_file_id() not in accumulator:
     accumulator[segment.get_file_id()] = []
@@ -117,3 +130,18 @@ def get_segments_explicit_overlap(segments, min_length = 0.0005):
       if new_segment.get_turn_duration() > min_length:
         new_segments.append(new_segment)
   return new_segments
+
+def reduce_scp_by_file_id(accumulator, scp_file):
+  if scp_file.get_file_id() not in accumulator:
+    accumulator[scp_file.get_file_id()] = scp_file
+  return accumulator
+
+def sort_scp_by_file_id(scp):
+  return functools.reduce(reduce_scp_by_file_id, scp, {})
+
+def read_wav_scp(filepath):
+  f = open(filepath, 'r')
+  scp = [Scp_file(line) for line in f.readlines()]
+  f.close()
+  scp = sort_scp_by_file_id(scp)
+  return scp
