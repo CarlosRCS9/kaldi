@@ -77,6 +77,7 @@ def main():
       segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
       for segment in segments:
         print(segment.get_rttm(), end = '')
+      print('$$$$$$$$$$$$$$')
       segments = get_segments_explicit_overlap(segments)
       for segment in segments:
         print(segment.get_rttm(), end = '')
