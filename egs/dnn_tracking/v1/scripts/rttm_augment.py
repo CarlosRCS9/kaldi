@@ -64,7 +64,9 @@ def main():
       filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
       segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
-      print(len(segments))
+      print('$$$$$$$$$$$$$$$')
+      for segment in segments:
+        print(segment.get_rttm(), end = '')
 
 if __name__ == '__main__':
   main()
