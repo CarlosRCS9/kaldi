@@ -38,8 +38,9 @@ def main():
     file_segments = get_segments_explicit_overlap(file_segments, 0.1)
     speakers_segments = sort_segments_by_speakers(file_segments)
     single_speakers_segments = filter_by_speakers_length(speakers_segments, 1)
-    for speakers_names in single_speakers_segments:
-      print(speakers_names, len(single_speakers_segments[speakers_names]))
+    for speaker_name in single_speakers_segments:
+      print(speaker_name)
+
 
 if __name__ == '__main__':
   main()
