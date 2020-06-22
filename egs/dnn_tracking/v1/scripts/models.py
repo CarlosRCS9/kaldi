@@ -6,6 +6,7 @@
 import numpy
 import functools
 import itertools
+import re
 
 class Speaker:
   def __init__(self, data):
