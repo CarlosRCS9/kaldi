@@ -72,6 +72,8 @@ class Segment:
     return self.speakers
   def has_speaker(self, speaker):
     return any([self_speaker.equals(speaker) for self_speaker in self.get_speakers()])
+  def has_same_speakers(self, segment):
+    return len(self.get_speakers()) == len(segment.get_speakers()) and all([self.has_speaker(speaker) for speaker in segment.get_speakers()])
   def add_speakers(self, speakers):
     self.speakers += [Speaker(speaker) for speaker in speakers if not self.has_speaker(speaker)]
   def get_confidence_score(self):

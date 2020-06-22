@@ -51,14 +51,20 @@ def main():
       new_speaker_segments = []
       for segment in speaker_segments:
         new_segment = Segment(segment)
-        new_segment.set_turn_onset(turn_onset)
-        new_speaker_segments.append(new_segment)
-        turn_onset = new_segment.get_turn_end()
+        if len(new_speaker_segments) > 0 and new_speaker_segments[-1].has_same_speakers(new_segment):
+          new_speaker_segments[-1].set_turn_duration(new_speaker_segments[-1].get_turn_duration() + new_segment.get_turn_duration())
+        else:
+          new_segment.set_turn_onset(turn_onset)
+          new_speaker_segments.append(new_segment)
+        turn_onset = new_speaker_segments[-1].get_turn_end()
+      print(speaker_filepath, speaker_filepath_duration, new_speaker_segments[-1].get_turn_end())
+      for segment in new_speaker_segments:
+        print(segment.get_rttm(), end = '')
       single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': speaker_filepath_duration, 'segments': new_speaker_segments }
 
-    combination_files = {}
+    '''combination_files = {}
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files], 2))]:
-      print(combination)
+      print(combination)'''
 
 if __name__ == '__main__':
   main()
