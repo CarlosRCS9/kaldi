@@ -64,8 +64,8 @@ def main():
       filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
       min_duration = min(durations)
-      speakers_segments = [filter(lambda segment: segment.get_turn_onset() < min_duration, single_speakers_files[speaker_name]['segments']) for speaker_name in combination]
-      for segment in filter(lambda segment: segment.get_turn_end() > min_duration, speakers_segments):
+      speakers_segments = [list(filter(lambda segment: segment.get_turn_onset()) < min_duration, single_speakers_files[speaker_name]['segments']) for speaker_name in combination]
+      for segment in list(filter(lambda segment: segment.get_turn_end() > min_duration, speakers_segments)):
         segment.set_turn_end(min_duration)
       segments = list(itertools.chain(*speakers_segments))
       print(min_duration)
