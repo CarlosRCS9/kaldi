@@ -107,6 +107,8 @@ class Scp_file:
       self.format = self.filepath.split('.')[-1]
   def get_file_id(self):
     return self.file_id
+  def get_filepath(self):
+    return self.filepath
   def get_format(self):
     return self.format
   def __str__(self):
