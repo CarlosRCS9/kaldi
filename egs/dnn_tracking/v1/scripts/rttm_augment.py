@@ -72,6 +72,7 @@ def main():
       segments = get_segments_explicit_overlap(segments)
       segments = list(filter(lambda segment: segment.get_turn_end() - duration < 0.001, segments))
       combination_files[','.join(combination)] = { 'filepath': filepath, 'duration': duration, 'segments': segments }
+    print(file_id)
     print(combination_files)
 
 if __name__ == '__main__':
