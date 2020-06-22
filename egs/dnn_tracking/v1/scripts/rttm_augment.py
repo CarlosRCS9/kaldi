@@ -14,7 +14,8 @@ get_segments_explicit_overlap, \
 sort_segments_by_speakers, \
 filter_by_speakers_length, \
 get_segments_explicit_overlap
-from sox import cut_and_stitch
+
+from sox import cut_and_stitch, mix_files
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -68,11 +69,10 @@ def main():
       segments = list(itertools.chain(*[list(filter(lambda segment: segment.get_turn_onset() < min_duration, single_speakers_files[speaker_name]['segments'])) for speaker_name in combination]))
       for segment in list(filter(lambda segment: segment.get_turn_end() > min_duration, segments)):
         segment.set_turn_end(min_duration)
-      print('$$$$$$$$$$$$$$$')
-      print(len(segments))
       segments = get_segments_explicit_overlap(segments)
-      print(len(segments))
-
+      filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
+      filepath, duration = mix_files(filepaths, min_duration, filepath)
+      print(filepath, duration)
 
       #segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
 
