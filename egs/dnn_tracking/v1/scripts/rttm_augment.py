@@ -63,10 +63,16 @@ def main():
     for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files], 2))]:
       filepaths = [single_speakers_files[speaker_name]['filepath'] for speaker_name in combination]
       durations = [single_speakers_files[speaker_name]['duration'] for speaker_name in combination]
-      segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
-      print('$$$$$$$$$$$$$$$')
+      min_duration = min(durations)
+      speakers_segments = [filter(lambda segment: segment.get_turn_onset() < min_duration, single_speakers_files[speaker_name]['segments']) for speaker_name in combination]
+      for segment in filter(lambda segment: segment.get_turn_end() > min_duration, speakers_segments):
+        segment.set_turn_end(min_duration)
+      segments = list(itertools.chain(*speakers_segments))
+      print(min_duration)
       for segment in segments:
         print(segment.get_rttm(), end = '')
+
+      #segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
 
 if __name__ == '__main__':
   main()
