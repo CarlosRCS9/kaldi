@@ -53,7 +53,6 @@ def main():
         new_segment.set_turn_onset(turn_onset)
         new_speaker_segments.append(new_segment)
         turn_onset = new_segment.get_turn_end()
-      print(speaker_filepath, speaker_filepath_duration, new_speaker_segments[-1].get_turn_end())
       single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': speaker_filepath_duration, 'segments': new_speaker_segments }
 
 if __name__ == '__main__':
