@@ -37,7 +37,7 @@ def main():
   segments = [Segment(line) for line in stdin]
   files_segments = sort_segments_by_file_id(segments)
   for index, file_id in enumerate(sorted(files_segments.keys())):
-    print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
+    #print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
     file_scp = wav_scp[file_id]
     file_segments = files_segments[file_id]
     file_segments = get_segments_explicit_overlap(file_segments, 0.1)
@@ -72,7 +72,7 @@ def main():
       segments = get_segments_explicit_overlap(segments)
       filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
       filepath, duration = mix_files(filepaths, min_duration, filepath)
-      print(filepath, duration)
+      print(filepath, duration, segments[-1].get_turn_end())
 
       #segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
 
