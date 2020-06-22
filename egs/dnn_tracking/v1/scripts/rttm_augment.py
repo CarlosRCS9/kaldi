@@ -6,12 +6,12 @@
 import argparse
 import sys
 
-from models import read_wav_scp,
-Segment,
-sort_segments_by_file_id,
-get_segments_explicit_overlap,
-sort_segments_by_speakers,
-filter_by_speakers_length
+from models import read_wav_scp, \
+Segment, \
+sort_segments_by_file_id, \
+get_segments_explicit_overlap, \
+sort_segments_by_speakers, \
+filter_by_speakers_length \
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
