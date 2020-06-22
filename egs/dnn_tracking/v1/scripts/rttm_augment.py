@@ -44,7 +44,6 @@ def main():
     speakers_segments = sort_segments_by_speakers(file_segments)
     single_speakers_segments = filter_by_speakers_length(speakers_segments, 1)
     single_speakers_files = {}
-    print(single_speakers_segments.keys())
     for speaker_name in single_speakers_segments:
       filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
       speaker_segments = single_speakers_segments[speaker_name]
@@ -73,8 +72,8 @@ def main():
       segments = get_segments_explicit_overlap(segments)
       segments = list(filter(lambda segment: segment.get_turn_end() - duration < 0.001, segments))
       combination_files[','.join(combination)] = { 'filepath': filepath, 'duration': duration, 'segments': segments }
-    print(file_id)
-    print(combination_files)
+
+    
 
 if __name__ == '__main__':
   main()
