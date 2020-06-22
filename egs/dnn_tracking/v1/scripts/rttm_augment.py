@@ -75,7 +75,7 @@ def main():
       print(duration)
       for segment in segments:
         print(segment.get_rttm(), end = '')
-      segments = list(filter(lambda segment: segment.get_turn_end() <= duration + 0.0001, segments))
+      segments = list(filter(lambda segment: segment.get_turn_end() <= duration + 0.001, segments))
       print(len(segments))
       print('\n', filepath, duration, segments[-1].get_turn_end())
 
