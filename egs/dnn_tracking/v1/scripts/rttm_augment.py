@@ -11,7 +11,8 @@ Segment, \
 sort_segments_by_file_id, \
 get_segments_explicit_overlap, \
 sort_segments_by_speakers, \
-filter_by_speakers_length \
+filter_by_speakers_length
+from sox import cut_and_stitch
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -41,9 +42,11 @@ def main():
     single_speakers_segments = filter_by_speakers_length(speakers_segments, 1)
     single_speakers_files = {}
     for speaker_name in single_speakers_segments:
-      filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
-      print(filepath)
-
+      speaker_filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
+      speaker_segments = single_speakers_segments[speaker_name]
+      timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in speaker_segments]
+      speaker_filepath, speaker_filepath_duration = sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
+      print(speaker_filepath, speaker_filepath_duration)
 
 if __name__ == '__main__':
   main()
