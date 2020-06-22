@@ -5,6 +5,7 @@
 
 import argparse
 import sys
+import itertools
 
 from models import read_wav_scp, \
 Segment, \
@@ -54,6 +55,10 @@ def main():
         new_speaker_segments.append(new_segment)
         turn_onset = new_segment.get_turn_end()
       single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': speaker_filepath_duration, 'segments': new_speaker_segments }
+
+    combination_files = {}
+    for combination in [sorted(combination) for combination in list(itertools.combinations([speaker_name for speaker_name in single_speakers_files], 2))]:
+      print(combination)
 
 if __name__ == '__main__':
   main()
