@@ -46,7 +46,15 @@ def main():
       speaker_segments = single_speakers_segments[speaker_name]
       timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in speaker_segments]
       speaker_filepath, speaker_filepath_duration = cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
-      print(speaker_filepath, speaker_filepath_duration)
+      turn_onset = 0
+      new_speaker_segments = []
+      for segment in speaker_segments:
+        new_segment = Segment(segment)
+        new_segment.set_turn_onset(turn_onset)
+        new_speaker_segments.append(new_segment)
+        turn_onset = new_segment.get_turn_end()
+      print(speaker_filepath, speaker_filepath_duration, new_speaker_segments[-1].get_turn_end())
+      single_speakers_files[speaker_name] = { 'filepath': speaker_filepath, 'duration': speaker_filepath_duration, 'segments': new_speaker_segments }
 
 if __name__ == '__main__':
   main()
