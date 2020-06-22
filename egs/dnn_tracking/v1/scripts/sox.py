@@ -4,6 +4,7 @@
 # Apache 2.0.
 
 import os
+import subprocess
 
 def cut_and_stitch(scp, timestamps_pairs, output_filepath):
   if not os.path.exists(output_filepath):
