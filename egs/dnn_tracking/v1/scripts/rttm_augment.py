@@ -3,6 +3,9 @@
 # Copyright 2019 Carlos Castillo
 # Apache 2.0.
 
+import argparse
+import sys
+
 def get_args():
   parser = argparse.ArgumentParser(description='')
   parser.add_argument('scp', type=str, help='')
