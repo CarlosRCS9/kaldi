@@ -68,18 +68,11 @@ def main():
       filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
       min_duration = min(durations)
       filepath, duration = mix_files(filepaths, min_duration, filepath)
-
-
       segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
       segments = get_segments_explicit_overlap(segments)
-      print(duration)
-      for segment in segments:
-        print(segment.get_rttm(), end = '')
       segments = list(filter(lambda segment: segment.get_turn_end() - duration < 0.001, segments))
-      print(len(segments))
-      print('\n', filepath, duration, segments[-1].get_turn_end())
-
-      #segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
+      combination_files[','.join(combination)] = { 'filepath': filepath, 'duration': duration, 'segments': segments }
+    print(combination_files)
 
 if __name__ == '__main__':
   main()
