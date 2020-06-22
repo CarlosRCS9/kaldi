@@ -98,6 +98,7 @@ class Segment:
 class Scp_file:
   def __init__(self, data):
     if isinstance(data, str):
+      print(data)
       self.data = data.split()
       self.filepath_index = [re.match(r'(\/.*?\.[\w:]+)', string) is not None for string in self.data].index(True)
       self.file_id = self.data[0]
