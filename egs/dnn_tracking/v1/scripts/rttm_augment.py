@@ -69,12 +69,16 @@ def main():
       min_duration = min(durations)
       filepath, duration = mix_files(filepaths, min_duration, filepath)
 
-      segments = list(itertools.chain(*[list(filter(lambda segment: segment.get_turn_onset() < min_duration, single_speakers_files[speaker_name]['segments'])) for speaker_name in combination]))
+      '''segments = list(itertools.chain(*[list(filter(lambda segment: segment.get_turn_onset() < min_duration, single_speakers_files[speaker_name]['segments'])) for speaker_name in combination]))
       for segment in list(filter(lambda segment: segment.get_turn_end() > min_duration, segments)):
         segment.set_turn_end(min_duration)
-      segments = get_segments_explicit_overlap(segments)
+      segments = get_segments_explicit_overlap(segments)'''
+      segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
+      for segment in segments:
+        print(segment.get_rttm(), end = '')
 
-      print(filepath, duration, segments[-1].get_turn_end())
+      print(filepath, duration)
+
       #segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
 
 if __name__ == '__main__':
