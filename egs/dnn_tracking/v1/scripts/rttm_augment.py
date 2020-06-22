@@ -74,6 +74,8 @@ def main():
         segment.set_turn_end(min_duration)
       segments = get_segments_explicit_overlap(segments)'''
       segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
+      for segment in segments:
+        print(segment.get_rttm(), end = '')
       segments = get_segments_explicit_overlap(segments)
       segments = list(filter(lambda segment: segment.get_turn_end() <= min_duration, segments))
       print(len(segments))
