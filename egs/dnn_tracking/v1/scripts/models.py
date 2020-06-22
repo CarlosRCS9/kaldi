@@ -146,3 +146,20 @@ def read_wav_scp(filepath):
   f.close()
   scp = sort_scp_by_file_id(scp)
   return scp
+
+def reduce_segments_by_speakers(accumulator, segment):
+  speakers_names = ','.join(sorted(map(lambda speaker: speaker.get_name(), segment.get_speakers())))
+  if speakers_names not in accumulator:
+    accumulator[speakers_names] = []
+  accumulator[speakers_names].append(segment)
+  return accumulator
+
+def sort_segments_by_speakers(segments):
+  return functools.reduce(reduce_segments_by_speakers, segments, {})
+
+def filter_by_speakers_length(speakers_segments, length):
+  new_speakers_segments = {}
+  for speakers_names in speakers_segments:
+    if len(speakers_names.split(',')) == length:
+      new_speakers_segments[speakers_names] = speakers_segments[speakers_names]
+  return new_speakers_segments

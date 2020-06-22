@@ -6,7 +6,12 @@
 import argparse
 import sys
 
-from models import read_wav_scp, Segment, sort_segments_by_file_id, get_segments_explicit_overlap
+from models import read_wav_scp,
+Segment,
+sort_segments_by_file_id,
+get_segments_explicit_overlap,
+sort_segments_by_speakers,
+filter_by_speakers_length
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -31,6 +36,10 @@ def main():
     print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
     file_segments = files_segments[file_id]
     file_segments = get_segments_explicit_overlap(file_segments, 0.1)
+    speakers_segments = sort_segments_by_speakers(file_segments)
+    single_speakers_segments = filter_by_speakers_length(speakers_segments, 1)
+    for speakers_names in single_speakers_segments:
+      print(speakers_names, len(single_speakers_segments[speakers_names]))
 
 if __name__ == '__main__':
   main()
