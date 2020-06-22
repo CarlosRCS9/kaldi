@@ -45,7 +45,7 @@ def main():
       speaker_filepath = output_folder + file_scp.get_file_id() + '_' + speaker_name + '.' + file_scp.get_format()
       speaker_segments = single_speakers_segments[speaker_name]
       timestamps_pairs = [(segment.get_turn_onset(), segment.get_turn_duration()) for segment in speaker_segments]
-      speaker_filepath, speaker_filepath_duration = sox_cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
+      speaker_filepath, speaker_filepath_duration = cut_and_stitch(file_scp, timestamps_pairs, speaker_filepath)
       print(speaker_filepath, speaker_filepath_duration)
 
 if __name__ == '__main__':
