@@ -89,7 +89,9 @@ def main():
     for _, combination_timestamps in combination_files.items():
       print(combination_timestamps)
       for turn_onset, turn_duration in combination_timestamps['timestamps_pairs']:
-        print(turn_onset, turn_duration)
+       combination_timestamps.append({ 'filepath': combination_timestamps['filepath'], 'turn_onset': turn_onset, 'turn_duration': turn_duration, 'segments': combination_timestamps['segments'] })
+    for entry in combination_timestamps:
+      print(entry)
 
 if __name__ == '__main__':
   main()
