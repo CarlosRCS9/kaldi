@@ -83,10 +83,11 @@ def main():
       cut_durations.append(numpy.floor(left_duration * 1000.0) / 1000.0)
       cut_onsets = [sum(cut_durations[:index]) for index, cut_duration in enumerate(cut_durations)]
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
-
       combination_files[','.join(combination)] = { 'filepath': filepath, 'duration': duration, 'segments': segments, 'timestamps_pairs': timestamps_pairs }
-      print(combination_files[','.join(combination)])
 
+    combinations_timestamps = []
+    for _, combination_timestamps in combination_files.items():
+      print(combination_timestamps)
 
 if __name__ == '__main__':
   main()
