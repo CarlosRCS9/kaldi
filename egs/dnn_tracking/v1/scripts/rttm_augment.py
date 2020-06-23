@@ -88,6 +88,8 @@ def main():
     combinations_timestamps = []
     for _, combination_timestamps in combination_files.items():
       print(combination_timestamps)
+      for turn_onset, turn_duration in combination_timestamps['timestamps_pairs']:
+        print(turn_onset, turn_duration)
 
 if __name__ == '__main__':
   main()
