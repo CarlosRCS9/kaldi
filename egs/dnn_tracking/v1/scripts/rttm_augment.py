@@ -6,6 +6,7 @@
 import argparse
 import sys
 import itertools
+import numpy
 
 from models import read_wav_scp, \
 Segment, \
