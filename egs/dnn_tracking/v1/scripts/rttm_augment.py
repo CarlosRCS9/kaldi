@@ -74,7 +74,7 @@ def main():
       segments = get_segments_explicit_overlap(segments)
       segments = list(filter(lambda segment: segment.get_turn_end() - duration < 0.001, segments))
 
-      left_duration = min_duration
+      left_duration = duration
       cut_durations = []
       while left_duration > 1.5:
         cut_duration = numpy.floor(numpy.sqrt(left_duration) * 1000.0) / 1000.0
@@ -85,7 +85,7 @@ def main():
       timestamps_pairs = list(zip(cut_onsets, cut_durations))
 
       combination_files[','.join(combination)] = { 'filepath': filepath, 'duration': duration, 'segments': segments, 'timestamps_pairs': timestamps_pairs }
-      print(combination_files[','].join(combination))
+      print(combination_files[','.join(combination)])
 
 
 if __name__ == '__main__':
