@@ -123,7 +123,7 @@ def main():
 
       options_lengths = [len(option) for option in options]
 
-    print(trims)
+    #print(trims)
 
 if __name__ == '__main__':
   main()
