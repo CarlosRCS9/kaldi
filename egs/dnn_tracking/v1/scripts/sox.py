@@ -49,3 +49,22 @@ def mix_files(input_filepaths, min_duration, output_filepath):
     duration = numpy.float32(output.decode("utf-8"))
     return (output_filepath, duration)
 
+def stitch_trims(trims, output_filepath):
+  if not os.path.exists(output_filepath):
+    command = ['sox'] + trims + [output_filepath]
+    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output, err = p.communicate()
+    rc = p.returncode
+    if rc != 0:
+      print(err)
+      exit(1)
+  command = ['soxi', '-D', output_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc != 0:
+    print(err)
+    exit(1)
+  else:
+    duration = numpy.float32(output.decode("utf-8"))
+    return (output_filepath, duration)

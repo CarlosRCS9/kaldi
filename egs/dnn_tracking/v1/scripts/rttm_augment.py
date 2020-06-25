@@ -20,7 +20,7 @@ sort_segments_by_speakers, \
 filter_by_speakers_length, \
 get_segments_explicit_overlap
 
-from sox import cut_and_stitch, mix_files
+from sox import cut_and_stitch, mix_files, stitch_trims
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -131,7 +131,10 @@ def main():
 
       options_lengths = [len(option) for option in options]
 
-    print(trims)
+
+    new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
+    new_filepath, duration = stitch_trims(trims, new_filepath)
+    print(new_filepath, duration)
     print(new_segments[-1].get_rttm(), end = '')
 
 if __name__ == '__main__':
