@@ -94,9 +94,9 @@ def main():
       for turn_onset, turn_duration in combination_timestamps['timestamps_pairs']:
        combinations_timestamps.append({ 'filepath': combination_timestamps['filepath'], 'turn_onset': turn_onset, 'turn_duration': turn_duration, 'segments': combination_timestamps['segments'] })
 
-    trims = []
     original_file_pointer = 0
     new_segments = []
+    trims = []
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
@@ -110,16 +110,13 @@ def main():
         filepath = file_scp.get_filepath()
         turn_onset = original_file_pointer
         turn_duration = option.get_turn_end() - original_file_pointer
-        
         segments = [Segment(option)]
         new_turn_onset += option.get_turn_onset() - original_file_pointer
-
         original_file_pointer = option.get_turn_end()
       else:
         filepath = option['filepath']
         turn_onset = option['turn_onset']
         turn_duration = option['turn_duration']
-        
         segments = [Segment(segment) for segment in option['segments'] if segment.has_timestamps_overlap(turn_onset, turn_onset + turn_duration)]
       new_turn_end = new_turn_onset + turn_duration
 
@@ -129,16 +126,17 @@ def main():
           segment.set_turn_end(new_turn_end)
         new_turn_onset = segment.get_turn_end()
       new_segments += segments
-
       trims.append('|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim ' + str(turn_onset) + ' ' + str(turn_duration))
 
       options_lengths = [len(option) for option in options]
 
-
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = stitch_trims(trims, new_filepath)
-    print(new_filepath, duration)
-    print(new_segments[-1].get_turn_end())
+    #print(new_filepath, duration)
+    #print(new_segments[-1].get_turn_end())
+    if numpy.abs(duration - new_segments[-1].get_turn_end()) >= 0.1:
+      print('WARNING:', new_filepath, 'real duration - computed duration:', duration - new_segments[-1].get_turn_end())
+      print('real duration:', duration, 'computed duration:', new_segments[-1].get_turn_end())
 
 if __name__ == '__main__':
   main()
