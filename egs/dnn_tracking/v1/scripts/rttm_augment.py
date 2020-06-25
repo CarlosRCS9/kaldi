@@ -94,8 +94,6 @@ def main():
       for turn_onset, turn_duration in combination_timestamps['timestamps_pairs']:
        combinations_timestamps.append({ 'filepath': combination_timestamps['filepath'], 'turn_onset': turn_onset, 'turn_duration': turn_duration, 'segments': combination_timestamps['segments'] })
 
-    
-    
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
 
@@ -106,8 +104,13 @@ def main():
       
       if option_index == 0:
         print('original segment')
+        turn_onset = option.get_turn_onset()
+        turn_duration = option.get_turn_duration()
       else:
         print('new segment')
+        turn_onset = option['turn_onset']
+        turn_duration = option['turn_duration']
+      print(turn_onset, turn_duration)
 
       options_lengths = [len(option) for option in options]
 
