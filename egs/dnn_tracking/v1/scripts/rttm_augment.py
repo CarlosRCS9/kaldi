@@ -115,7 +115,7 @@ def main():
         filepath = option['filepath']
         turn_onset = option['turn_onset']
         turn_duration = option['turn_duration']
-        segments = [Segment(segment) for segment in option['segments']]
+        segments = [Segment(segment) for segment in option['segments'] if segment.has_timestamps_overlap(turn_onset, turn_onset + turn_duration)]
 
       print(len(segments))
 
