@@ -95,9 +95,10 @@ def main():
        combinations_timestamps.append({ 'filepath': combination_timestamps['filepath'], 'turn_onset': turn_onset, 'turn_duration': turn_duration, 'segments': combination_timestamps['segments'] })
 
     trims = []
+    original_file_pointer = 0
+
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
-
     while sum(options_lengths) > 0:
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
@@ -105,8 +106,10 @@ def main():
       
       if option_index == 0:
         filepath = file_scp.get_filepath()
-        turn_onset = option.get_turn_onset()
-        turn_duration = option.get_turn_duration()
+        turn_onset = original_file_pointer
+        turn_duration = option.get_turn_end() - original_file_pointer
+
+        original_file_pointer = option.get_turn_end()
       else:
         filepath = option['filepath']
         turn_onset = option['turn_onset']
