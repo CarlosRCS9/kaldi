@@ -121,13 +121,16 @@ def main():
         turn_duration = option['turn_duration']
         
         segments = [Segment(segment) for segment in option['segments'] if segment.has_timestamps_overlap(turn_onset, turn_onset + turn_duration)]
-      
+      new_turn_end = new_turn_onset + turn_duration
+
       for segment in segments:
         segment.set_turn_onset(new_turn_onset)
+        if segment.get_turn_end() > new_turn_end:
+          segment.set_turn_end(new_turn_end)
         new_turn_onset = segment.get_turn_end()
+      new_segments += segments
 
       trims.append('|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim ' + str(turn_onset) + ' ' + str(turn_duration))
-      new_segments += segments
 
       options_lengths = [len(option) for option in options]
 
