@@ -101,6 +101,7 @@ def main():
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
+      print(option)
       options_lengths = [len(option) for option in options]
     print(file_id)
 
