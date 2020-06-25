@@ -96,6 +96,7 @@ def main():
 
     trims = []
     original_file_pointer = 0
+    new_file
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
@@ -108,7 +109,10 @@ def main():
         filepath = file_scp.get_filepath()
         turn_onset = original_file_pointer
         turn_duration = option.get_turn_end() - original_file_pointer
-        segments = [option]
+        silence = option.get_turn_onset() - original_file_pointer
+        print(silence)
+        segments = [Segment(option)]
+
 
         original_file_pointer = option.get_turn_end()
       else:
@@ -116,8 +120,6 @@ def main():
         turn_onset = option['turn_onset']
         turn_duration = option['turn_duration']
         segments = [Segment(segment) for segment in option['segments'] if segment.has_timestamps_overlap(turn_onset, turn_onset + turn_duration)]
-
-      print(len(segments))
 
       trims.append('|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim ' + str(turn_onset) + ' ' + str(turn_duration))
 
