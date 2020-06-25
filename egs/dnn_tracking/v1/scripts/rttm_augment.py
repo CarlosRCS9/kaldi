@@ -94,6 +94,7 @@ def main():
       for turn_onset, turn_duration in combination_timestamps['timestamps_pairs']:
        combinations_timestamps.append({ 'filepath': combination_timestamps['filepath'], 'turn_onset': turn_onset, 'turn_duration': turn_duration, 'segments': combination_timestamps['segments'] })
 
+    trims = []
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
 
@@ -103,18 +104,18 @@ def main():
       option = options[option_index].pop(0)
       
       if option_index == 0:
-        print('original segment')
         filepath = file_scp.get_filepath()
         turn_onset = option.get_turn_onset()
         turn_duration = option.get_turn_duration()
       else:
-        print('new segment')
         filepath = option['filepath']
         turn_onset = option['turn_onset']
         turn_duration = option['turn_duration']
-      print(filepath, turn_onset, turn_duration)
+      trims.append('|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim ' + str(turn_onset) + ' ' + str(turn_duration))
 
       options_lengths = [len(option) for option in options]
+
+    print(trims)
 
 if __name__ == '__main__':
   main()
