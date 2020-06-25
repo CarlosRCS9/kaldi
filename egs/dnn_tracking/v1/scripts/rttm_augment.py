@@ -96,7 +96,6 @@ def main():
 
     trims = []
     original_file_pointer = 0
-    new_file
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
