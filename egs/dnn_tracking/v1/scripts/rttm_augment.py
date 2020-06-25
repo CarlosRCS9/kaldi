@@ -7,6 +7,10 @@ import argparse
 import sys
 import itertools
 import numpy
+import random
+
+random_seed = 0
+random.seed(random_seed)
 
 from models import read_wav_scp, \
 Segment, \
@@ -92,7 +96,13 @@ def main():
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
-    print(options_lengths)
+
+    while sum(options_lengths) > 0:
+      options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
+      option_index = random.choice(options_indexes)
+      option = options[option_index].pop(0)
+      options_lengths = [len(option) for option in options]
+    print(file_id)
 
 if __name__ == '__main__':
   main()
