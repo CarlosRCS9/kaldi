@@ -96,6 +96,7 @@ def main():
 
     trims = []
     original_file_pointer = 0
+    new_segments = []
 
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
@@ -104,27 +105,34 @@ def main():
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
       
+      new_turn_onset = new_segments[-1].get_turn_end() if len(new_segments) > 0 else 0
       if option_index == 0:
         filepath = file_scp.get_filepath()
         turn_onset = original_file_pointer
         turn_duration = option.get_turn_end() - original_file_pointer
-        silence = option.get_turn_onset() - original_file_pointer
-        print(silence)
+        
         segments = [Segment(option)]
-
+        new_turn_onset += option.get_turn_onset() - original_file_pointer
 
         original_file_pointer = option.get_turn_end()
       else:
         filepath = option['filepath']
         turn_onset = option['turn_onset']
         turn_duration = option['turn_duration']
+        
         segments = [Segment(segment) for segment in option['segments'] if segment.has_timestamps_overlap(turn_onset, turn_onset + turn_duration)]
+      
+      for segment in segments:
+        segment.set_turn_onset(new_turn_onset)
+        new_turn_onset = segment.get_turn_end()
 
       trims.append('|sox ' + filepath + ' -t ' + filepath.split('.')[-1] + ' - trim ' + str(turn_onset) + ' ' + str(turn_duration))
+      new_segments += segments
 
       options_lengths = [len(option) for option in options]
 
-    #print(trims)
+    print(trims)
+    print(new_segments[-1].get_rttm(), end = '')
 
 if __name__ == '__main__':
   main()
