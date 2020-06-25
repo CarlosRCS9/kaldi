@@ -94,6 +94,8 @@ def main():
       for turn_onset, turn_duration in combination_timestamps['timestamps_pairs']:
        combinations_timestamps.append({ 'filepath': combination_timestamps['filepath'], 'turn_onset': turn_onset, 'turn_duration': turn_duration, 'segments': combination_timestamps['segments'] })
 
+    
+    
     options = [file_segments, combinations_timestamps]
     options_lengths = [len(option) for option in options]
 
@@ -101,9 +103,13 @@ def main():
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
-      print(option)
+      
+      if option_index == 0:
+        print('original segment')
+      else:
+        print('new segment')
+
       options_lengths = [len(option) for option in options]
-    print(file_id)
 
 if __name__ == '__main__':
   main()
