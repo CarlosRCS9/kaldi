@@ -138,7 +138,7 @@ def main():
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = stitch_trims(trims, new_filepath)
     print(new_filepath, duration)
-    print(new_segments[-1].get_rttm(), end = '')
+    print(new_segments.get_turn_end())
 
 if __name__ == '__main__':
   main()
