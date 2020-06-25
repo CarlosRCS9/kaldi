@@ -104,13 +104,15 @@ def main():
       
       if option_index == 0:
         print('original segment')
+        filepath = file_scp.get_filepath()
         turn_onset = option.get_turn_onset()
         turn_duration = option.get_turn_duration()
       else:
         print('new segment')
+        filepath = option['filepath']
         turn_onset = option['turn_onset']
         turn_duration = option['turn_duration']
-      print(turn_onset, turn_duration)
+      print(filepath, turn_onset, turn_duration)
 
       options_lengths = [len(option) for option in options]
 
