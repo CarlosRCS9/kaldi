@@ -134,7 +134,7 @@ def main():
     new_filepath, duration = stitch_trims(trims, new_filepath)
 
     error = numpy.abs(duration - new_segments[-1].get_turn_end()) 
-    if error >= 0.0001:
+    if error >= 0.001:
       print('WARNING:', new_filepath, 'duration misalignment of', str(error) + 's')
 
 if __name__ == '__main__':
