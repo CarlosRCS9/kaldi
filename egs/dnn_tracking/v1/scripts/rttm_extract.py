@@ -48,7 +48,7 @@ def main():
     if index > 1:
       break
 
-  foo = re.findall("augmented_\d+", args.wav_scp)
+  foo = re.findall("augmented_\d+", "test")
   print(foo)
   new_folder = args.output_folder + 'exp/'  
   pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
