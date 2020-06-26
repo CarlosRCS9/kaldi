@@ -23,8 +23,8 @@ def main():
     for segment in file_segments:
       segments_data += segment.get_file_id() + '_' + count + ' ' + \
       segment.get_file_id() + ' ' + \
-      segment.get_turn_onset() + ' ' + \
-      segment.get_turn_end() + '\n'
+      str(segment.get_turn_onset()) + ' ' + \
+      str(segment.get_turn_end()) + '\n'
       count += 1
 
   print(segments_data)
