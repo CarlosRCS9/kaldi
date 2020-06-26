@@ -5,7 +5,8 @@
 
 import argparse
 import sys
-from pathlib import Path
+import pathlib
+import shutil
 
 from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap
 
@@ -47,7 +48,8 @@ def main():
       break
 
   new_folder = args.output_folder + 'exp/'  
-  Path(new_folder).mkdir(parents = True, exist_ok = True)
+  pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
+  shutil.copyfile(args.wav_scp, new_folder + 'wav.scp')
 
 if __name__ == '__main__':
   main()
