@@ -49,6 +49,15 @@ def main():
 
   new_folder = args.output_folder + 'exp/'  
   pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
+  f = open(new_folder + 'segments', 'w')
+  f.write(segments_data)
+  f.close()
+  f = open(new_folder + 'utt2spk', 'w')
+  f.write(utt2spk_data)
+  f.close()
+  f = open(new_folder + 'spk2utt', 'w')
+  f.write(spk2utt_data)
+  f.close()
   shutil.copyfile(args.wav_scp, new_folder + 'wav.scp')
 
 if __name__ == '__main__':
