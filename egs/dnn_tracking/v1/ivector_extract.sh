@@ -22,3 +22,15 @@ if [ $stage -le 1 ]; then
     $data_folder/mfcc
   utils/fix_data_dir.sh $data_folder
 fi
+
+# Extract i-vectors
+if [ $stage -le 2 ]; then
+  rm -rf $data_folder/make_ivectors
+
+  diarization/extract_ivectors.sh --cmd "$train_cmd --mem 20G" \
+    --nj 40 --window 1.5 --period 0.75 --apply-cmn false \
+    --min-segment 0.5 \
+    $extractor_model \
+    $data_folder \
+    $data_folder/make_ivectors
+fi
