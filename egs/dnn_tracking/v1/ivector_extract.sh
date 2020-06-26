@@ -8,8 +8,8 @@
 set -e
 stage=0
 
-data_folder=$1
-extractor_model=$2
+extractor_model=$1
+data_folder=$2
 
 # Prepare features
 if [ $stage -le 1 ]; then
