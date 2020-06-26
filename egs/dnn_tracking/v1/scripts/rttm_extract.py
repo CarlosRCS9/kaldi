@@ -6,11 +6,10 @@
 import argparse
 import sys
 import pathlib
-import shutil
 import re
 import subprocess
 
-from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap
+from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap, read_wav_scp
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -29,13 +28,16 @@ def main():
 
   segments = [Segment(line) for line in stdin]
   files_segments = sort_segments_by_file_id(segments)
+  wav_scp = read_wav_scp(args.wav_scp)
 
   segments_data = ''
   utt2spk_data = ''
   spk2utt_data = ''
+  wav_scp_data = ''
   for index, file_id in enumerate(sorted(files_segments.keys())):
     print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
     file_segments = get_segments_explicit_overlap(files_segments[file_id])
+    file_scp = wav_scp[file_id]
     count = 0
     spk2utt_data += file_id
     for segment in file_segments:
@@ -47,6 +49,7 @@ def main():
       spk2utt_data += ' ' + utt
       count += 1
     spk2utt_data += '\n'
+    wav_scp_data += file_scp.get_string()
     if index > 1:
       break
 
@@ -63,7 +66,9 @@ def main():
   f = open(new_folder + 'spk2utt', 'w')
   f.write(spk2utt_data)
   f.close()
-  shutil.copyfile(args.wav_scp, new_folder + 'wav.scp')
+  f = open(new_folder + 'wav.scp', 'w')
+  f.write(wav_scp_data)
+  f.close()
 
   subprocess.run(['./ivector_extract.sh', args.extractor_model, new_folder])
 
