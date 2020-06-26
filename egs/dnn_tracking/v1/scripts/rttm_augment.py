@@ -134,7 +134,7 @@ def main():
     new_filepath, duration = stitch_trims(trims, new_filepath)
     #print(new_filepath, duration)
     #print(new_segments[-1].get_turn_end())
-    if numpy.abs(duration - new_segments[-1].get_turn_end()) >= 0.0001:
+    if numpy.abs(duration - new_segments[-1].get_turn_end()) >= 0.001:
       print('WARNING:', new_filepath, 'real duration - computed duration:', duration - new_segments[-1].get_turn_end())
       print('real duration:', duration, 'computed duration:', new_segments[-1].get_turn_end())
 
