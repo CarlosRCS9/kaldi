@@ -8,16 +8,17 @@
 set -e
 stage=0
 
-extractor_model=$1
-data_folder=$2
+data_folder=$1
 output_folder=$data_folder/exp
+mfcc_conf=$2
+extractor_model=$3
 
 mkdir -p output_folder
 
 # Prepare features
 if [ $stage -le 1 ]; then
   rm -rf $output_folder/make_mfcc
-  steps/make_mfcc.sh --mfcc-config conf/mfcc_ivectors_dihard.conf --nj 40 \
+  steps/make_mfcc.sh --mfcc-config $mfcc_conf --nj 40 \
     --cmd "$train_cmd" --write-utt2num-frames true --write-utt2dur true \
     $data_folder \
     $output_folder/make_mfcc \

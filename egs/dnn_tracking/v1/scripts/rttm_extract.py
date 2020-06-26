@@ -70,7 +70,7 @@ def main():
   f.write(wav_scp_data)
   f.close()
 
-  subprocess.run(['./ivector_extract.sh', args.extractor_model, new_folder])
+  subprocess.run(['./ivector_extract.sh', new_folder, 'conf/mfcc_ivectors_dihard.conf', args.extractor_model])
 
 if __name__ == '__main__':
   main()
