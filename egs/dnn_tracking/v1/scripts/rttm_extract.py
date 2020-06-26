@@ -46,7 +46,8 @@ def main():
     if index > 1:
       break
 
-  Path(args.output_folder + 'exp').mkdir(parents = True, exist_ok = True)
+  new_folder = args.output_folder + 'exp/'  
+  Path(new_folder).mkdir(parents = True, exist_ok = True)
 
 if __name__ == '__main__':
   main()
