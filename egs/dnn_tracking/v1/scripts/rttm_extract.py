@@ -25,7 +25,7 @@ def main():
     count = 0
     spk2utt_data += file_id
     for segment in file_segments:
-      utt = file_id + '_' + str(count)
+      utt = file_id + '_' + str(count).zfill(5)
       segments_data += utt + ' ' + file_id + ' ' + \
       str(round(segment.get_turn_onset(), 3)) + ' ' + \
       str(round(segment.get_turn_end(), 3)) + '\n'
@@ -33,7 +33,7 @@ def main():
       spk2utt_data += ' ' + utt
       count += 1
     spk2utt_data += '\n'
-    if index > 2:
+    if index > 1:
       break
 
   #print(segments_data, end = '')
