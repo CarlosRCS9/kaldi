@@ -5,7 +5,6 @@
 
 import argparse
 import sys
-import copy
 
 from models import Segment, sort_segments_by_file_id
 
