@@ -17,7 +17,7 @@ def get_args():
   parser.add_argument('output_folder', type=str, help='')
   parser.add_argument('mfcc_conf', type=str, help='')
   parser.add_argument('extractor_model', type=str, help='')
-  parser.add_argument('--skip-extractor', type=bool, default=True, help='')
+  parser.add_argument('--skip-extractor', type=bool, default=False, help='')
   args = parser.parse_args()
   return args
 
@@ -52,8 +52,6 @@ def main():
       count += 1
     spk2utt_data += '\n'
     wav_scp_data += file_scp.get_string()
-    if index > 1:
-      break
 
   names = re.findall("augmented_\d+", args.wav_scp)
   data_folder = args.output_folder + (names[0] + '/' if len(names) > 0 else 'exp/')  
@@ -75,7 +73,7 @@ def main():
   if not args.skip_extractor:
     subprocess.run(['./ivector_extract.sh', data_folder, args.mfcc_conf, args.extractor_model])
 
-  print(data_folder)
+  print('output_folder:', data_folder)
 
 if __name__ == '__main__':
   main()
