@@ -50,7 +50,7 @@ def main():
 
 
   names = re.findall("augmented_\d+", args.wav_scp)
-  new_folder = args.output_folder + (names + '/' if len(names) > 0 else 'exp/')  
+  new_folder = args.output_folder + (names[0] + '/' if len(names) > 0 else 'exp/')  
   pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
 
   f = open(new_folder + 'segments', 'w')
