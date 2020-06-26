@@ -111,6 +111,8 @@ class Scp_file:
     return self.filepath
   def get_format(self):
     return self.format
+  def get_string(self):
+    return ' '.join(self.data)
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
 

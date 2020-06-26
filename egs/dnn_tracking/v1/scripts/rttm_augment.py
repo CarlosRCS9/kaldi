@@ -39,6 +39,7 @@ def main():
   wav_scp = read_wav_scp(args.wav_scp)
   output_folder = args.output_folder
   rttm = ''
+  scp = ''
 
   segments = [Segment(line) for line in stdin]
   files_segments = sort_segments_by_file_id(segments)
@@ -141,9 +142,16 @@ def main():
     for segment in new_segments:
       rttm += segment.get_rttm()
 
+    scp += file_scp.get_string()
+
   rttm_filepath = output_folder + 'ref_augmented_' + str(random_seed) + '.rttm'
   f = open(rttm_filepath, 'w')
   f.write(rttm)
+  f.close()
+
+  scp_filepath = output_folder + 'wav_augmented_' + str(random_seed) + '.scp'
+  f = open(scp_filepath, 'w')
+  f.write(scp)
   f.close()
 
 if __name__ == '__main__':
