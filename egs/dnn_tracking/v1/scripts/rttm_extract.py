@@ -29,6 +29,7 @@ def main():
       str(round(segment.get_turn_onset(), 3)) + ' ' + \
       str(round(segment.get_turn_end(), 3)) + '\n'
       count += 1
+    break
 
   print(segments_data, end = '')
 
