@@ -7,6 +7,7 @@ import argparse
 import sys
 import pathlib
 import shutil
+import re
 
 from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap
 
@@ -47,7 +48,8 @@ def main():
     if index > 1:
       break
 
-  print(args.wav_scp)
+  foo = re.findall("augmented_\d+", args.wav_scp)
+  print(foo)
   new_folder = args.output_folder + 'exp/'  
   pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
 
