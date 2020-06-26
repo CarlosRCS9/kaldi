@@ -17,7 +17,6 @@ mkdir -p output_folder
 # Prepare features
 if [ $stage -le 1 ]; then
   rm -rf $output_folder/make_mfcc
-
   steps/make_mfcc.sh --mfcc-config conf/mfcc_ivectors_dihard.conf --nj 40 \
     --cmd "$train_cmd" --write-utt2num-frames true --write-utt2dur true \
     $data_folder \
@@ -29,9 +28,8 @@ fi
 # Extract i-vectors
 if [ $stage -le 2 ]; then
   rm -rf $output_folder/make_ivectors
-
   diarization/extract_ivectors.sh --cmd "$train_cmd --mem 20G" \
-    --nj 3 --window 1.5 --period 0.75 --apply-cmn false \
+    --nj 40 --window 1.5 --period 0.75 --apply-cmn false \
     --min-segment 0.5 \
     $extractor_model \
     $data_folder \
