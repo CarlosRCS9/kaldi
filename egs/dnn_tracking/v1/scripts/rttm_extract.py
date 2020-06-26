@@ -15,6 +15,7 @@ def get_args():
   parser = argparse.ArgumentParser(description='')
   parser.add_argument('wav_scp', type=str, help='')
   parser.add_argument('output_folder', type=str, help='')
+  parser.add_argument('extractor_model', type=str, help='')
   args = parser.parse_args()
   return args
 
