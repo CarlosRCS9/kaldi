@@ -50,7 +50,6 @@ def main():
       count += 1
     spk2utt_data += '\n'
     wav_scp_data += file_scp.get_string()
-    break
     if index > 1:
       break
 
