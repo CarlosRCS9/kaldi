@@ -35,7 +35,7 @@ def main():
         new_segment.set_turn_onset(turn_onset)
         new_segment.set_turn_end(turn_end)
         if new_segment.get_turn_duration() >= args.min_length:
-          new_segment.print_rttm()
+          print(new_segment.get_rttm(), end = '')
         if turn_end >= segment.get_turn_end():
           break
         turn_onset = turn_end - args.overlap
