@@ -100,15 +100,27 @@ class Segment:
 class Scp_file:
   def __init__(self, data):
     if isinstance(data, str):
-      self.data = data.split()
+      self.data           = data.split()
       self.filepath_index = [re.match(r'(\/.*?\.[\w:]+)', string) is not None for string in self.data].index(True)
-      self.file_id = self.data[0]
-      self.filepath = self.data[self.filepath_index]
-      self.format = self.filepath.split('.')[-1]
+      self.file_id        = self.data[0]
+      self.filepath       = self.data[self.filepath_index]
+      self.format         = self.filepath.split('.')[-1]
+    elif isinstance(data, Scp_file):
+      self.data           = data.get_data().copy()
+      self.filepath_index = data.get_filepath_index()
+      self.file_id        = data.get_file_id()
+      self.filepath       = data.get_filepath()
+      self.format         = data.get_format()
+  def get_data(self):
+    return self.data
+  def get_filepath_index(self):
+    return self.filepath_index
   def get_file_id(self):
     return self.file_id
   def get_filepath(self):
     return self.filepath
+  def set_filepath(self, filepath):
+    self.filepath = filepath
   def get_format(self):
     return self.format
   def get_string(self):

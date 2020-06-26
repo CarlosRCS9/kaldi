@@ -12,8 +12,9 @@ import random
 random_seed = 0
 random.seed(random_seed)
 
-from models import read_wav_scp, \
-Segment, \
+from models import Segment, \
+Scp_file, \
+read_wav_scp, \
 sort_segments_by_file_id, \
 get_segments_explicit_overlap, \
 sort_segments_by_speakers, \
@@ -142,7 +143,9 @@ def main():
     for segment in new_segments:
       rttm += segment.get_rttm()
 
-    scp += file_scp.get_string()
+    new_file_scp = Scp_file(file_scp)
+    new_file_scp.set_filepath(filepath)
+    scp += new_file_scp.get_string()
 
   rttm_filepath = output_folder + 'ref_augmented_' + str(random_seed) + '.rttm'
   f = open(rttm_filepath, 'w')
