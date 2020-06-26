@@ -15,6 +15,7 @@ def get_args():
   parser = argparse.ArgumentParser(description='')
   parser.add_argument('wav_scp', type=str, help='')
   parser.add_argument('output_folder', type=str, help='')
+  parser.add_argument('mfcc_conf', type=str, help='')
   parser.add_argument('extractor_model', type=str, help='')
   args = parser.parse_args()
   return args
@@ -54,23 +55,23 @@ def main():
       break
 
   names = re.findall("augmented_\d+", args.wav_scp)
-  new_folder = args.output_folder + (names[0] + '/' if len(names) > 0 else 'exp/')  
-  pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
+  data_folder = args.output_folder + (names[0] + '/' if len(names) > 0 else 'exp/')  
+  pathlib.Path(data_folder).mkdir(parents = True, exist_ok = True)
 
-  f = open(new_folder + 'segments', 'w')
+  f = open(data_folder + 'segments', 'w')
   f.write(segments_data)
   f.close()
-  f = open(new_folder + 'utt2spk', 'w')
+  f = open(data_folder + 'utt2spk', 'w')
   f.write(utt2spk_data)
   f.close()
-  f = open(new_folder + 'spk2utt', 'w')
+  f = open(data_folder + 'spk2utt', 'w')
   f.write(spk2utt_data)
   f.close()
-  f = open(new_folder + 'wav.scp', 'w')
+  f = open(data_folder + 'wav.scp', 'w')
   f.write(wav_scp_data)
   f.close()
 
-  subprocess.run(['./ivector_extract.sh', new_folder, 'conf/mfcc_ivectors_dihard.conf', args.extractor_model])
+  subprocess.run(['./ivector_extract.sh', data_folder, args.mfcc_conf, args.extractor_model])
 
 if __name__ == '__main__':
   main()
