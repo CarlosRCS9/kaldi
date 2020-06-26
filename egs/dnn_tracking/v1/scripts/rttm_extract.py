@@ -18,23 +18,26 @@ def main():
 
   segments_data = ''
   utt2spk_data = ''
+  spk2utt_data = ''
   for index, file_id in enumerate(sorted(files_segments.keys())):
     print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
     file_segments = get_segments_explicit_overlap(files_segments[file_id])
     count = 0
+    spk2utt_data += file_id
     for segment in file_segments:
-      utt = segment.get_file_id() + '_' + str(count)
-      segments_data += \
-      utt + ' ' + \
-      segment.get_file_id() + ' ' + \
+      utt = file_id + '_' + str(count)
+      segments_data += utt + ' ' + file_id + ' ' + \
       str(round(segment.get_turn_onset(), 3)) + ' ' + \
       str(round(segment.get_turn_end(), 3)) + '\n'
-      utt2spk_data += utt + ' ' + segment.get_file_id() + '\n'
+      utt2spk_data += utt + ' ' + file_id + '\n'
+      spk2utt_data += ' ' + utt
       count += 1
-    break
+    spk2utt_data += '\n'
+    if index > 2:
+      break
 
   #print(segments_data, end = '')
-  print(utt2spk_data, end = '')
+  print(spk2utt_data, end = '')
 
 if __name__ == '__main__':
   main()
