@@ -135,7 +135,7 @@ def main():
 
     error = numpy.abs(duration - new_segments[-1].get_turn_end()) 
     if error >= 0.0001:
-      print('WARNING:', new_filepath, 'duration', error, 'misalignment.')
+      print('WARNING:', new_filepath, 'duration misalignment of', error, 's')
 
 if __name__ == '__main__':
   main()
