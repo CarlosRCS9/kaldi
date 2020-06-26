@@ -3,6 +3,8 @@
 # Copyright 2019 Carlos Castillo
 # Apache 2.0.
 
+import sys
+
 from models import Segment, sort_segments_by_file_id
 
 def get_stdin():
