@@ -17,7 +17,8 @@ def main():
   files_segments = sort_segments_by_file_id(segments)
 
   segments_data = ''
-  for file_id in sorted(files_segments.keys()):
+  for index, file_id in enumerate(sorted(files_segments.keys())):
+    print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
     file_segments = get_segments_explicit_overlap(files_segments[file_id])
     count = 0
     for segment in file_segments:
