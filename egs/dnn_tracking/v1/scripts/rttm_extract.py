@@ -72,7 +72,7 @@ def main():
   f.write(wav_scp_data)
   f.close()
 
-  if not args.skit_extractor:
+  if not args.skip_extractor:
     subprocess.run(['./ivector_extract.sh', data_folder, args.mfcc_conf, args.extractor_model])
 
   print('done')
