@@ -18,7 +18,7 @@ def main():
 
   segments_data = ''
   for file_id in sorted(files_segments.keys()):
-    file_segments = files_segments[file_id]
+    file_segments = get_segments_explicit_overlap(files_segments[file_id])
     count = 0
     for segment in file_segments:
       segments_data += \
