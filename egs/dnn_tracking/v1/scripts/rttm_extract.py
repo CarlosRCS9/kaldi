@@ -20,6 +20,7 @@ def get_stdin():
   return sys.stdin
 
 def main():
+  args = get_args()
   stdin = get_stdin()
 
   segments = [Segment(line) for line in stdin]
