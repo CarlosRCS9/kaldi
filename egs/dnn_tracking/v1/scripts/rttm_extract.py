@@ -8,6 +8,7 @@ import sys
 import pathlib
 import shutil
 import re
+import subprocess
 
 from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap
 
@@ -63,6 +64,8 @@ def main():
   f.write(spk2utt_data)
   f.close()
   shutil.copyfile(args.wav_scp, new_folder + 'wav.scp')
+
+  subprocess.run(['./ivector_extract.sh', args.extractor_model, new_folder])
 
 if __name__ == '__main__':
   main()
