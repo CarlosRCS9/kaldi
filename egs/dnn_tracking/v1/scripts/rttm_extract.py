@@ -21,7 +21,9 @@ def main():
     file_segments = files_segments[file_id]
     count = 0
     for segment in file_segments:
-      segments_data += segment.get_file_id() + '_' + count + ' ' + \
+      segments_data += \
+      segment.get_file_id() + '_' + \
+      str(count) + ' ' + \
       segment.get_file_id() + ' ' + \
       str(segment.get_turn_onset()) + ' ' + \
       str(segment.get_turn_end()) + '\n'
