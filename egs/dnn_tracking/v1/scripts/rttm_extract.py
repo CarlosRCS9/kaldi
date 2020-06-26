@@ -50,8 +50,7 @@ def main():
       count += 1
     spk2utt_data += '\n'
     wav_scp_data += file_scp.get_string()
-    if index > 1:
-      break
+    break
 
   names = re.findall("augmented_\d+", args.wav_scp)
   new_folder = args.output_folder + (names[0] + '/' if len(names) > 0 else 'exp/')  
