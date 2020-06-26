@@ -3,9 +3,18 @@
 # Copyright 2019 Carlos Castillo
 # Apache 2.0.
 
+import argparse
 import sys
+from pathlib import Path
 
 from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap
+
+def get_args():
+  parser = argparse.ArgumentParser(description='')
+  parser.add_argument('wav_scp', type=str, help='')
+  parser.add_argument('output_folder', type=str, help='')
+  args = parser.parse_args()
+  return args
 
 def get_stdin():
   return sys.stdin
@@ -36,8 +45,7 @@ def main():
     if index > 1:
       break
 
-  #print(segments_data, end = '')
-  print(spk2utt_data, end = '')
+  Path(arg.output_folder + 'exp').mkdir(parents = True, exist_ok = True)
 
 if __name__ == '__main__':
   main()
