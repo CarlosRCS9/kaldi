@@ -29,7 +29,7 @@ def main():
       str(segment.get_turn_end()) + '\n'
       count += 1
 
-  print(segments_data)
+  print(segments_data, end = '')
 
 if __name__ == '__main__':
   main()
