@@ -31,7 +31,7 @@ if [ $stage -le 2 ]; then
   rm -rf $output_folder/make_ivectors
 
   diarization/extract_ivectors.sh --cmd "$train_cmd --mem 20G" \
-    --nj 40 --window 1.5 --period 0.75 --apply-cmn false \
+    --nj 3 --window 1.5 --period 0.75 --apply-cmn false \
     --min-segment 0.5 \
     $extractor_model \
     $data_folder \
