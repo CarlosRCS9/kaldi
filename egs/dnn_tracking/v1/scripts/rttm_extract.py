@@ -49,6 +49,7 @@ def main():
 
   new_folder = args.output_folder + 'exp/'  
   pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
+
   f = open(new_folder + 'segments', 'w')
   f.write(segments_data)
   f.close()
