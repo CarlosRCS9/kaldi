@@ -38,11 +38,12 @@ def main():
 
   wav_scp = read_wav_scp(args.wav_scp)
   output_folder = args.output_folder
+  rttm = ''
 
   segments = [Segment(line) for line in stdin]
   files_segments = sort_segments_by_file_id(segments)
   for index, file_id in enumerate(sorted(files_segments.keys())):
-    #print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
+    print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
     file_scp = wav_scp[file_id]
     file_segments = files_segments[file_id]
     file_segments = get_segments_explicit_overlap(file_segments, 0.1)
@@ -130,12 +131,20 @@ def main():
 
       options_lengths = [len(option) for option in options]
 
-    new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
-    new_filepath, duration = stitch_trims(trims, new_filepath)
+    filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
+    filepath, duration = stitch_trims(trims, filepath)
 
     error = numpy.abs(duration - new_segments[-1].get_turn_end()) 
     if error >= 0.001:
-      print('WARNING:', new_filepath, 'duration misalignment of', str(error) + 's')
+      print('WARNING:', filepath, 'duration misalignment of', str(error) + 's')
+
+    for segment in new_segments:
+      rttm += segment.get_rttm()
+
+  rttm_filepath = output_folder + 'ref_augmented_' + str(random_seed) + '.rttm'
+  f = open(rttm_filepath, 'w')
+  f.write(rttm)
+  f.close()
 
 if __name__ == '__main__':
   main()
