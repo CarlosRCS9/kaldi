@@ -5,7 +5,7 @@
 
 import sys
 
-from models import Segment, sort_segments_by_file_id
+from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap
 
 def get_stdin():
   return sys.stdin
