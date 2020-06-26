@@ -132,11 +132,10 @@ def main():
 
     new_filepath = output_folder + file_scp.get_file_id() + '_augmented_' + str(random_seed) + '.' + file_scp.get_format()
     new_filepath, duration = stitch_trims(trims, new_filepath)
-    #print(new_filepath, duration)
-    #print(new_segments[-1].get_turn_end())
-    if numpy.abs(duration - new_segments[-1].get_turn_end()) >= 0.001:
-      print('WARNING:', new_filepath, 'real duration - computed duration:', duration - new_segments[-1].get_turn_end())
-      print('real duration:', duration, 'computed duration:', new_segments[-1].get_turn_end())
+
+    error = numpy.abs(duration - new_segments[-1].get_turn_end()) 
+    if error >= 0.0001:
+      print('WARNING:', new_filepath, 'duration', error, 'misalignment.')
 
 if __name__ == '__main__':
   main()
