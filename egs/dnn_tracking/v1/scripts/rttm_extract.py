@@ -47,6 +47,7 @@ def main():
     if index > 1:
       break
 
+  print(args.wav_scp)
   new_folder = args.output_folder + 'exp/'  
   pathlib.Path(new_folder).mkdir(parents = True, exist_ok = True)
 
