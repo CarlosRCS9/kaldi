@@ -32,8 +32,8 @@ def main():
       while True:
         turn_end = turn_onset + args.length if turn_onset + args.length < segment.get_turn_end() else segment.get_turn_end()
         new_segment = Segment(segment)
-        new_segment.update_turn_onset(turn_onset)
-        new_segment.update_turn_end(turn_end)
+        new_segment.set_turn_onset(turn_onset)
+        new_segment.set_turn_end(turn_end)
         if new_segment.get_turn_duration() >= args.min_length:
           new_segment.print_rttm()
         if turn_end >= segment.get_turn_end():
