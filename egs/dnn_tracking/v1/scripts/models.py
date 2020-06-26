@@ -121,6 +121,7 @@ class Scp_file:
     return self.filepath
   def set_filepath(self, filepath):
     self.filepath = filepath
+    self.get_data()[self.get_filepath_index()] = self.get_filepath()
   def get_format(self):
     return self.format
   def get_string(self):
