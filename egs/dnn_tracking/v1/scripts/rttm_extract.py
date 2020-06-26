@@ -18,7 +18,8 @@ def main():
   for file_id in sorted(files_segments.keys()):
     file_segments = files_segments[file_id]
     for segment in file_segments:
-      print(file_id, segment.get_rttm(), end = '')
+      print(file_id)
+      print(segment.get_rttm(), end = '')
 
 if __name__ == '__main__':
   main()
