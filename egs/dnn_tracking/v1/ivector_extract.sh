@@ -35,5 +35,3 @@ if [ $stage -le 2 ]; then
     $data_folder \
     $output_folder/make_ivectors
 fi
-
-cp $output_folder/make_ivectors/ivector.scp $data_folder
