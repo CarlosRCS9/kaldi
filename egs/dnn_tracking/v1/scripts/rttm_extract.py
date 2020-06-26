@@ -12,9 +12,13 @@ def get_stdin():
 
 def main():
   stdin = get_stdin()
+
   segments = [Segment(line) for line in stdin]
-  for segment in segments:
-    print(segment.get_rttm(), end = '')
+  files_segments = sort_segments_by_file_id(segments)
+  for file_id in sorted(files_segments.keys()):
+    file_segments = files_segments[file_id]
+    for segment in file_segments:
+      print(file_id, segment.get_rttm(), end = '')
 
 if __name__ == '__main__':
   main()
