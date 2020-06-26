@@ -22,9 +22,9 @@ def main():
     file_segments = get_segments_explicit_overlap(files_segments[file_id])
     count = 0
     for segment in file_segments:
+      utt = segment.get_file_id() + '_' + str(count)
       segments_data += \
-      segment.get_file_id() + '_' + \
-      str(count) + ' ' + \
+      utt + ' ' + \
       segment.get_file_id() + ' ' + \
       str(round(segment.get_turn_onset(), 3)) + ' ' + \
       str(round(segment.get_turn_end(), 3)) + '\n'
