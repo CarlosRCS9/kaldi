@@ -17,6 +17,7 @@ def get_args():
   parser.add_argument('output_folder', type=str, help='')
   parser.add_argument('mfcc_conf', type=str, help='')
   parser.add_argument('extractor_model', type=str, help='')
+  parser.add_argument('--skip-extractor', type=bool, default=True, help='')
   args = parser.parse_args()
   return args
 
@@ -71,7 +72,10 @@ def main():
   f.write(wav_scp_data)
   f.close()
 
-  subprocess.run(['./ivector_extract.sh', data_folder, args.mfcc_conf, args.extractor_model])
+  if not args.skit_extractor:
+    subprocess.run(['./ivector_extract.sh', data_folder, args.mfcc_conf, args.extractor_model])
+
+  print('done')
 
 if __name__ == '__main__':
   main()
