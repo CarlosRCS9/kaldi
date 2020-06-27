@@ -9,9 +9,6 @@ import itertools
 import numpy
 import random
 
-random_seed = 0
-random.seed(random_seed)
-
 from models import Segment, \
 Scp_file, \
 read_wav_scp, \
@@ -27,6 +24,7 @@ def get_args():
   parser = argparse.ArgumentParser(description='')
   parser.add_argument('wav_scp', type=str, help='')
   parser.add_argument('output_folder', type=str, help='')
+  parser.add_argument('--random-seed', type=int, default=0, help='')
   args = parser.parse_args()
   return args
 
@@ -36,6 +34,9 @@ def get_stdin():
 def main():
   args = get_args()
   stdin = get_stdin()
+
+  random_seed = args.random_seed
+  random.seed(random_seed)
 
   wav_scp = read_wav_scp(args.wav_scp)
   output_folder = args.output_folder
