@@ -38,14 +38,24 @@ if [ $stage -le 1 ]; then
 fi
 
 # Applying a sliding window to the segments.
-if [ $stage -le 2 ]; then
-  echo run.sh stage 2
+if [ $stage -le 1 ]; then
+  echo run.sh stage 1
   for name in development evaluation; do
     cat $output_folder$name/ref_augmented_$random_seed.rttm \
-    | python3 scripts/rttm_extract.py \
-    $output_folder$name/wav_augmented_$random_seed.scp \
-    $output_folder$name/ \
-    $mfcc_conf \
-    $extractor_model
+    | python3 scripts/rttm_split.py $length $overlap --min-length=$min-length \
+    > $output_folder$name/ref_augmented_$random_seed_$length_$overlap_$min-length.rttm
   done
 fi
+
+# Extracting features
+# if [ $stage -le 3 ]; then
+#   echo run.sh stage 3
+#   for name in development evaluation; do
+#     cat $output_folder$name/ref_augmented_$random_seed.rttm \
+#     | python3 scripts/rttm_extract.py \
+#     $output_folder$name/wav_augmented_$random_seed.scp \
+#     $output_folder$name/ \
+#     $mfcc_conf \
+#     $extractor_model
+#   done
+# fi
