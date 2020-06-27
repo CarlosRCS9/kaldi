@@ -18,6 +18,8 @@ fi
 
 if [ $stage -le 1 ]; then
   for name in development evaluation; do
-    cat $data_folder$name/ref_explicit_overlap.rttm | python3 scripts/rttm_augment.py
+    cat $data_folder$name/ref_explicit_overlap.rttm | python3 scripts/rttm_augment.py \
+    $data_folder$name/wav.scp \
+    $output_folder$name
   done
 fi
