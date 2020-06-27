@@ -35,6 +35,6 @@ fi
 if [ $stage -le 2 ]; then
   echo run.sh stage 2
   for name in development evaluation; do
-
+    echo done
   done
 fi
