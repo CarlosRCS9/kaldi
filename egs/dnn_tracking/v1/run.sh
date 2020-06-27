@@ -2,6 +2,8 @@
 # Copyright 2020 Carlos Castillo
 # Apache 2.0.
 
+. ./path.sh
+
 data_folder=data/dihardii/
 output_folder=/export/b03/carlosc/data/2020/augmented/dihardii/
 mfcc_conf=conf/mfcc_ivectors_dihard.conf
