@@ -6,7 +6,7 @@ random_seed=1
 data_folder=data/dihardii/
 output_folder=/export/b03/carlosc/data/2020/augmented/dihardii/
 
-stage=1
+stage=0
 
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
@@ -26,7 +26,7 @@ if [ $stage -le 1 ]; then
     cat $data_folder$name/ref_explicit_overlap.rttm \
     | python3 scripts/rttm_augment.py \
     $data_folder$name/wav.scp \
-    $output_folder$name \
+    $output_folder$name/ \
     --random-seed=$random_seed
   done
 fi
