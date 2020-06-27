@@ -7,12 +7,6 @@ output_folder=/export/b03/carlosc/data/2020/augmented/dihardii/
 
 stage=0
 
-timestamp() {
-  date +"%Y%m%d_%H%M%S"
-}
-
-echo $timestamp
-
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
 if [ $stage -le 0 ]; then
@@ -33,4 +27,3 @@ if [ $stage -le 1 ]; then
   done
 fi
 
-echo $timestamp
