@@ -39,6 +39,7 @@ fi
 if [ $stage -le 2 ]; then
   echo run.sh stage 2
   for name in development evaluation; do
-    cat $output_folder$name/wav_augmented_$random_seed.scp
+    cat $output_folder$name/ref_augmented_$random_seed.rttm
+    #cat $output_folder$name/wav_augmented_$random_seed.scp
   done
 fi
