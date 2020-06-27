@@ -10,7 +10,7 @@ length=1.5
 overlap=0.5
 min_length=0.5
 
-stage=0
+stage=2
 
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
@@ -39,6 +39,6 @@ fi
 if [ $stage -le 2 ]; then
   echo run.sh stage 2
   for name in development evaluation; do
-    cat $data_folder$name/wav_augmented_$random_seed.scp
+    cat $output_folder$name/wav_augmented_$random_seed.scp
   done
 fi
