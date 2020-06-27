@@ -12,7 +12,7 @@ length=1.5
 overlap=0.5
 min_length=0.5
 
-stage=2
+stage=3
 
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
@@ -48,14 +48,14 @@ if [ $stage -le 2 ]; then
 fi
 
 # Extracting features
-# if [ $stage -le 3 ]; then
-#   echo run.sh stage 3
-#   for name in development evaluation; do
-#     cat $output_folder$name/ref_augmented_$random_seed.rttm \
-#     | python3 scripts/rttm_extract.py \
-#     $output_folder$name/wav_augmented_$random_seed.scp \
-#     $output_folder$name/ \
-#     $mfcc_conf \
-#     $extractor_model
-#   done
-# fi
+if [ $stage -le 3 ]; then
+  echo run.sh stage 3
+  for name in development evaluation; do
+    cat $output_folder$name/ref_augmented_$random_seed'_'$length'_'$overlap'_'$min_length.rttm \
+    | python3 scripts/rttm_extract.py \
+    $output_folder$name/wav_augmented_$random_seed.scp \
+    $output_folder$name/ \
+    $mfcc_conf \
+    $extractor_model
+  done
+fi
