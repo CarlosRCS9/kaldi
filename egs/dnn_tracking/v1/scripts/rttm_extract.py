@@ -73,7 +73,5 @@ def main():
   if not args.skip_extractor:
     subprocess.run(['./ivector_extract.sh', data_folder, args.mfcc_conf, args.extractor_model])
 
-  print('output_folder:', data_folder)
-
 if __name__ == '__main__':
   main()
