@@ -42,8 +42,8 @@ if [ $stage -le 2 ]; then
   echo run.sh stage 2
   for name in development evaluation; do
     cat $output_folder$name/ref_augmented_$random_seed.rttm \
-    | python3 scripts/rttm_split.py $length $overlap --min-length=$min-length \
-    > $output_folder$name/ref_augmented_$random_seed_$length_$overlap_$min-length.rttm
+    | python3 scripts/rttm_split.py $length $overlap --min-length=$min_length \
+    > $output_folder$name/ref_augmented_$random_seed_$length_$overlap_$min_length.rttm
   done
 fi
 
