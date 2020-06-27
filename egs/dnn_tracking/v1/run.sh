@@ -6,7 +6,7 @@ random_seed=1
 data_folder=data/dihardii/
 output_folder=/export/b03/carlosc/data/2020/augmented/dihardii/
 
-stage=2
+stage=1
 
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
