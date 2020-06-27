@@ -7,12 +7,12 @@ output_folder=/export/b03/carlosc/data/2020/augmented/dihardii/
 mfcc_conf=conf/mfcc_ivectors_dihard.conf
 extractor_model=/export/c03/carloscastillo/repos/kaldi_fix/egs/online_diarization/v1/exp/extractor_c2048_i400/extractor_c2048_i400
 
-random_seed=1
+random_seed=0
 length=1.5
 overlap=0.5
 min_length=0.5
 
-stage=3
+stage=0
 
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
