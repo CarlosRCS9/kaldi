@@ -2,9 +2,13 @@
 # Copyright 2020 Carlos Castillo
 # Apache 2.0.
 
-random_seed=1
 data_folder=data/dihardii/
 output_folder=/export/b03/carlosc/data/2020/augmented/dihardii/
+
+random_seed=1
+length=1.5
+overlap=0.5
+min_length=0.5
 
 stage=0
 
@@ -35,6 +39,6 @@ fi
 if [ $stage -le 2 ]; then
   echo run.sh stage 2
   for name in development evaluation; do
-    echo done
+    cat $data_folder$name/wav_augmented_$random_seed.scp
   done
 fi
