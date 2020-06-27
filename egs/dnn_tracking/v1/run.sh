@@ -38,8 +38,8 @@ if [ $stage -le 1 ]; then
 fi
 
 # Applying a sliding window to the segments.
-if [ $stage -le 1 ]; then
-  echo run.sh stage 1
+if [ $stage -le 2 ]; then
+  echo run.sh stage 2
   for name in development evaluation; do
     cat $output_folder$name/ref_augmented_$random_seed.rttm \
     | python3 scripts/rttm_split.py $length $overlap --min-length=$min-length \
