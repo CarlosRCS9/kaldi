@@ -10,7 +10,7 @@ stage=0
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
 if [ $stage -le 0 ]; then
-  echo stage $stage
+  echo run.sh stage $stage
   for name in development evaluation; do
     cat $data_folder$name/ref.rttm \
     | python3 scripts/rttm_explicit_overlap.py \
@@ -20,7 +20,7 @@ fi
 
 # Generating overlapping speech to augment the database.
 if [ $stage -le 1 ]; then
-  echo stage $stage
+  echo run.sh stage $stage
   for name in development evaluation; do
     cat $data_folder$name/ref_explicit_overlap.rttm \
     | python3 scripts/rttm_augment.py \
