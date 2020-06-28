@@ -43,6 +43,7 @@ def main():
     count = 0
     spk2utt_data += file_id
     for segment in file_segments:
+      print(segment.get_turn_length())
       utt = file_id + '_' + str(count).zfill(5)
       segments_data += utt + ' ' + file_id + ' ' + \
       str(round(segment.get_turn_onset(), 3)) + ' ' + \
