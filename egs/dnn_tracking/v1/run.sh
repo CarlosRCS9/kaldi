@@ -59,7 +59,7 @@ if [ $stage -le 3 ]; then
     $output_folder$name/ \
     $mfcc_conf \
     $extractor_model \
-    --split-extractor=True
+    --skip-extractor=True
   done
 fi
 
