@@ -9,7 +9,7 @@ import pathlib
 import re
 import subprocess
 
-from models import Segment, sort_segments_by_file_id, get_segments_explicit_overlap, read_wav_scp
+from models import Segment, sort_segments_by_file_id, get_segments_union, read_wav_scp
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -38,7 +38,7 @@ def main():
   wav_scp_data = ''
   for index, file_id in enumerate(sorted(files_segments.keys())):
     print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
-    file_segments = get_segments_explicit_overlap(files_segments[file_id])
+    file_segments = get_segments_union(files_segments[file_id])
     file_scp = wav_scp[file_id]
     count = 0
     spk2utt_data += file_id

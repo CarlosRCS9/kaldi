@@ -153,6 +153,19 @@ def get_segments_explicit_overlap(segments, min_length = 0.0005):
         new_segments.append(new_segment)
   return new_segments
 
+# segments should be ordered
+def get_segments_union(segments, min_length = 0.0005):
+  new_segments = []
+  for segment in segments:
+    if segment.get_turn_duration() > min_length:
+      if len(new_segments) > 0 and \
+      new_segments[-1].get_turn_onset() == segment.get_turn_onset() and \
+      new_segments[-1].get_turn_duration() == segment.get_turn_duration():
+        new_segments[-1].add_speakers(segment.get_speakers())
+      else:
+        new_segments.append(Segment(segment))
+  return new_segments 
+
 def reduce_scp_by_file_id(accumulator, scp_file):
   if scp_file.get_file_id() not in accumulator:
     accumulator[scp_file.get_file_id()] = scp_file
