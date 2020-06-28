@@ -58,8 +58,7 @@ if [ $stage -le 3 ]; then
     $output_folder$name/wav_augmented_$random_seed.scp \
     $output_folder$name/ \
     $mfcc_conf \
-    $extractor_model \
-    --skip-extractor=True
+    $extractor_model
   done
 fi
 
