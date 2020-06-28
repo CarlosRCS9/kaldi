@@ -39,11 +39,11 @@ def main():
   for index, file_id in enumerate(sorted(files_segments.keys())):
     print(index + 1, '/', len(files_segments.keys()), file_id, end = '\r')
     file_segments = get_segments_union(files_segments[file_id])
+    print('original:', len(files_segments[file_id], 'union:', len(file_segments)))
     file_scp = wav_scp[file_id]
     count = 0
     spk2utt_data += file_id
     for segment in file_segments:
-      print(segment.get_turn_duration())
       utt = file_id + '_' + str(count).zfill(5)
       segments_data += utt + ' ' + file_id + ' ' + \
       str(round(segment.get_turn_onset(), 3)) + ' ' + \
