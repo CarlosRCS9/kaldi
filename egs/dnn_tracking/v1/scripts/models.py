@@ -28,6 +28,8 @@ class Speaker:
     return self.get_name() == speaker.get_name() and \
     self.get_channel_id() == speaker.get_channel_id() and \
     self.get_type() == speaker.get_type()
+  def __str__(self):
+    return str(self.__class__) + ": " + str(self.__dict__)
 
 class Segment:
   def __init__(self, data):
@@ -41,6 +43,7 @@ class Segment:
       self.speakers              = [Speaker([data[2], data[6], data[7]])]
       self.confidence_score      = data[8]
       self.signal_lookahead_time = data[9]
+      self.utterance_id          = None
     elif isinstance(data, Segment):
       self.type                  = data.get_type()
       self.file_id               = data.get_file_id()
@@ -50,6 +53,7 @@ class Segment:
       self.speakers              = [Speaker(speaker) for speaker in data.get_speakers()]
       self.confidence_score      = data.get_confidence_score()
       self.signal_lookahead_time = data.get_signal_lookahead_time()
+      self.utterance_id          = data.get_utterance_id()
   def get_type(self):
     return self.type
   def get_file_id(self):
@@ -80,6 +84,10 @@ class Segment:
     return self.confidence_score
   def get_signal_lookahead_time(self):
     return self.signal_lookahead_time
+  def get_utterance_id(self):
+    return self.utterance_id
+  def set_utterance_id(self, utterance_id):
+    self.utterance_id = utterance_id
   def get_rttm(self):
     output = ''
     for speaker in self.get_speakers():
@@ -96,6 +104,8 @@ class Segment:
     return output
   def has_timestamps_overlap(self, turn_onset, turn_end):
     return not (turn_end <= self.get_turn_onset() or self.get_turn_end() <= turn_onset)
+  def __str__(self):
+    return str(self.__class__) + ": " + str(self.__dict__)
 
 class Scp_file:
   def __init__(self, data):
@@ -129,6 +139,25 @@ class Scp_file:
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
 
+class Utterance_turn:
+  def __init__(self, data):
+    if isinstance(data, str):
+      data = data.split()
+      self.utterance_id = data[0]
+      self.file_id = data[1]
+      self.turn_onset = numpy.float32(data[2])
+      self.turn_end = numpy.float32(data[3])
+  def get_utterance_id(self):
+    return self.utterance_id
+  def get_file_id(self):
+    return self.file_id
+  def get_turn_onset(self):
+    return self.turn_onset
+  def get_turn_end(self):
+    return self.turn_end
+  def __str__(self):
+    return str(self.__class__) + ": " + str(self.__dict__)
+
 def reduce_segments_by_file_id(accumulator, segment):
   if segment.get_file_id() not in accumulator:
     accumulator[segment.get_file_id()] = []
@@ -137,6 +166,15 @@ def reduce_segments_by_file_id(accumulator, segment):
 
 def sort_segments_by_file_id(segments):
   return functools.reduce(reduce_segments_by_file_id, segments, {})
+
+def reduce_utterances_turns_by_file_id(accumulator, utterance_turn):
+  if utterance_turn.get_file_id() not in accumulator:
+    accumulator[utterance_turn.get_file_id()] = []
+  accumulator[utterance_turn.get_file_id()].append(utterance_turn)
+  return accumulator
+
+def sort_utterances_turns_by_file_id(utterances_turns):
+  return functools.reduce(reduce_utterances_turns_by_file_id, utterances_turns, {})
 
 def get_segments_explicit_overlap(segments, min_length = 0.0005):
   new_segments = []
@@ -153,18 +191,21 @@ def get_segments_explicit_overlap(segments, min_length = 0.0005):
         new_segments.append(new_segment)
   return new_segments
 
-# segments should be ordered
 def get_segments_union(segments, min_length = 0.0005):
+  original_segments = segments.copy()
   new_segments = []
-  for segment in segments:
+  while len(original_segments) > 0:
+    segment = original_segments.pop(0)
     if segment.get_turn_duration() > min_length:
-      if len(new_segments) > 0 and \
-      new_segments[-1].get_turn_onset() == segment.get_turn_onset() and \
-      new_segments[-1].get_turn_duration() == segment.get_turn_duration():
-        new_segments[-1].add_speakers(segment.get_speakers())
-      else:
-        new_segments.append(Segment(segment))
-  return new_segments 
+      new_segment = Segment(segment)
+      indexes = [index for index, segment in enumerate(original_segments) if \
+      new_segment.get_turn_onset() == segment.get_turn_onset() and \
+      segment.get_turn_duration() == segment.get_turn_duration()]
+      for index in indexes:
+        segment = original_segments.pop(index)
+        new_segment.add_speakers(segment.get_speakers())
+      new_segments.append(new_segment)
+  return new_segments
 
 def reduce_scp_by_file_id(accumulator, scp_file):
   if scp_file.get_file_id() not in accumulator:
