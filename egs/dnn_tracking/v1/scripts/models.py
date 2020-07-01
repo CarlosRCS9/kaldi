@@ -201,7 +201,7 @@ def get_segments_union(segments, min_length = 0.0005):
       indexes = [index for index, segment in enumerate(original_segments) if \
       new_segment.get_turn_onset() == segment.get_turn_onset() and \
       segment.get_turn_duration() == segment.get_turn_duration()]
-      indexes = [value - index for index, value enumerate(indexes)]
+      indexes = [value - index for index, value in enumerate(indexes)]
       for index in indexes:
         segment = original_segments.pop(index)
         new_segment.add_speakers(segment.get_speakers())
