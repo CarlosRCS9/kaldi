@@ -6,6 +6,7 @@
 import argparse
 
 from models import Segment, \
+Ivector, \
 sort_segments_by_file_id, \
 Utterance_turn, \
 sort_utterances_turns_by_file_id, \
@@ -15,6 +16,7 @@ def get_args():
   parser = argparse.ArgumentParser(description='')
   parser.add_argument('rttm', type=str, help='')
   parser.add_argument('segments', type=str, help='')
+  parser.add_argument('ivectors', type=str, help='')
   args = parser.parse_args()
   return args
 
@@ -35,10 +37,13 @@ def main():
     file_segments = get_segments_union(files_segments[file_id])
     file_utterances_turns = files_utterances_turns[file_id]
     for segment in file_segments:
-      segment_utterances_turns = list(filter(lambda utterance_turn: segment.get_turn_onset() == utterance_turn.get_turn_onset(), file_utterances_turns))
-      print(segment.get_rttm(), end = '')
-      for utterance_turn in segment_utterances_turns:
-        print(utterance_turn)
+      indexes = [index for index, utterance_turn in enumerate(file_utterances_turns) if\
+      segment.get_turn_onset() == utterance_turn.get_turn_onset()]
+      if len(indexes) == 1:
+        utterance_turn = file_utterances_turns.pop(indexes[0])
+        segment.set_ivectors([Ivector([args.ivectors, utterance_turn.get_utterance_id()])])
+      else:
+        print('WARNING: missing utterance_turn for segment.')
 
 if __name__ == '__main__':
   main()

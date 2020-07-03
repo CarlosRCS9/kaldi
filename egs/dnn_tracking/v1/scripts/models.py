@@ -7,6 +7,17 @@ import numpy
 import functools
 import itertools
 import re
+import subprocess
+
+def grep(string, filepath):
+  bin = 'grep'
+  p = subprocess.Popen([bin, string, filepath], stdout=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc == 0:
+    return output.decode("utf-8").split('\n')[:-1]
+  else:
+    exit('grep fail.')
 
 class Speaker:
   def __init__(self, data):
@@ -31,6 +42,27 @@ class Speaker:
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
 
+class Ivector:
+  def __init__(self, data):
+    if isinstance(data, list):
+      self.filepath     = data[0]
+      self.utterance_id = data[1]
+      self.value        = None
+    elif isinstance(data, Ivector):
+      self.filepath     = data.get_filepath()
+      self.utterance_id = data.get_utterance_id()
+      self.value        = data.get_value().copy()
+  def get_filepath(self):
+    return self.filepath
+  def get_utterance_id(self):
+    return self.utterance_id
+  def get_value(self):
+    if self.value is None:
+      self.set_value(numpy.array(re.findall('\[.+\]', grep(self.get_utterance_id(), self.get_filepath())[0])[0][2:-2].split(' ')).astype(numpy.float32))
+    return self.value
+  def set_value(self, value):
+    self.value = value
+
 class Segment:
   def __init__(self, data):
     if isinstance(data, str):
@@ -43,7 +75,7 @@ class Segment:
       self.speakers              = [Speaker([data[2], data[6], data[7]])]
       self.confidence_score      = data[8]
       self.signal_lookahead_time = data[9]
-      self.utterance_id          = None
+      self.ivectors              = []
     elif isinstance(data, Segment):
       self.type                  = data.get_type()
       self.file_id               = data.get_file_id()
@@ -53,7 +85,7 @@ class Segment:
       self.speakers              = [Speaker(speaker) for speaker in data.get_speakers()]
       self.confidence_score      = data.get_confidence_score()
       self.signal_lookahead_time = data.get_signal_lookahead_time()
-      self.utterance_id          = data.get_utterance_id()
+      self.ivectors              = [Ivector(ivector) for ivector in data.get_ivectors()]
   def get_type(self):
     return self.type
   def get_file_id(self):
@@ -84,10 +116,10 @@ class Segment:
     return self.confidence_score
   def get_signal_lookahead_time(self):
     return self.signal_lookahead_time
-  def get_utterance_id(self):
-    return self.utterance_id
-  def set_utterance_id(self, utterance_id):
-    self.utterance_id = utterance_id
+  def get_ivectors(self):
+    return self.ivectors;
+  def set_ivectors(self, ivectors):
+    self.ivectors = ivectors
   def get_rttm(self):
     output = ''
     for speaker in self.get_speakers():
