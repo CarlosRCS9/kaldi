@@ -271,3 +271,27 @@ def filter_by_speakers_length(speakers_segments, length):
     if len(speakers_names.split(',')) == length:
       new_speakers_segments[speakers_names] = speakers_segments[speakers_names]
   return new_speakers_segments
+
+def get_rttm_segments_features(rttm_filepath, segments_filepath, ivectors_filepath):
+  f = open(rttm_filepath, 'r')
+  segments = [Segment(line) for line in f.readlines()]
+  f.close()
+  files_segments = sort_segments_by_file_id(segments)
+
+  f = open(segments_filepath, 'r')
+  utterances_turns = [Utterance_turn(line) for line in f.readlines()]
+  f.close()
+  files_utterances_turns = sort_utterances_turns_by_file_id(utterances_turns)
+
+  for file_id in sorted(files_segments.keys()):
+    file_segments = get_segments_union(files_segments[file_id])
+    file_utterances_turns = files_utterances_turns[file_id]
+    for segment in file_segments:
+      indexes = [index for index, utterance_turn in enumerate(file_utterances_turns) if\
+      segment.get_turn_onset() == utterance_turn.get_turn_onset()]
+      if len(indexes) == 1:
+        utterance_turn = file_utterances_turns.pop(indexes[0])
+        segment.set_ivectors([Ivector([ivectors_filepath, utterance_turn.get_utterance_id()])])
+    files_segments[file_id] = file_segments
+
+  return files_segments
