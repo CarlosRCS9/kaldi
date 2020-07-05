@@ -7,17 +7,6 @@ import numpy
 import functools
 import itertools
 import re
-import subprocess
-
-def grep(string, filepath):
-  bin = 'grep'
-  p = subprocess.Popen([bin, string, filepath], stdout=subprocess.PIPE)
-  output, err = p.communicate()
-  rc = p.returncode
-  if rc == 0:
-    return output.decode("utf-8").split('\n')[:-1]
-  else:
-    exit('grep fail.')
 
 class Speaker:
   def __init__(self, data):
@@ -44,21 +33,19 @@ class Speaker:
 
 class Ivector:
   def __init__(self, data):
-    if isinstance(data, list):
-      self.filepath     = data[0]
-      self.utterance_id = data[1]
-      self.value        = None
+    if isinstance(data, str):
+      data = data.split('  [ ')
+      self.utterance_id = data[0].split('-')[0]
+      self.value        = numpy.array(data[1][:-3].split(' ')).astype(numpy.float32)
     elif isinstance(data, Ivector):
-      self.filepath     = data.get_filepath()
       self.utterance_id = data.get_utterance_id()
       self.value        = data.get_value().copy()
-  def get_filepath(self):
-    return self.filepath
+    elif isinstance(data, numpy.ndarray):
+      self.utterance_id = None
+      self.value        = data
   def get_utterance_id(self):
     return self.utterance_id
   def get_value(self):
-    if self.value is None:
-      self.set_value(numpy.array(re.findall('\[.+\]', grep(self.get_utterance_id(), self.get_filepath())[0])[0][2:-2].split(' ')).astype(numpy.float32))
     return self.value
   def set_value(self, value):
     self.value = value
@@ -199,15 +186,6 @@ def reduce_segments_by_file_id(accumulator, segment):
 def sort_segments_by_file_id(segments):
   return functools.reduce(reduce_segments_by_file_id, segments, {})
 
-def reduce_utterances_turns_by_file_id(accumulator, utterance_turn):
-  if utterance_turn.get_file_id() not in accumulator:
-    accumulator[utterance_turn.get_file_id()] = []
-  accumulator[utterance_turn.get_file_id()].append(utterance_turn)
-  return accumulator
-
-def sort_utterances_turns_by_file_id(utterances_turns):
-  return functools.reduce(reduce_utterances_turns_by_file_id, utterances_turns, {})
-
 def get_segments_explicit_overlap(segments, min_length = 0.0005):
   new_segments = []
   timestamps = sorted(set(itertools.chain(*[[segment.get_turn_onset(), segment.get_turn_end()] for segment in segments])))
@@ -278,20 +256,27 @@ def get_rttm_segments_features(rttm_filepath, segments_filepath, ivectors_filepa
   f.close()
   files_segments = sort_segments_by_file_id(segments)
 
+  utterances_turns_dict = {}
   f = open(segments_filepath, 'r')
-  utterances_turns = [Utterance_turn(line) for line in f.readlines()]
+  for line in f.readlines():
+    utterance_turn = Utterance_turn(line)
+    if utterance_turn.get_file_id() not in utterances_turns_dict:
+      utterances_turns_dict[utterance_turn.get_file_id()] = {}
+    utterances_turns_dict[utterance_turn.get_file_id()][utterance_turn.get_turn_onset()] = utterance_turn.get_utterance_id()
   f.close()
-  files_utterances_turns = sort_utterances_turns_by_file_id(utterances_turns)
 
-  for file_id in sorted(files_segments.keys()):
-    file_segments = get_segments_union(files_segments[file_id])
-    file_utterances_turns = files_utterances_turns[file_id]
-    for segment in file_segments:
-      indexes = [index for index, utterance_turn in enumerate(file_utterances_turns) if\
-      segment.get_turn_onset() == utterance_turn.get_turn_onset()]
-      if len(indexes) == 1:
-        utterance_turn = file_utterances_turns.pop(indexes[0])
-        segment.set_ivectors([Ivector([ivectors_filepath, utterance_turn.get_utterance_id()])])
-    files_segments[file_id] = file_segments
+  ivectors_dict = {}
+  f = open(ivectors_filepath, 'r')
+  for line in f.readlines():
+    ivector = Ivector(line)
+    ivectors_dict[ivector.get_utterance_id()] = ivector
+  f.close()
+
+  for file_id, segments in files_segments.items():
+    segments = get_segments_union(segments)
+    for segment in segments:
+      ivector = ivectors_dict[utterances_turns_dict[file_id][segment.get_turn_onset()]]
+      segment.set_ivectors([ivector])
+    files_segments[file_id] = segments
 
   return files_segments
