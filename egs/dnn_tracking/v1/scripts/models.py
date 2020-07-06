@@ -43,6 +43,10 @@ class Ivector:
     elif isinstance(data, numpy.ndarray):
       self.utterance_id = None
       self.value        = data
+    else:
+      print('Ivector: unknown data type.')
+      self.utterance_id = None
+      self.value        = None
   def get_utterance_id(self):
     return self.utterance_id
   def get_value(self):

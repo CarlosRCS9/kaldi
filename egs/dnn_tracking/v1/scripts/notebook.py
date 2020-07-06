@@ -5,6 +5,7 @@
 
 import functools
 import numpy
+import itertools
 
 from scripts.models import Ivector
 
@@ -50,3 +51,11 @@ def get_speakers_models(segments, speakers_segments_indexes, models_generation_l
       model_ivectors = [Ivector(numpy.sum(ivectors, 0) / len(ivectors)) for ivectors in model_ivectors]
       speakers_models[speakers_names][model_generation_length]['ivectors'] = model_ivectors
   return speakers_models
+
+def get_speakers_permutations(speakers_models, length, include_zeros = True, include_overlaps = False):
+    speakers_names = [speakers_names for speakers_names in speakers_models.keys() if include_overlaps\
+                      or len(speakers_names.split(',')) == 1]
+    if len(speakers_names) == 0:
+        print('ERROR: no speakers left.')
+    speakers_names += ['0' for _ in range(length)] if include_zeros or len(speakers_names) < length else []
+    return sorted(set(itertools.permutations(speakers_names, length)))
