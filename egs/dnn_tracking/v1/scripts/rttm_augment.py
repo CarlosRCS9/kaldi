@@ -77,7 +77,7 @@ def main():
       filepath = output_folder + file_scp.get_file_id() + '_'.join([''] + combination) + '.' + file_scp.get_format()
       min_duration = min(durations)
       filepath, duration = mix_files(filepaths, min_duration, filepath)
-      
+
       segments = list(itertools.chain(*[single_speakers_files[speaker_name]['segments'] for speaker_name in combination]))
       segments = get_segments_explicit_overlap(segments)
       segments = list(filter(lambda segment: segment.get_turn_end() - duration < 0.001, segments))
