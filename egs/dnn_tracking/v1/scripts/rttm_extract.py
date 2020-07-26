@@ -54,7 +54,8 @@ def main():
     wav_scp_data += file_scp.get_string()
 
   names = re.findall("augmented_\d+", args.wav_scp)
-  data_folder = args.output_folder + (names[0] + '/' if len(names) > 0 else 'exp/')  
+  #data_folder = args.output_folder + (names[0] + '/' if len(names) > 0 else 'exp/')
+  data_folder = args.output_folder
   pathlib.Path(data_folder).mkdir(parents = True, exist_ok = True)
 
   f = open(data_folder + 'segments', 'w')
