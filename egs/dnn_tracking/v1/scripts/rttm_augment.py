@@ -108,7 +108,7 @@ def main():
       options_indexes = list(itertools.chain(*[[index] * len(option) for index, option in enumerate(options)]))
       option_index = random.choice(options_indexes)
       option = options[option_index].pop(0)
-      
+
       new_turn_onset = new_segments[-1].get_turn_end() if len(new_segments) > 0 else 0
       if option_index == 0:
         filepath = file_scp.get_filepath()

@@ -90,6 +90,7 @@ venv/
 /egs/*/*/RIRS_NOISES/
 /egs/*/*/notebooks/batch
 /egs/*/*/data2
+/egs/*/*/augmented
  
 # /tools/
 /tools/pocolm/
