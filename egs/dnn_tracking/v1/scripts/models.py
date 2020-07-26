@@ -285,3 +285,28 @@ def get_rttm_segments_features(rttm_filepath, segments_filepath, ivectors_filepa
     files_segments[file_id] = segments
 
   return files_segments
+
+def test_rttm_segments(rttm_filepath, segments_filepath):
+  f = open(rttm_filepath, 'r')
+  segments = [Segment(line) for line in f.readlines()]
+  f.close()
+  files_segments = sort_segments_by_file_id(segments)
+
+  utterances_turns_dict = {}
+  f = open(segments_filepath, 'r')
+  for line in f.readlines():
+    utterance_turn = Utterance_turn(line)
+    if utterance_turn.get_file_id() not in utterances_turns_dict:
+      utterances_turns_dict[utterance_turn.get_file_id()] = {}
+    utterances_turns_dict[utterance_turn.get_file_id()][utterance_turn.get_turn_onset()] = utterance_turn.get_utterance_id()
+  f.close()
+
+  for file_id, segments in files_segments.items():
+    print(file_id, end = '\r')
+    segments = get_segments_union(segments)
+    for segment in segments:
+      ivector = utterances_turns_dict[file_id][segment.get_turn_onset()] 
+      segment.set_ivectors([ivector])
+    files_segments[file_id] = segments
+
+  return files_segments
