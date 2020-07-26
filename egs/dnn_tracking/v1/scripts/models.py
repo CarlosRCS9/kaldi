@@ -279,7 +279,7 @@ def get_rttm_segments_features(rttm_filepath, segments_filepath, ivectors_filepa
   for file_id, segments in files_segments.items():
     segments = get_segments_union(segments)
     for segment in segments:
-      print(file_id, segment.get_turn_onset())
+      #print(file_id, segment.get_turn_onset())
       ivector = ivectors_dict[utterances_turns_dict[file_id][segment.get_turn_onset()]]
       segment.set_ivectors([ivector])
     files_segments[file_id] = segments
