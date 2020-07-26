@@ -16,7 +16,7 @@ mfccdir=`pwd`/mfcc
 vaddir=`pwd`/mfcc
 data_root=/export/corpora5/LDC
 num_components=2048
-ivector_dim=128
+ivector_dim=400
 stage=0
 
 # Prepare datasets
@@ -36,7 +36,7 @@ if [ $stage -le 0 ]; then
                              data/swbd_cellular2_train
 
   # Prepare the Callhome portion of NIST SRE 2000.
-  local/make_callhome.sh /export/corpora/NIST/LDC2001S97/ data/
+  local/make_callhome.sh /export/corpora5/LDC/LDC2001S97/ data/
 
   utils/combine_data.sh data/train \
     data/swbd_cellular1_train data/swbd_cellular2_train \

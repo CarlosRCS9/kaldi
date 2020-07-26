@@ -17,10 +17,10 @@ set -e
 mfccdir=`pwd`/mfcc
 vaddir=`pwd`/mfcc
 data_root=/export/corpora5/LDC
-stage=0
+stage=13
 nnet_dir=exp/xvector_nnet_1a/
 num_components=1024 # the number of UBM components (used for VB resegmentation)
-ivector_dim=400 # the dimension of i-vector (used for VB resegmentation)
+ivector_dim=128 # the dimension of i-vector (used for VB resegmentation)
 
 # Prepare datasets
 if [ $stage -le 0 ]; then
@@ -29,7 +29,7 @@ if [ $stage -le 0 ]; then
   local/make_sre.sh $data_root data
 
   # Prepare SWB for x-vector DNN training.
-  local/make_swbd2_phase1.pl /export/corpora/LDC/LDC98S75 \
+  local/make_swbd2_phase1.pl /export/corpora3/LDC/LDC98S75 \
     data/swbd2_phase1_train
   local/make_swbd2_phase2.pl $data_root/LDC99S79 \
                            data/swbd2_phase2_train
@@ -41,7 +41,7 @@ if [ $stage -le 0 ]; then
                              data/swbd_cellular2_train
 
   # Prepare the Callhome portion of NIST SRE 2000.
-  local/make_callhome.sh /export/corpora/NIST/LDC2001S97/ data/
+  local/make_callhome.sh /export/corpora5/LDC/LDC2001S97/ data/
 
   utils/combine_data.sh data/train \
     data/swbd_cellular1_train data/swbd_cellular2_train \
@@ -132,7 +132,7 @@ if [ $stage -le 2 ]; then
 
   # Prepare the MUSAN corpus, which consists of music, speech, and noise
   # suitable for augmentation.
-  steps/data/make_musan.sh --sampling-rate 8000 /export/corpora/JHU/musan data
+  steps/data/make_musan.sh --sampling-rate 8000 /export/corpora5/JHU/musan data
 
   # Get the duration of the MUSAN recordings.  This will be used by the
   # script augment_data_dir.py.
