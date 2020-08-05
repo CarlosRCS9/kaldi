@@ -6,6 +6,7 @@
 import functools
 import numpy
 import itertools
+import random
 
 from scripts.models import Ivector
 
@@ -18,6 +19,21 @@ def get_first_speakers(data, length):
   else:
     speakers_names = itertools.chain(*map(lambda segment: [speaker.get_name() for speaker in segment.get_speakers()], data))
     return list(dict.fromkeys(speakers_names).keys())[:length]
+
+def get_best_speakers(segments, length):
+  if isinstance(segments, dict):
+    files_speakers_names = {}
+    for file_id, segments_ in segments.items():
+      files_speakers_names[file_id] = get_best_speakers(segments_, length)
+    return files_speakers_names
+  else:
+    speakers_names_count = {}
+    for segment in segments:
+      for speaker in segment.get_speakers():
+        if speaker.get_name() not in speakers_names_count:
+          speakers_names_count[speaker.get_name()] = 0
+        speakers_names_count[speaker.get_name()] += 1
+    return list(map(lambda value: value[0], sorted(speakers_names_count.items(), key = lambda value: value[1], reverse = True)[:length]))
 
 def limit_segments_speakers_names(segments, speakers_names, log = False):
   if isinstance(segments, dict) and isinstance(speakers_names, dict):
@@ -127,9 +143,86 @@ def get_speakers_models(segments, speakers_segments_indexes, models_generation_l
   return speakers_models
 
 def get_speakers_permutations(speakers_models, length, include_zeros = True, include_overlaps = False):
-    speakers_names = [speakers_names for speakers_names in speakers_models.keys() if include_overlaps\
-                      or len(speakers_names.split(',')) == 1]
-    if len(speakers_names) == 0:
-        print('ERROR: no speakers left.')
-    speakers_names += ['0' for _ in range(length)] if include_zeros or len(speakers_names) < length else []
-    return sorted(set(itertools.permutations(speakers_names, length)))
+  speakers_names = [speakers_names for speakers_names in speakers_models.keys() if include_overlaps or len(speakers_names.split(',')) == 1]
+  if len(speakers_names) == 0:
+    print('ERROR: no speakers left.')
+  speakers_names += ['0' for _ in range(length)] if include_zeros or len(speakers_names) < length else []
+  return sorted(set(itertools.permutations(speakers_names, length)))
+
+def get_speakers_weights(speakers_segments_indexes, permutations, zero_multiplier = 1):
+  zero_multiplier = 1 / zero_multiplier
+  speakers_segments_lengths = {}
+  for speakers_names, segments_indexes in speakers_segments_indexes.items():
+    speakers_segments_lengths[speakers_names] = len(segments_indexes)
+  outputs = list(itertools.chain(*permutations))
+  speakers_weights = {}
+  for speakers_names in outputs:
+    segments_length = sum(speakers_segments_lengths.values())
+    speakers_length = speakers_segments_lengths[speakers_names] if speakers_names != '0' else segments_length * zero_multiplier
+    if speakers_names not in speakers_weights:
+      speakers_weights[speakers_names] = 0
+    speakers_weights[speakers_names] += speakers_length
+    if '0' in outputs and speakers_names != '0':
+      speakers_weights['0'] += (segments_length - speakers_length) * zero_multiplier
+  weight_sum = sum(speakers_weights.values())
+  weight_count = len(speakers_weights.values())
+  speakers_weights_inverse = {}
+  for speakers_names, weight in speakers_weights.items():
+    speakers_weights_inverse[speakers_names] = (weight_sum - speakers_weights[speakers_names]) / ((weight_count - 1) * weight_sum)
+  return speakers_weights_inverse
+
+class Permutations:
+  def __init__(self, speakers_names, samples, sample_length = None, include_zeros = True, mode = 'uniform'):
+    self.samples = samples if isinstance(samples, int) else 0
+    self.sample_length = sample_length if isinstance(sample_length, int) else len(speakers_names) 
+    self.include_zeros = include_zeros == True
+    self.mode = mode
+    self.speakers_names = ['0'] if self.include_zeros else []
+    for speaker_name in speakers_names:
+      if speaker_name not in self.speakers_names:
+        self.speakers_names.append(speaker_name)
+
+    self.permutations = []
+    self.speakers_names_counts = {}
+    for speaker_name in self.speakers_names:
+      self.speakers_names_counts[speaker_name] = 0
+    if self.mode == 'uniform':
+      for i in range(self.samples):
+        sample = []
+        for j in range(self.sample_length):
+          speaker_name = random.choice(self.speakers_names)
+          while speaker_name != '0' and speaker_name in sample:
+            speaker_name = random.choice(self.speakers_names)
+          sample.append(speaker_name)
+          self.speakers_names_counts[speaker_name] += 1
+        self.permutations.append(sample)
+  def __len__(self):
+    return self.samples
+  def __getitem__(self, key):
+    return self.permutations[key]
+  def get_speakers_names_counts(self):
+    return self.speakers_names_counts
+
+def get_speakers_weights_2(segments, permutations):
+  speakers_weights = {}
+  index = 0
+  for permutation in permutations:
+    segment_speakers_names = [speaker.get_name() for speaker in segments[index].get_speakers()]
+    for speaker_name in permutation:
+      if speaker_name in segment_speakers_names:
+        if speaker_name not in speakers_weights:
+          speakers_weights[speaker_name] = 0
+        speakers_weights[speaker_name] += 1
+      else:
+        if '0' not in speakers_weights:
+          speakers_weights['0'] = 0
+        speakers_weights['0'] += 1
+    index += 1
+    if index == len(segments):
+      index = 0
+  weight_sum = sum(speakers_weights.values())
+  weight_count = len(speakers_weights.values())
+  speakers_weights_inverse = {}
+  for speaker_name, weight in speakers_weights.items():
+    speakers_weights_inverse[speaker_name] = (weight_sum - speakers_weights[speaker_name]) / ((weight_count - 1) * weight_sum)
+  return speakers_weights_inverse
