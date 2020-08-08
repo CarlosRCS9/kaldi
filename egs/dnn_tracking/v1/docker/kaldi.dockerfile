@@ -37,7 +37,4 @@ RUN git clone --depth 1 https://github.com/CarlosRCS9/kaldi.git /opt/kaldi && \
     make depend -j $(nproc) && \
     make -j $(nproc)
 
-RUN apt-get install -y python3-pip && \
-	pip3 install torch
-
 WORKDIR /opt/kaldi/
