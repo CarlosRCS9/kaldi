@@ -8,7 +8,7 @@ import numpy
 import itertools
 import random
 
-from scripts.models import Ivector
+from models import Ivector
 
 def get_first_speakers(data, length):
   if isinstance(data, dict):
