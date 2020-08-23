@@ -12,14 +12,14 @@ extractor_dim=128
 extractor_model=/export/c03/carloscastillo/repos/kaldi_fix/egs/callhome_diarization/v1/exp/extractor_c2048_i128
 plda_a=/export/c03/carloscastillo/repos/kaldi_fix/egs/callhome_diarization/v1/exp/ivectors_callhome1
 plda_b=/export/c03/carloscastillo/repos/kaldi_fix/egs/callhome_diarization/v1/exp/ivectors_callhome2
-output_folder=/export/b03/carlosc/data/2020/augmented/callhome_offline/
+output_folder=/export/b03/carlosc/data/2020/augmented/callhome_offline2/
 
 random_seed=0
-length=1.5
+length=1.0
 overlap=0.5
 min_length=0.5
 
-stage=2
+stage=0
 
 # By default the RTTM file contains the speaker overlaps implicitly,
 # in the first stage we make these overlaps explicit.
@@ -50,6 +50,7 @@ fi
 if [ $stage -le 2 ]; then
   echo run.sh stage 2
   for name in callhome1 callhome2; do
+    rm -rf $output_folder$name/augmented_$random_seed/$length'_'$overlap'_'$min_length/$extractor_dim
     mkdir -p $output_folder$name/augmented_$random_seed/$length'_'$overlap'_'$min_length/$extractor_dim
 
     cat $output_folder$name/ref_augmented_$random_seed.rttm \
@@ -67,6 +68,7 @@ if [ $stage -le 3 ]; then
     $output_folder$name/wav_augmented_$random_seed.scp \
     $output_folder$name/augmented_$random_seed/$length'_'$overlap'_'$min_length/$extractor_dim/ \
     $mfcc_conf \
+    'ivectors' \
     $extractor_model
   done
 fi
@@ -183,14 +185,20 @@ if [ $stage -le 7 ]; then
     --reco2num-spk $data_folder$name2/reco2num_spk_2 \
     $folder2/exp/make_ivectors/plda_scores $folder2/exp/make_ivectors/plda_scores_num_spk
 
-  mkdir -p exp/results
-  # Now combine the results for callhome1 and callhome2 and evaluate it together.
+  mkdir -p exp/callhome_offline_ivectors
   cat $folder/exp/make_ivectors/plda_scores_num_spk/rttm \
-  $folder2/exp/make_ivectors/plda_scores_num_spk/rttm \
-    | md-eval.pl -r exp/results/fullref.rttm -s - 2> exp/results/num_spk.log \
-    > exp/results/DER_num_spk.txt
+  $folder2/exp/make_ivectors/plda_scores_num_spk/rttm > exp/callhome_offline_ivectors/results.rttm
+  cat exp/callhome_offline_ivectors/results.rttm | python3 scripts/rttm_filter.py callhome > exp/callhome_offline_ivectors/results_filtered.rttm
+  cp exp/results/fullref.rttm exp/callhome_offline_ivectors/groundtruth.rttm
+  cat exp/callhome_offline_ivectors/groundtruth.rttm | python3 scripts/rttm_filter.py callhome > exp/callhome_offline_ivectors/groundtruth_filtered.rttm
+  # Now combine the results for callhome1 and callhome2 and evaluate it together.
+  cat exp/callhome_offline_ivectors/results_filtered.rttm \
+    | md-eval.pl -r exp/callhome_offline_ivectors/groundtruth_filtered.rttm -s - 2> exp/callhome_offline_ivectors/num_spk.log \
+    > exp/callhome_offline_ivectors/DER_num_spk.txt
   der=$(grep -oP 'DIARIZATION\ ERROR\ =\ \K[0-9]+([.][0-9]+)?' \
-    exp/results/DER_num_spk.txt)
+    exp/callhome_offline_ivectors/DER_num_spk.txt)
   # Using the oracle number of speakers, DER: 8.69%
   echo "Using the oracle number of speakers, DER: $der%"
+
+  cat exp/callhome_offline_ivectors/DER_num_spk.txt
 fi

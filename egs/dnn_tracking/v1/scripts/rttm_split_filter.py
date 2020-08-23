@@ -7,7 +7,7 @@ import argparse
 import sys
 
 from models import Segment, sort_segments_by_file_id
-from notebook import get_best_speakers
+from notebook import get_first_speakers
 
 def get_args():
   parser = argparse.ArgumentParser(description='')
@@ -30,7 +30,7 @@ def main():
   files_segments = sort_segments_by_file_id(segments)
   for file_id in sorted(files_segments.keys()):
     segments = files_segments[file_id]
-    speakers = get_best_speakers(segments, args.max_file_speakers)
+    speakers = get_first_speakers(segments, args.max_file_speakers)
     for segment in segments:
       turn_onset = segment.get_turn_onset()
       while True:

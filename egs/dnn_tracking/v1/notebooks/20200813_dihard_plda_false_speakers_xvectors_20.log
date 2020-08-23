@@ -1,0 +1,4 @@
+  File "20200813_dihard_plda_false_speakers_xvectors_20.py", line 156
+    !mkdir -p $save_dir
+    ^
+SyntaxError: invalid syntax
