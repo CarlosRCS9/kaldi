@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# This was needed for a specific purpose-- some neural net training for the
+# This was needed for a specific purpose-- some neural net training for the 
 # BABEL setup that was done by Yajie Miao.  We don't expect these tools will
 # be used very heavily.
 
@@ -20,4 +20,8 @@ fi
 tar -xvzf quicknet-$VERSION.tar.gz
 cd quicknet-$VERSION/
 ./configure --prefix=`pwd`  || exit 1
-make install
+make install  || exit 1
+cd ..
+
+
+

@@ -76,8 +76,7 @@ if [ $stage -le 2 ]; then
         $ldafolder/lda.mat $ldafolder/lda_stats || exit 1
 
     rm $ldafolder/lda_stats
-    # lda.mat is in $ldafolder, i.e. one up from $ldafolder/config.
-    ln -sf ../lda.mat $ldafolder/configs/lda.mat
+    ln -rs $ldafolder/lda.mat $ldafolder/configs/lda.mat
 fi
 
 echo "$0: Finished computing LDA transform"

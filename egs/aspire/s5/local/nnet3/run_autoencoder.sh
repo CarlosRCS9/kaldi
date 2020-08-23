@@ -38,17 +38,11 @@ targets_scp=$dir/targets.scp
 
 mkdir -p $dir
 
-if [ -e $targets_scp.unsorted ]; then
-  rm $targets_scp.unsorted
-fi
-
-# Create copies of clean feats with prefix "rev$x-" to match utterance names of
+# Create copies of clean feats with prefix "rev$x_" to match utterance names of
 # the noisy feats
 for x in `seq 1 $num_data_reps`; do
-  awk -v x=$x '{print "rev"x"-"$0}' $clean_data_dir/feats.scp >> $targets_scp.unsorted
+  awk -v x=$x '{print "rev"x"_"$0}' $clean_data_dir/feats.scp | sort -k1,1 > $targets_scp
 done
-sort -k1,1 $targets_scp.unsorted > $targets_scp
-rm $targets_scp.unsorted
 
 if [ $stage -le 9 ]; then
   echo "$0: creating neural net configs";

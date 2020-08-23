@@ -1,20 +1,13 @@
-from __future__ import print_function
-
 import os
 import sys
 import re
 import fnmatch
 import argparse
 
-# avoid Python>3 rewrite newline on different platforms
-os.linesep = "\n"
-EXCLUDE_FILES = ['kenlm.h', 'kenlm.cc', 'kenlm-test.cc']
-
 # earily parse, will refernece args globally
 parser = argparse.ArgumentParser()
 parser.add_argument("working_dir")
 parser.add_argument("--quiet", default=False, action="store_true")
-parser.add_argument("--shared", default=False, action="store_true")
 args = parser.parse_args()
 
 def print_wrapper(*args_, **kwargs):
@@ -28,7 +21,7 @@ def is_bin_dir(d):
     return d.endswith("bin")
 
 def get_files(d):
-    return [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name)) and (name not in EXCLUDE_FILES)]
+    return [name for name in os.listdir(d) if os.path.isfile(os.path.join(d, name))]
 
 def is_header(f):
     return f.endswith(".h")
@@ -187,9 +180,7 @@ install(FILES ${{PUBLIC_HEADERS}} DESTINATION include/kaldi/{dir})
 
 class CMakeListsLibrary(object):
 
-    def __init__(self, dir_name, is_shared):
-        assert(type(is_shared) is bool)
-
+    def __init__(self, dir_name):
         self.dir_name = dir_name
         self.target_name = lib_dir_name_to_lib_target(self.dir_name)
         self.header_list = []
@@ -197,7 +188,6 @@ class CMakeListsLibrary(object):
         self.cuda_source_list = []
         self.test_source_list = []
         self.depends = []
-        self.is_shared = is_shared
 
     def add_header(self, filename):
         self.header_list.append(filename)
@@ -241,10 +231,7 @@ class CMakeListsLibrary(object):
             ret.append("    )")
             ret.append("endif()\n")
 
-        add_lib_line = "add_library(" + self.target_name
-        if self.is_shared:
-            add_lib_line += " SHARED"
-        ret.append(add_lib_line)
+        ret.append("add_library(" + self.target_name)
         for f in self.source_list:
             ret.append("    " + f)
         ret.append(")\n")
@@ -321,7 +308,7 @@ class CMakeListsFile(object):
         self.sections.append(section)
 
     def write_file(self):
-        with open(self.path, "w") as f:
+        with open(self.path, "w", newline='\n') as f: # good luck for python2
             f.write(CMakeListsFile.GEN_CMAKE_HEADER)
             for s in self.sections:
                 code = s.gen_code()
@@ -353,7 +340,7 @@ if __name__ == "__main__":
             if not os.path.exists(makefile):
                 lib = CMakeListsHeaderLibrary(dir_name)
             else:
-                lib = CMakeListsLibrary(dir_name, args.shared)
+                lib = CMakeListsLibrary(dir_name)
                 lib.load_dependency_from_makefile(makefile)
             cmakelists.add_section(lib)
             for f in sorted(get_files(d)):

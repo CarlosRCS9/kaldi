@@ -996,15 +996,12 @@ void LatticeFasterDecoderTpl<FST, Token>::TopSortTokens(
 template class LatticeFasterDecoderTpl<fst::Fst<fst::StdArc>, decoder::StdToken>;
 template class LatticeFasterDecoderTpl<fst::VectorFst<fst::StdArc>, decoder::StdToken >;
 template class LatticeFasterDecoderTpl<fst::ConstFst<fst::StdArc>, decoder::StdToken >;
-
-template class LatticeFasterDecoderTpl<fst::ConstGrammarFst, decoder::StdToken>;
-template class LatticeFasterDecoderTpl<fst::VectorGrammarFst, decoder::StdToken>;
+template class LatticeFasterDecoderTpl<fst::GrammarFst, decoder::StdToken>;
 
 template class LatticeFasterDecoderTpl<fst::Fst<fst::StdArc> , decoder::BackpointerToken>;
 template class LatticeFasterDecoderTpl<fst::VectorFst<fst::StdArc>, decoder::BackpointerToken >;
 template class LatticeFasterDecoderTpl<fst::ConstFst<fst::StdArc>, decoder::BackpointerToken >;
-template class LatticeFasterDecoderTpl<fst::ConstGrammarFst, decoder::BackpointerToken>;
-template class LatticeFasterDecoderTpl<fst::VectorGrammarFst, decoder::BackpointerToken>;
+template class LatticeFasterDecoderTpl<fst::GrammarFst, decoder::BackpointerToken>;
 
 
 } // end namespace kaldi.

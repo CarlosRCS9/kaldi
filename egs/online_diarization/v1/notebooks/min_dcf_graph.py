@@ -8,6 +8,7 @@ import kaldi_utils
 import numpy as np
 from functools import reduce
 import matplotlib.pyplot as plt
+from itertools import cycle
 
 def compute_min_dcf(directory, target_probability = 0.01):
   scores_filepath = directory + '/dcf.scores'
@@ -23,6 +24,8 @@ experiments = list(set(['_'.join(directory.split('_')[:-1]) for directory in dir
 experiments = [(experiment, experiment.split('_')[-3], experiment.split('_')[-2]) for experiment in experiments]
 experiments.sort(key = lambda experiment: experiment[1] + experiment[2].zfill(2))
 labels = []
+lines = ['-','--','-.',':']
+linecycler = cycle(lines)
 for experiment in experiments:
   if experiment[2] != '15':
     experiment_directories = list(filter(lambda directory: experiment[0] in directory, directories))
@@ -31,10 +34,11 @@ for experiment in experiments:
     x = np.linspace(0.01, 0.5, 50)
     y = np.vectorize(lambda x: mean_compute_min_dcf(experiment_directories, x))(x)
 
-    plt.plot(x * 100, y * 100)
+    plt.plot(x * 100, y, next(linecycler))
     labels.append(('i-vector' if experiment[1] == 'ivectors' else 'x-vector') + ' ' + str(int(experiment[2]) * 0.5 + 0.5)  + ' s')
 
 plt.xlabel('Target probability (%)')
-plt.ylabel('min DCF (%)')
+plt.ylabel('minDCF')
 plt.legend(labels)
+plt.grid()
 plt.show()

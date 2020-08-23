@@ -97,7 +97,7 @@ void OnlineIvectorExtractionInfo::Check() const {
 
 // The class constructed in this way should never be used.
 OnlineIvectorExtractionInfo::OnlineIvectorExtractionInfo():
-    online_cmvn_iextractor(false), ivector_period(0), num_gselect(0), min_post(0.0), posterior_scale(0.0),
+    ivector_period(0), num_gselect(0), min_post(0.0), posterior_scale(0.0),
     use_most_recent_ivector(true), greedy_ivector_extractor(false),
     max_remembered_frames(0) { }
 
@@ -480,8 +480,7 @@ OnlineSilenceWeighting::OnlineSilenceWeighting(
 
 template <typename FST>
 void OnlineSilenceWeighting::ComputeCurrentTraceback(
-    const LatticeFasterOnlineDecoderTpl<FST> &decoder,
-    bool use_final_probs) {
+    const LatticeFasterOnlineDecoderTpl<FST> &decoder) {
   int32 num_frames_decoded = decoder.NumFramesDecoded(),
       num_frames_prev = frame_info_.size();
   // note, num_frames_prev is not the number of frames previously decoded,
@@ -496,6 +495,7 @@ void OnlineSilenceWeighting::ComputeCurrentTraceback(
   if (num_frames_decoded == 0)
     return;
   int32 frame = num_frames_decoded - 1;
+  bool use_final_probs = false;
   typename LatticeFasterOnlineDecoderTpl<FST>::BestPathIterator iter =
       decoder.BestPathEnd(use_final_probs, NULL);
   while (frame >= 0) {
@@ -530,8 +530,7 @@ void OnlineSilenceWeighting::ComputeCurrentTraceback(
 
 template <typename FST>
 void OnlineSilenceWeighting::ComputeCurrentTraceback(
-    const LatticeIncrementalOnlineDecoderTpl<FST> &decoder,
-    bool use_final_probs) {
+    const LatticeIncrementalOnlineDecoderTpl<FST> &decoder) {
   int32 num_frames_decoded = decoder.NumFramesDecoded(),
       num_frames_prev = frame_info_.size();
   // note, num_frames_prev is not the number of frames previously decoded,
@@ -546,6 +545,7 @@ void OnlineSilenceWeighting::ComputeCurrentTraceback(
   if (num_frames_decoded == 0)
     return;
   int32 frame = num_frames_decoded - 1;
+  bool use_final_probs = false;
   typename LatticeIncrementalOnlineDecoderTpl<FST>::BestPathIterator iter =
       decoder.BestPathEnd(use_final_probs, NULL);
   while (frame >= 0) {
@@ -582,29 +582,16 @@ void OnlineSilenceWeighting::ComputeCurrentTraceback(
 // Instantiate the template OnlineSilenceWeighting::ComputeCurrentTraceback().
 template
 void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::Fst<fst::StdArc> >(
-    const LatticeFasterOnlineDecoderTpl<fst::Fst<fst::StdArc> > &decoder,
-    bool use_final_probs);
+    const LatticeFasterOnlineDecoderTpl<fst::Fst<fst::StdArc> > &decoder);
 template
-void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::ConstGrammarFst >(
-    const LatticeFasterOnlineDecoderTpl<fst::ConstGrammarFst > &decoder,
-    bool use_final_probs);
-template
-void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::VectorGrammarFst >(
-    const LatticeFasterOnlineDecoderTpl<fst::VectorGrammarFst > &decoder,
-    bool use_final_probs);
-
+void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::GrammarFst>(
+    const LatticeFasterOnlineDecoderTpl<fst::GrammarFst> &decoder);
 template
 void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::Fst<fst::StdArc> >(
-    const LatticeIncrementalOnlineDecoderTpl<fst::Fst<fst::StdArc> > &decoder,
-    bool use_final_probs);
+    const LatticeIncrementalOnlineDecoderTpl<fst::Fst<fst::StdArc> > &decoder);
 template
-void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::ConstGrammarFst >(
-    const LatticeIncrementalOnlineDecoderTpl<fst::ConstGrammarFst > &decoder,
-    bool use_final_probs);
-template
-void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::VectorGrammarFst >(
-    const LatticeIncrementalOnlineDecoderTpl<fst::VectorGrammarFst > &decoder,
-    bool use_final_probs);
+void OnlineSilenceWeighting::ComputeCurrentTraceback<fst::GrammarFst>(
+    const LatticeIncrementalOnlineDecoderTpl<fst::GrammarFst> &decoder);
 
 
 void OnlineSilenceWeighting::GetDeltaWeights(
@@ -712,43 +699,5 @@ void OnlineSilenceWeighting::GetDeltaWeights(
     }
   }
 }
-
-void OnlineSilenceWeighting::GetNonsilenceFrames(
-    int32 num_frames_ready, int32 first_decoder_frame,
-    std::vector<int32> *frames) {
-  // num_frames_ready is at the feature frame-rate, most of the code
-  // in this function is at the decoder frame-rate.
-  // round up, so we are sure to get weights for at least the frame
-  // 'num_frames_ready - 1', and maybe one or two frames afterward.
-  KALDI_ASSERT(num_frames_ready > first_decoder_frame || num_frames_ready == 0);
-  int32 fs = frame_subsampling_factor_,
-  num_decoder_frames_ready = (num_frames_ready - first_decoder_frame + fs - 1) / fs;
-
-  frames->clear();
-
-  int32 prev_num_frames_processed = frame_info_.size();
-  if (frame_info_.size() < static_cast<size_t>(num_decoder_frames_ready))
-    frame_info_.resize(num_decoder_frames_ready);
-
-  // Don't go further backward into the past then 500 frames before the most
-  // recent frame
-  int32 begin_frame = std::max<int32>(0, prev_num_frames_processed - 500),
-      frames_out = static_cast<int32>(frame_info_.size()) - begin_frame;
-  // frames_out is the number of frames we will output.
-  KALDI_ASSERT(frames_out >= 0);
-
-  for (int32 offset = 0; offset < frames_out; offset++) {
-    int32 frame = begin_frame + offset;
-    int32 transition_id = frame_info_[frame].transition_id;
-    if (transition_id != -1) {
-      int32 phone = trans_model_.TransitionIdToPhone(transition_id);
-      bool is_silence = (silence_phones_.count(phone) != 0);
-      if (!is_silence) {
-        frames->push_back(frame);
-      }
-    }
-  }
-}
-
 
 }  // namespace kaldi

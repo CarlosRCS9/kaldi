@@ -3,7 +3,6 @@
 # Copyright 2016    Vijayaditya Peddinti.
 #           2016    Vimal Manohar
 #           2017    Hossein Hadian
-#           2021    Behavox Ltd. (author: Hossein Hadian)
 # Apache 2.0.
 
 """ This script does flat-start chain training and is based on
@@ -101,15 +100,6 @@ def get_args():
 
 
     # trainer options
-    parser.add_argument("--trainer.input-model", type=str,
-                        dest='input_model', default=None,
-                        action=common_lib.NullstrToNoneAction,
-                        help="If specified, this model is used as initial "
-                             "'raw' model (0.raw in the script) instead of "
-                             "initializing the model from the xconfig. "
-                             "Also configs dir is not expected to exist "
-                             "and left/right context is computed from this "
-                             "model.")
     parser.add_argument("--trainer.num-epochs", type=float, dest='num_epochs',
                         default=10.0,
                         help="Number of epochs to train the model")
@@ -212,11 +202,10 @@ def process_args(args):
             "--trainer.deriv-truncate-margin.".format(
                 args.deriv_truncate_margin))
 
-    if (not os.path.exists(args.dir + "/configs") and
-        (args.input_model is None or not os.path.exists(args.input_model))):
-        raise Exception("Either --trainer.input-model option should be supplied, "
-                        "and exist; or the {0}/configs directory should exist."
-                        "".format(args.dir))
+    if (not os.path.exists(args.dir + "/configs")):
+        raise Exception("This scripts expects the directory specified with "
+                        "--dir={0} to exist and have a configs/ directory which "
+                        "is the output of make_configs.py script".format(args.dir))
 
     # set the options corresponding to args.use_gpu
     run_opts = common_train_lib.RunOpts()
@@ -291,15 +280,10 @@ def train(args, run_opts):
     with open('{0}/num_jobs'.format(args.dir), 'w') as f:
         f.write(str(num_jobs))
 
-    if args.input_model is None:
-        config_dir = '{0}/configs'.format(args.dir)
-        var_file = '{0}/vars'.format(config_dir)
+    config_dir = '{0}/configs'.format(args.dir)
+    var_file = '{0}/vars'.format(config_dir)
 
-        variables = common_train_lib.parse_generic_config_vars_file(var_file)
-    else:
-        # If args.input_model is specified, the model left and right contexts
-        # are computed using input_model.
-        variables = common_train_lib.get_input_model_info(args.input_model)
+    variables = common_train_lib.parse_generic_config_vars_file(var_file)
 
     # Set some variables.
     try:
@@ -325,9 +309,7 @@ def train(args, run_opts):
         logger.info("Creating denominator FST")
         chain_lib.create_denominator_fst(args.dir, args.tree_dir, run_opts)
 
-    if ((args.stage <= -4) and
-            os.path.exists("{0}/configs/init.config".format(args.dir))
-            and (args.input_model is None)):
+    if (args.stage <= -4):
         logger.info("Initializing a basic network...")
         common_lib.execute_command(
             """{command} {dir}/log/nnet_init.log \
@@ -335,11 +317,11 @@ def train(args, run_opts):
                     {dir}/init.raw""".format(command=run_opts.command,
                                              dir=args.dir))
 
-    egs_left_context = left_context + args.frame_subsampling_factor // 2
-    egs_right_context = right_context + args.frame_subsampling_factor // 2
-    egs_left_context_initial = (left_context_initial + args.frame_subsampling_factor // 2 if
+    egs_left_context = left_context + args.frame_subsampling_factor / 2
+    egs_right_context = right_context + args.frame_subsampling_factor / 2
+    egs_left_context_initial = (left_context_initial + args.frame_subsampling_factor / 2 if
                                 left_context_initial >= 0 else -1)
-    egs_right_context_final = (right_context_final + args.frame_subsampling_factor // 2 if
+    egs_right_context_final = (right_context_final + args.frame_subsampling_factor / 2 if
                                right_context_final >= 0 else -1)
 
     default_egs_dir = '{0}/egs'.format(args.dir)
@@ -359,7 +341,7 @@ def train(args, run_opts):
                     --frames-per-iter {frames_per_iter} \
                     --srand {srand} \
                     {data} {dir} {fst_dir} {egs_dir}""".format(
-                        command=run_opts.egs_command,
+                        command=run_opts.command,
                         cmvn_opts=args.cmvn_opts if args.cmvn_opts is not None else '',
                         ivector_dir=(args.online_ivector_dir
                                      if args.online_ivector_dir is not None
@@ -402,8 +384,7 @@ def train(args, run_opts):
 
     if (args.stage <= -1):
         logger.info("Preparing the initial acoustic model.")
-        chain_lib.prepare_initial_acoustic_model(args.dir, run_opts,
-                                                 input_model=args.input_model)
+        chain_lib.prepare_initial_acoustic_model(args.dir, run_opts)
 
     with open("{0}/frame_subsampling_factor".format(args.dir), "w") as f:
         f.write(str(args.frame_subsampling_factor))
@@ -415,7 +396,7 @@ def train(args, run_opts):
     num_archives_to_process = int(args.num_epochs * num_archives_expanded)
     num_archives_processed = 0
     num_iters = ((num_archives_to_process * 2)
-                 // (args.num_jobs_initial + args.num_jobs_final))
+                 / (args.num_jobs_initial + args.num_jobs_final))
 
     models_to_combine = common_train_lib.get_model_combine_iters(
         num_iters, args.num_epochs,
@@ -533,7 +514,7 @@ def train(args, run_opts):
         chain_lib.combine_models(
             dir=args.dir, num_iters=num_iters,
             models_to_combine=models_to_combine,
-            num_chunk_per_minibatch_str="1:64",
+            num_chunk_per_minibatch_str=args.num_chunk_per_minibatch,
             egs_dir=egs_dir,
             leaky_hmm_coefficient=args.leaky_hmm_coefficient,
             l2_regularize=args.l2_regularize,

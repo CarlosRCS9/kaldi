@@ -137,20 +137,11 @@ bool EndpointDetected<LatticeFasterOnlineDecoderTpl<fst::Fst<fst::StdArc> > >(
 
 
 template
-bool EndpointDetected<LatticeFasterOnlineDecoderTpl<fst::ConstGrammarFst > >(
+bool EndpointDetected<LatticeFasterOnlineDecoderTpl<fst::GrammarFst> >(
     const OnlineEndpointConfig &config,
     const TransitionModel &tmodel,
     BaseFloat frame_shift_in_seconds,
-    const LatticeFasterOnlineDecoderTpl<fst::ConstGrammarFst > &decoder);
-
-
-template
-bool EndpointDetected<LatticeFasterOnlineDecoderTpl<fst::VectorGrammarFst > >(
-    const OnlineEndpointConfig &config,
-    const TransitionModel &tmodel,
-    BaseFloat frame_shift_in_seconds,
-    const LatticeFasterOnlineDecoderTpl<fst::VectorGrammarFst > &decoder);
-
+    const LatticeFasterOnlineDecoderTpl<fst::GrammarFst> &decoder);
 
 template
 bool EndpointDetected<LatticeIncrementalOnlineDecoderTpl<fst::Fst<fst::StdArc> > >(
@@ -159,20 +150,14 @@ bool EndpointDetected<LatticeIncrementalOnlineDecoderTpl<fst::Fst<fst::StdArc> >
     BaseFloat frame_shift_in_seconds,
     const LatticeIncrementalOnlineDecoderTpl<fst::Fst<fst::StdArc> > &decoder);
 
+
 template
-bool EndpointDetected<LatticeIncrementalOnlineDecoderTpl<fst::ConstGrammarFst > >(
+bool EndpointDetected<LatticeIncrementalOnlineDecoderTpl<fst::GrammarFst> >(
     const OnlineEndpointConfig &config,
     const TransitionModel &tmodel,
     BaseFloat frame_shift_in_seconds,
-    const LatticeIncrementalOnlineDecoderTpl<fst::ConstGrammarFst > &decoder);
+    const LatticeIncrementalOnlineDecoderTpl<fst::GrammarFst> &decoder);
 
-
-template
-bool EndpointDetected<LatticeIncrementalOnlineDecoderTpl<fst::VectorGrammarFst > >(
-    const OnlineEndpointConfig &config,
-    const TransitionModel &tmodel,
-    BaseFloat frame_shift_in_seconds,
-    const LatticeIncrementalOnlineDecoderTpl<fst::VectorGrammarFst > &decoder);
 
 
 }  // namespace kaldi

@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
                 "A comma separated list of start times referring to the "
                 "input signal. The additive signals will be added to the "
                 "input signal starting at the offset. If the start time "
-                "exceeds the length of the input signal, the addition will "
+                "exceed the length of the input signal, the addition will "
                 "be ignored.");
     po.Register("normalize-output", &normalize_output,
                 "If true, then after reverberating and "

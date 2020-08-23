@@ -17,7 +17,7 @@ if [ -f ./path.sh ]; then . ./path.sh; fi
 
 affix=  # Affix for the segmentation
 nj=32
-cmd=run.pl
+cmd=queue.pl
 stage=-1
 
 # Feature options (Must match training)

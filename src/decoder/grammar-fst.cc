@@ -23,19 +23,17 @@
 namespace fst {
 
 
-template <typename FST>
-GrammarFstTpl<FST>::GrammarFstTpl(
+GrammarFst::GrammarFst(
     int32 nonterm_phones_offset,
-    std::shared_ptr<FST > top_fst,
-    const std::vector<std::pair<Label, std::shared_ptr<FST > > > &ifsts):
+    std::shared_ptr<const ConstFst<StdArc> > top_fst,
+    const std::vector<std::pair<Label, std::shared_ptr<const ConstFst<StdArc> > > > &ifsts):
     nonterm_phones_offset_(nonterm_phones_offset),
     top_fst_(top_fst),
     ifsts_(ifsts) {
   Init();
 }
 
-template <typename FST>
-void GrammarFstTpl<FST>::Init() {
+void GrammarFst::Init() {
   KALDI_ASSERT(nonterm_phones_offset_ > 1);
   InitNonterminalMap();
   entry_arcs_.resize(ifsts_.size());
@@ -51,13 +49,21 @@ void GrammarFstTpl<FST>::Init() {
   InitInstances();
 }
 
-template <typename FST>
-GrammarFstTpl<FST>::~GrammarFstTpl() {
+GrammarFst::~GrammarFst() {
   Destroy();
 }
 
-template <typename FST>
-void GrammarFstTpl<FST>::Destroy() {
+void GrammarFst::Destroy() {
+  for (size_t i = 0; i < instances_.size(); i++) {
+    FstInstance &instance = instances_[i];
+    std::unordered_map<BaseStateId, ExpandedState*>::const_iterator
+        iter = instance.expanded_states.begin(),
+        end = instance.expanded_states.end();
+    for (; iter != end; ++iter) {
+      ExpandedState *e = iter->second;
+      delete e;
+    }
+  }
   top_fst_ = NULL;
   ifsts_.clear();
   nonterminal_map_.clear();
@@ -65,8 +71,8 @@ void GrammarFstTpl<FST>::Destroy() {
   instances_.clear();
 }
 
-template <typename FST>
-void GrammarFstTpl<FST>::DecodeSymbol(Label label,
+
+void GrammarFst::DecodeSymbol(Label label,
                               int32 *nonterminal_symbol,
                               int32 *left_context_phone) {
   // encoding_multiple will normally equal 1000 (but may be a multiple of 1000
@@ -88,8 +94,7 @@ void GrammarFstTpl<FST>::DecodeSymbol(Label label,
 
 }
 
-template <typename FST>
-void GrammarFstTpl<FST>::InitNonterminalMap() {
+void GrammarFst::InitNonterminalMap() {
   nonterminal_map_.clear();
   for (size_t i = 0; i < ifsts_.size(); i++) {
     int32 nonterminal = ifsts_[i].first;
@@ -104,10 +109,10 @@ void GrammarFstTpl<FST>::InitNonterminalMap() {
   }
 }
 
-template <typename FST>
-bool GrammarFstTpl<FST>::InitEntryArcs(int32 i) {
+
+bool GrammarFst::InitEntryArcs(int32 i) {
   KALDI_ASSERT(static_cast<size_t>(i) < ifsts_.size());
-  FST &fst = *(ifsts_[i].second);
+  const ConstFst<StdArc> &fst = *(ifsts_[i].second);
   if (fst.NumStates() == 0)
     return false;  /* this was the empty FST. */
   InitEntryOrReentryArcs(fst, fst.Start(),
@@ -116,8 +121,7 @@ bool GrammarFstTpl<FST>::InitEntryArcs(int32 i) {
   return true;
 }
 
-template <typename FST>
-void GrammarFstTpl<FST>::InitInstances() {
+void GrammarFst::InitInstances() {
   KALDI_ASSERT(instances_.empty());
   instances_.resize(1);
   instances_[0].ifst_index = -1;
@@ -126,14 +130,13 @@ void GrammarFstTpl<FST>::InitInstances() {
   instances_[0].parent_state = -1;
 }
 
-template <typename FST>
-void GrammarFstTpl<FST>::InitEntryOrReentryArcs(
-    FST &fst,
+void GrammarFst::InitEntryOrReentryArcs(
+    const ConstFst<StdArc> &fst,
     int32 entry_state,
     int32 expected_nonterminal_symbol,
     std::unordered_map<int32, int32> *phone_to_arc) {
   phone_to_arc->clear();
-  ArcIterator<FST > aiter(fst, entry_state);
+  ArcIterator<ConstFst<StdArc> > aiter(fst, entry_state);
   int32 arc_index = 0;
   for (; !aiter.Done(); aiter.Next(), ++arc_index) {
     const StdArc &arc = aiter.Value();
@@ -165,12 +168,11 @@ void GrammarFstTpl<FST>::InitEntryOrReentryArcs(
   }
 }
 
-template <typename FST>
-std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::ExpandState(
+GrammarFst::ExpandedState *GrammarFst::ExpandState(
     int32 instance_id, BaseStateId state_id) {
   int32 big_number = kNontermBigNumber;
-  FST &fst = *(instances_[instance_id].fst);
-  ArcIterator<FST> aiter(fst, state_id);
+  const ConstFst<StdArc> &fst = *(instances_[instance_id].fst);
+  ArcIterator<ConstFst<StdArc> > aiter(fst, state_id);
   KALDI_ASSERT(!aiter.Done() && aiter.Value().ilabel > big_number &&
                "Something is not right; did you call PrepareForGrammarFst()?");
 
@@ -194,8 +196,7 @@ std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::
 
 
 // static inline
-template <typename FST>
-void GrammarFstTpl<FST>::CombineArcs(const StdArc &leaving_arc,
+void GrammarFst::CombineArcs(const StdArc &leaving_arc,
                              const StdArc &arriving_arc,
                              float cost_correction,
                              StdArc *arc) {
@@ -216,31 +217,30 @@ void GrammarFstTpl<FST>::CombineArcs(const StdArc &leaving_arc,
   arc->nextstate = arriving_arc.nextstate;
 }
 
-template <typename FST>
-std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::ExpandStateEnd(
+GrammarFst::ExpandedState *GrammarFst::ExpandStateEnd(
     int32 instance_id, BaseStateId state_id) {
   if (instance_id == 0)
     KALDI_ERR << "Did not expect #nonterm_end symbol in FST-instance 0.";
   const FstInstance &instance = instances_[instance_id];
   int32 parent_instance_id = instance.parent_instance;
-  FST &fst = *(instance.fst);
+  const ConstFst<StdArc> &fst = *(instance.fst);
   const FstInstance &parent_instance = instances_[parent_instance_id];
-  FST &parent_fst = *(parent_instance.fst);
+  const ConstFst<StdArc> &parent_fst = *(parent_instance.fst);
 
-  std::shared_ptr<ExpandedState> ans = std::make_shared<ExpandedState>();
+  ExpandedState *ans = new ExpandedState;
   ans->dest_fst_instance = parent_instance_id;
 
   // parent_aiter is the arc-iterator in the state we return to.  We'll Seek()
   // to a different position 'parent_aiter' for each arc leaving this state.
   // (actually we expect just one arc to leave this state).
-  ArcIterator<FST > parent_aiter(parent_fst,
+  ArcIterator<ConstFst<StdArc> > parent_aiter(parent_fst,
                                               instance.parent_state);
 
   // for explanation of cost_correction, see documentation for CombineArcs().
   float num_reentry_arcs = instances_[instance_id].parent_reentry_arcs.size(),
       cost_correction = -log(num_reentry_arcs);
 
-  ArcIterator<FST > aiter(fst, state_id);
+  ArcIterator<ConstFst<StdArc> > aiter(fst, state_id);
 
   for (; !aiter.Done(); aiter.Next()) {
     const StdArc &leaving_arc = aiter.Value();
@@ -278,8 +278,7 @@ std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::
   return ans;
 }
 
-template <typename FST>
-int32 GrammarFstTpl<FST>::GetChildInstanceId(int32 instance_id, int32 nonterminal,
+int32 GrammarFst::GetChildInstanceId(int32 instance_id, int32 nonterminal,
                                      int32 state) {
   int64 encoded_pair = (static_cast<int64>(nonterminal) << 32) + state;
   // 'new_instance_id' is the instance-id we'd assign if we had to create a new one.
@@ -322,13 +321,12 @@ int32 GrammarFstTpl<FST>::GetChildInstanceId(int32 instance_id, int32 nontermina
   return child_instance_id;
 }
 
-template <typename FST>
-std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::ExpandStateUserDefined(
+GrammarFst::ExpandedState *GrammarFst::ExpandStateUserDefined(
     int32 instance_id, BaseStateId state_id) {
-  FST &fst = *(instances_[instance_id].fst);
-  ArcIterator<FST > aiter(fst, state_id);
+  const ConstFst<StdArc> &fst = *(instances_[instance_id].fst);
+  ArcIterator<ConstFst<StdArc> > aiter(fst, state_id);
 
-  std::shared_ptr<ExpandedState> ans = std::make_shared<ExpandedState>();
+  ExpandedState *ans = new ExpandedState;
   int32 dest_fst_instance = -1;  // We'll set it in the loop.
                                  // and->dest_fst_instance will be set to this.
 
@@ -347,7 +345,7 @@ std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::
           "(Did you use PrepareForGrammarFst()?)";
     }
     const FstInstance &child_instance = instances_[child_instance_id];
-    FST &child_fst = *(child_instance.fst);
+    const ConstFst<StdArc> &child_fst = *(child_instance.fst);
     int32 child_ifst_index = child_instance.ifst_index;
     std::unordered_map<int32, int32> &entry_arcs = entry_arcs_[child_ifst_index];
     if (entry_arcs.empty()) {
@@ -370,7 +368,7 @@ std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::
                 << left_context_phone;
     }
     int32 arc_index = entry_iter->second;
-    ArcIterator<FST > child_aiter(child_fst, child_fst.Start());
+    ArcIterator<ConstFst<StdArc> > child_aiter(child_fst, child_fst.Start());
     child_aiter.Seek(arc_index);
     const StdArc &arriving_arc = child_aiter.Value();
     StdArc arc;
@@ -381,11 +379,11 @@ std::shared_ptr<typename GrammarFstTpl<FST>::ExpandedState> GrammarFstTpl<FST>::
   return ans;
 }
 
-template <typename FST>
-void GrammarFstTpl<FST>::Write(std::ostream &os, bool binary) const {
+
+void GrammarFst::Write(std::ostream &os, bool binary) const {
   using namespace kaldi;
   if (!binary)
-    KALDI_ERR << "GrammarFstTpl<FST>::Write only supports binary mode.";
+    KALDI_ERR << "GrammarFst::Write only supports binary mode.";
   int32 format = 1,
       num_ifsts = ifsts_.size();
   WriteToken(os, binary, "<GrammarFst>");
@@ -405,25 +403,24 @@ void GrammarFstTpl<FST>::Write(std::ostream &os, bool binary) const {
   WriteToken(os, binary, "</GrammarFst>");
 }
 
-template <typename FST>
-static FST *ReadConstFstFromStream(std::istream &is) {
+static ConstFst<StdArc> *ReadConstFstFromStream(std::istream &is) {
   fst::FstHeader hdr;
   std::string stream_name("unknown");
   if (!hdr.Read(is, stream_name))
     KALDI_ERR << "Reading FST: error reading FST header";
   FstReadOptions ropts("<unspecified>", &hdr);
-  FST *ans = FST::Read(is, ropts);
+  ConstFst<StdArc> *ans = ConstFst<StdArc>::Read(is, ropts);
   if (!ans)
     KALDI_ERR << "Could not read ConstFst from stream.";
   return ans;
 }
 
 
-template <typename FST>
-void GrammarFstTpl<FST>::Read(std::istream &is, bool binary) {
+
+void GrammarFst::Read(std::istream &is, bool binary) {
   using namespace kaldi;
   if (!binary)
-    KALDI_ERR << "GrammarFstTpl<FST>::Read only supports binary mode.";
+    KALDI_ERR << "GrammarFst::Read only supports binary mode.";
   if (top_fst_ != NULL)
     Destroy();
   int32 format = 1, num_ifsts;
@@ -434,13 +431,13 @@ void GrammarFstTpl<FST>::Read(std::istream &is, bool binary) {
         "update your code.";
   ReadBasicType(is, binary, &num_ifsts);
   ReadBasicType(is, binary, &nonterm_phones_offset_);
-  top_fst_ = std::shared_ptr<FST >(ReadConstFstFromStream<FST>(is));
+  top_fst_ = std::shared_ptr<const ConstFst<StdArc> >(ReadConstFstFromStream(is));
   for (int32 i = 0; i < num_ifsts; i++) {
     int32 nonterminal;
     ReadBasicType(is, binary, &nonterminal);
-    std::shared_ptr<FST >
-        this_fst(ReadConstFstFromStream<FST>(is));
-    ifsts_.push_back(std::pair<int32, std::shared_ptr<FST > >(
+    std::shared_ptr<const ConstFst<StdArc> >
+        this_fst(ReadConstFstFromStream(is));
+    ifsts_.push_back(std::pair<int32, std::shared_ptr<const ConstFst<StdArc> > >(
         nonterminal, this_fst));
   }
   Init();
@@ -988,8 +985,7 @@ void PrepareForGrammarFst(int32 nonterm_phones_offset,
   p.Prepare();
 }
 
-template <typename FST>
-void CopyToVectorFst(GrammarFstTpl<FST> *grammar_fst,
+void CopyToVectorFst(GrammarFst *grammar_fst,
                      VectorFst<StdArc> *vector_fst) {
   typedef GrammarFstArc::StateId GrammarStateId;  // int64
   typedef StdArc::StateId StdStateId;  // int
@@ -1012,7 +1008,7 @@ void CopyToVectorFst(GrammarFstTpl<FST> *grammar_fst,
     GrammarStateId grammar_state = p.first;
     StdStateId std_state = p.second;
     vector_fst->SetFinal(std_state, grammar_fst->Final(grammar_state));
-    ArcIterator<GrammarFstTpl<FST> > aiter(*grammar_fst, grammar_state);
+    ArcIterator<GrammarFst> aiter(*grammar_fst, grammar_state);
     for (; !aiter.Done(); aiter.Next()) {
       const GrammarFstArc &grammar_arc = aiter.Value();
       StdArc std_arc;
@@ -1037,16 +1033,6 @@ void CopyToVectorFst(GrammarFstTpl<FST> *grammar_fst,
   }
 }
 
-// Instantiate the template for the instance fst types that are used in kaldi
-template class GrammarFstTpl<const ConstFst<StdArc> >;
-template class GrammarFstTpl<StdVectorFst>;
 
-template class ArcIterator<GrammarFstTpl<const ConstFst<StdArc> > >;
-template class ArcIterator<GrammarFstTpl<StdVectorFst> >;
 
-// Instantiate the function template for CopyToVectorFST
-template void CopyToVectorFst<const ConstFst<StdArc> >(GrammarFstTpl<const ConstFst<StdArc> > *grammar_fst,
-                                                       VectorFst<StdArc> *vector_fst);
-template void CopyToVectorFst<StdVectorFst>(GrammarFstTpl<StdVectorFst> *grammar_fst,
-                                                       VectorFst<StdArc> *vector_fst);
 } // end namespace fst

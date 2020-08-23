@@ -16,13 +16,9 @@
  * limitations under the License.
  */
 
-//
-// Important: This file is deprecated and will be removed in a future release
-//
-
 #if HAVE_CUDA == 1
 
-#include "cudadecoder/decodable-cumatrix.h"
+#include "decodable-cumatrix.h"
 
 namespace kaldi {
 namespace cuda_decoder {
@@ -52,8 +48,8 @@ int32 DecodableCuMatrixMapped::NumIndices() const {
 }
 
 // returns cuda pointer to nnet3 output
-BaseFloat *DecodableCuMatrixMapped::GetLogLikelihoodsCudaPointer(
-    int32 subsampled_frame) {
+BaseFloat *
+DecodableCuMatrixMapped::GetLogLikelihoodsCudaPointer(int32 subsampled_frame) {
   BaseFloat *frame_nnet3_out =
       (BaseFloat *)likes_->Data() +
       (subsampled_frame - frame_offset_) * likes_->Stride();

@@ -24,6 +24,24 @@ def compute_eer(res_filepath, log_directory = None):
   else:
     sys.exit(err)
 
+# compute_eer [VALIDATED]
+def compute_eer2(res_filepath, log_directory = None):
+  bin = '../../../../../kaldi_fix/src/ivectorbin/compute-eer'
+  command = [bin, res_filepath]
+  p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  output, err = p.communicate()
+  rc = p.returncode
+  if rc == 0:
+    output = output.decode("utf-8")
+    if log_directory is not None:
+      file = open(log_directory + '/eer.log', 'w')
+      file.write(output)
+      file.close()
+    return float(output)
+  else:
+    sys.exit(err)
+
+
 # compute_min_dcf [VALIDATED]
 def compute_min_dcf(scores_filepath, trials_filepath, target_probability = 0.01, log_directory = None):
   bin = '../sid/compute_min_dcf.py'
@@ -52,8 +70,11 @@ def ivector_plda_scoring(plda_filepath, ref_vector, test_vector):
   rc = p.returncode
   if rc == 0:
     lines =  output.decode("utf-8").split('\n')
-    pldaLine = [line for line in lines if 'reference test' in line][0]
-    return float(re.findall('\d+\.?\d*', pldaLine)[0])
+    pldaLine = [line for line in lines if 'reference test ' in line][0]
+    try:
+        return float(pldaLine[15:])
+    except:
+        sys.exit('ERROR: Could not convert string to float: ' + pldaLine[15:])
   else:
     sys.exit(err)
 
@@ -72,6 +93,7 @@ def md_eval(ref_filepath, res_filepath, log_directory = None):
       file.close()
     lines =  output.split('\n')
     derLine = [line for line in lines if 'OVERALL SPEAKER DIARIZATION ERROR' in line][0]
-    return float(re.findall('\d+\.?\d*', derLine)[0])
+    #return float(re.findall('[+-]?([0-9]*[.])?[0-9]+', derLine)[0])
+    return float(re.findall('\d+\.?\d+', derLine)[0])
   else:
     sys.exit(err)

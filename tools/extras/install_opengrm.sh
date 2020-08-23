@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Copyright 2019 Alpha Cephei Inc (author: Nickolay Shmyrev)
 #
 # Apache 2.0
 #
-# This script installs OpenGrm, a library which makes and modifies n-gram language
+# This script installs OpenGrm, a library which makes and modifies n-gram language 
 # models encoded as weighted finite-state transducers (FSTs).
 
 echo "****() Installing OpenGrm"
@@ -34,3 +34,5 @@ cd ngram-1.3.7
 OPENFSTPREFIX=`pwd`/../openfst
 LDFLAGS="-L${OPENFSTPREFIX}/lib" CXXFLAGS="-I${OPENFSTPREFIX}/include" ./configure --prefix ${OPENFSTPREFIX}
 make; make install
+
+cd ..

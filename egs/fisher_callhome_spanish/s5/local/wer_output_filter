@@ -1,7 +1,5 @@
-#!/usr/bin/env bash
-sed '
+#!/bin/sed -f
 s:\[laughter\]::g
 s:\[noise\]::g
 s:\[oov\]::g
 s:<UNK>::g
-'

@@ -297,7 +297,7 @@ if [ $stage -le 19 ]; then
     --initial-effective-lrate $initial_effective_lrate \
     --final-effective-lrate $final_effective_lrate \
     --max-param-change $max_param_change \
-    --minibatch-size 128 \
+    --groups-per-minibatch 128 \
     --l2-regularize 0.00005 \
     --num-jobs-initial $num_jobs_initial --num-jobs-final $num_jobs_final \
      $common_egs_dir $dir

@@ -55,7 +55,7 @@ while(<STDIN>) {
   if ( @col > 1 && $ngram > 0 && $col[$ngram] eq $unk_word ) {
     if ( $fixed_value eq "true" && $ngram == 1 ) {
       $col[0] = (log($unk_scale) / log(10.0));
-    } elsif ($fixed_value eq "false" ) {
+    } else {
       $col[0] += (log($unk_scale) / log(10.0));
     }
     my $line = join("\t", @col);

@@ -225,6 +225,7 @@ if [ $stage -le 9 ]; then
       steps/align_fmllr_lats.sh --nj $nj --cmd "$train_cmd" ${lores_train_data_dir} \
         $langdir $gmm_dir $lat_dir
       rm $lat_dir/fsts.*.gz # save space
+      exit
   done
 fi 
 
@@ -420,7 +421,7 @@ if [ $stage -le 18 ]; then
     --initial-effective-lrate $initial_effective_lrate \
     --final-effective-lrate $final_effective_lrate \
     --max-param-change $max_param_change \
-    --minibatch-size 128 \
+    --groups-per-minibatch 128 \
     --srand 1 \
     --shuffle-buffer-size 5000 \
     --l2-regularize 5e-5 \

@@ -1,6 +1,6 @@
 // cudadecoder/thread-pool.h
 // Source:  https://github.com/progschj/ThreadPool
-// Modified to add a priority queue
+// Modified to add a priority queue 
 // Ubtained under this license:
 /*
 Copyright (c) 2012 Jakob Progsch, Václav Zeman
@@ -25,12 +25,8 @@ freely, subject to the following restrictions:
    distribution.
 */
 
-//
-// Important: This file is deprecated and will be removed in a future release
-//
-
-#ifndef KALDI_CUDA_DECODER_DEPRECATED_THREAD_POOL_H_
-#define KALDI_CUDA_DECODER_DEPRECATED_THREAD_POOL_H_
+#ifndef KALDI_CUDA_DECODER_THREAD_POOL_H_
+#define KALDI_CUDA_DECODER_THREAD_POOL_H_
 
 #include <climits>
 #include <condition_variable>
@@ -47,14 +43,10 @@ namespace kaldi {
 namespace cuda_decoder {
 
 // C++ indexes enum 0,1,2...
-enum [[deprecated]] ThreadPoolPriority {
-  THREAD_POOL_LOW_PRIORITY,
-  THREAD_POOL_NORMAL_PRIORITY,
-  THREAD_POOL_HIGH_PRIORITY
-};
+enum ThreadPoolPriority  { THREAD_POOL_LOW_PRIORITY, THREAD_POOL_NORMAL_PRIORITY, THREAD_POOL_HIGH_PRIORITY };
 
-class [[deprecated]] ThreadPool {
- public:
+class ThreadPool {
+public:
   ThreadPool(size_t);
   template <class F, class... Args>
   auto enqueue(ThreadPoolPriority priority, F &&f, Args &&... args)
@@ -69,11 +61,10 @@ class [[deprecated]] ThreadPool {
   std::vector<std::thread> workers;
   // the task queue
   struct Task {
-    std::function<void()> func;
-    // Ordered first by priority, then FIFO order
-    // tasks created first will have a higher
-    // priority_with_fifo.second
-    std::pair<ThreadPoolPriority, long long> priority_with_fifo;
+	  std::function<void()> func;
+          // Ordered first by priority, then FIFO order
+          // tasks created first will have a higher priority_with_fifo.second
+          std::pair<ThreadPoolPriority, long long> priority_with_fifo;
   };
   friend bool operator<(const ThreadPool::Task &lhs,
                         const ThreadPool::Task &rhs);
@@ -101,7 +92,7 @@ inline ThreadPool::ThreadPool(size_t threads)
       for (;;) {
         Task task;
 
-        {
+	{
           std::unique_lock<std::mutex> lock(this->queue_mutex);
           this->condition.wait(
               lock, [this] { return this->stop || !this->tasks.empty(); });
@@ -109,8 +100,8 @@ inline ThreadPool::ThreadPool(size_t threads)
           if (!tasks.empty()) {
             task = std::move(this->tasks.top());
             this->tasks.pop();
-          }
         }
+	}
         task.func();
       }
     });
@@ -120,8 +111,7 @@ inline ThreadPool::ThreadPool(size_t threads)
 template <class F, class... Args>
 auto ThreadPool::enqueue(F &&f, Args &&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {
-  return enqueue(THREAD_POOL_NORMAL_PRIORITY, std::forward<F>(f),
-                 std::forward<Args>(args)...);
+  return enqueue(THREAD_POOL_NORMAL_PRIORITY, std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 // add new work item to the pool
@@ -138,7 +128,8 @@ auto ThreadPool::enqueue(ThreadPoolPriority priority, F &&f, Args &&... args)
     std::unique_lock<std::mutex> lock(queue_mutex);
 
     // don't allow enqueueing after stopping the pool
-    if (stop) throw std::runtime_error("enqueue on stopped ThreadPool");
+    if (stop)
+      throw std::runtime_error("enqueue on stopped ThreadPool");
     Task task;
     task.func = [func]() { (*func)(); };
     long long task_fifo_id = task_counter--;
@@ -160,10 +151,12 @@ inline ThreadPool::~ThreadPool() {
     stop = true;
   }
   condition.notify_all();
-  for (std::thread &worker : workers) worker.join();
+  for (std::thread &worker : workers)
+    worker.join();
 }
 
 }  // end namespace cuda_decoder
 }  // end namespace kaldi
+
 
 #endif  // KALDI_CUDA_DECODER_THREAD_POOL_H_

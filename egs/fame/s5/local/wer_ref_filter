@@ -1,4 +1,2 @@
-#!/usr/bin/env bash
-sed '
+#!/bin/sed -f
 s:<UNK>::g
-'

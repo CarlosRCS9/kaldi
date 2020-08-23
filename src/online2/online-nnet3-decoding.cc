@@ -97,7 +97,6 @@ bool SingleUtteranceNnet3DecoderTpl<FST>::EndpointDetected(
 
 // Instantiate the template for the types needed.
 template class SingleUtteranceNnet3DecoderTpl<fst::Fst<fst::StdArc> >;
-template class SingleUtteranceNnet3DecoderTpl<fst::ConstGrammarFst >;
-template class SingleUtteranceNnet3DecoderTpl<fst::VectorGrammarFst >;
+template class SingleUtteranceNnet3DecoderTpl<fst::GrammarFst>;
 
 }  // namespace kaldi

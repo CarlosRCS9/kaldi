@@ -1,35 +1,25 @@
 cmake_minimum_required(VERSION 3.5)
 project(kaldi)
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/src CACHE PATH "Install path prefix." FORCE)
-endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 include(GNUInstallDirs)
 include(Utils)
-
 include(third_party/get_third_party)
 
-include(cmake/third_party/openfst.cmake)
-
+# Should update cmake to a more recent version which supports FindPython3.
 find_package(PythonInterp)
-if(NOT PYTHON_EXECUTABLE)
-    message(FATAL_ERROR "Needs python to auto-generate most CMake files, but not found.")
+if(NOT PYTHON_EXECUTABLE OR PYTHON_VERSION_MAJOR LESS 3)
+    message(WARNING "Needs python3 to auto-generate most CMake files, but not found. "
+                    "Will try `python3` directly...")
+    set(PYTHON_EXECUTABLE "python3")
 endif()
 
 message(STATUS "Running gen_cmake_skeleton.py")
-option(BUILD_SHARED_LIBS "Build shared Kaldi libraries." OFF)
-set(IS_LIB_SHARE "")
-if(BUILD_SHARED_LIBS)
-    set(IS_LIB_SHARE "--shared")
-endif()
 execute_process(COMMAND ${PYTHON_EXECUTABLE}
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/gen_cmake_skeleton.py"
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
     "--quiet"
-    ${IS_LIB_SHARE}
 )
-unset(IS_LIB_SHARE)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -42,7 +32,7 @@ if(BUILD_SHARED_LIBS)
     elseif(APPLE)
         set(CMAKE_INSTALL_RPATH "@loader_path")
     else()
-        set(CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib;$ORIGIN/../../tools/openfst/lib")
+        set(CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/../lib")
     endif()
 endif()
 
@@ -73,16 +63,12 @@ if(MATHLIB STREQUAL "OpenBLAS")
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tools/CLAPACK)
     link_libraries(${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 elseif(MATHLIB STREQUAL "MKL")
-    if(NOT DEFINED ENV{MKLROOT} OR "$ENV{MKLROOT}" STREQUAL "")
-        message(FATAL_ERROR "Environment variable MKLROOT is not defined")
-    else()
-        message(STATUS "Finding MKL from \"$ENV{MKLROOT}\"")
-    endif()
+    set(BLA_VENDOR "Intel10_64lp")
+    # find_package(BLAS REQUIRED)
     normalize_env_path(ENV{MKLROOT})
-    set(BLA_VENDOR "Intel10_64lp_seq") # use the single threaded MKL by default
     find_package(LAPACK REQUIRED)
     add_definitions(-DHAVE_MKL=1)
-    include_directories($ENV{MKLROOT}/include)
+    include_directories($ENV{MKLROOT}/include) # TODO: maybe not use env, idk, find_package doesnt handle includes...
     link_libraries(${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 elseif(MATHLIB STREQUAL "Accelerate")
     execute_process(COMMAND sw_vers -productVersion
@@ -127,6 +113,8 @@ endif()
 
 find_package(CUDA)
 if(CUDA_FOUND)
+    set(CUB_ROOT_DIR "${PROJECT_SOURCE_DIR}/tools/cub")
+
     set(CUDA_PROPAGATE_HOST_FLAGS ON)
     set(KALDI_CUDA_NVCC_FLAGS "--default-stream=per-thread;-std=c++${CMAKE_CXX_STANDARD}")
     if(MSVC)
@@ -158,8 +146,6 @@ if(CUDA_FOUND)
     include_directories(${NvToolExt_INCLUDE_DIR})
     link_libraries(${NvToolExt_LIBRARIES})
 
-    get_third_party(cub)
-    set(CUB_ROOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cub")
     find_package(CUB REQUIRED)
     include_directories(${CUB_INCLUDE_DIR})
 endif()
@@ -172,18 +158,9 @@ if(${KALDI_USE_PATCH_NUMBER})
     set(KALDI_VERSION "${KALDI_VERSION}.${KALDI_PATCH_NUMBER}")
 endif()
 
-# get_third_party(openfst)
-# set(OPENFST_ROOT_DIR ${CMAKE_CURRENT_BINARY_DIR}/openfst)
-# include(third_party/openfst_lib_target)
-#find_library(OpenFST_LIBRARY
-#            NAMES fst
-#            PATHS ${CMAKE_CURRENT_SOURCE_DIR}/tools/openfst/lib
-#            REQUIRED)
-#find_path(OpenFST_INCLUDE_DIR
-#            NAMES "fst/fst.h"
-#            PATHS "${CMAKE_CURRENT_SOURCE_DIR}/tools/openfst/include"
-#            REQUIRED)
-
+get_third_party(openfst)
+set(OPENFST_ROOT_DIR ${CMAKE_CURRENT_BINARY_DIR}/openfst)
+include(third_party/openfst_lib_target)
 link_libraries(fst)
 
 # add all native libraries
@@ -253,15 +230,15 @@ include(CMakePackageConfigHelpers)
 # maybe we should put this into subfolder?
 configure_package_config_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/kaldi-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/kaldi-config.cmake
+    ${CMAKE_BINARY_DIR}/cmake/kaldi-config.cmake
     INSTALL_DESTINATION lib/cmake/kaldi
 )
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/cmake/kaldi-config-version.cmake
+    ${CMAKE_BINARY_DIR}/cmake/kaldi-config-version.cmake
     VERSION ${KALDI_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/kaldi-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/cmake/kaldi-config-version.cmake
+install(FILES ${CMAKE_BINARY_DIR}/cmake/kaldi-config.cmake ${CMAKE_BINARY_DIR}/cmake/kaldi-config-version.cmake
     DESTINATION lib/cmake/kaldi
 )
 install(EXPORT kaldi-targets DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/kaldi)

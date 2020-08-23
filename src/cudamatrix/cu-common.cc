@@ -18,17 +18,22 @@
 // See the Apache 2 License for the specific language governing permissions and
 // limitations under the License.
 
-#if HAVE_CUDA
+#ifndef KALDI_CUDAMATRIX_COMMON_H_
+#define KALDI_CUDAMATRIX_COMMON_H_
 
-#include "cudamatrix/cu-common.h"
-
-#include <cuda.h>
-
+// This file contains some #includes, forward declarations
+// and typedefs that are needed by all the main header
+// files in this directory.
+#include <mutex>
 #include "base/kaldi-common.h"
-#include "cudamatrix/cu-matrixdim.h"
 #include "matrix/kaldi-blas.h"
+#include "cudamatrix/cu-device.h"
+#include "cudamatrix/cu-common.h"
+#include "cudamatrix/cu-matrixdim.h"
 
 namespace kaldi {
+
+#if HAVE_CUDA == 1
 
 #ifdef USE_NVTX
 NvtxTracer::NvtxTracer(const char* name) {
@@ -86,7 +91,6 @@ void GetBlockSizesForSimpleMatrixOperation(int32 num_rows,
 }
 
 const char* cublasGetStatusString(cublasStatus_t status) {
-  // Defined in CUDA include file: cublas.h or cublas_api.h
   switch(status) {
     case CUBLAS_STATUS_SUCCESS:           return "CUBLAS_STATUS_SUCCESS";
     case CUBLAS_STATUS_NOT_INITIALIZED:   return "CUBLAS_STATUS_NOT_INITIALIZED";
@@ -104,7 +108,6 @@ const char* cublasGetStatusString(cublasStatus_t status) {
 
 const char* cusparseGetStatusString(cusparseStatus_t status) {
   // detail info come from http://docs.nvidia.com/cuda/cusparse/index.html#cusparsestatust
-  // Defined in CUDA include file: cusparse.h
   switch(status) {
     case CUSPARSE_STATUS_SUCCESS:                   return "CUSPARSE_STATUS_SUCCESS";
     case CUSPARSE_STATUS_NOT_INITIALIZED:           return "CUSPARSE_STATUS_NOT_INITIALIZED";
@@ -116,17 +119,12 @@ const char* cusparseGetStatusString(cusparseStatus_t status) {
     case CUSPARSE_STATUS_INTERNAL_ERROR:            return "CUSPARSE_STATUS_INTERNAL_ERROR";
     case CUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED: return "CUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED";
     case CUSPARSE_STATUS_ZERO_PIVOT:                return "CUSPARSE_STATUS_ZERO_PIVOT";
-    #if CUDA_VERSION >= 11000
-    case CUSPARSE_STATUS_NOT_SUPPORTED:             return "CUSPARSE_STATUS_NOT_SUPPORTED";
-    case CUSPARSE_STATUS_INSUFFICIENT_RESOURCES:    return "CUSPARSE_STATUS_INSUFFICIENT_RESOURCES";
-    #endif
   }
   return "CUSPARSE_STATUS_UNKNOWN_ERROR";
 }
 
 const char* curandGetStatusString(curandStatus_t status) {
   // detail info come from http://docs.nvidia.com/cuda/curand/group__HOST.html
-  // Defined in CUDA include file: curand.h
   switch(status) {
     case CURAND_STATUS_SUCCESS:                     return "CURAND_STATUS_SUCCESS";
     case CURAND_STATUS_VERSION_MISMATCH:            return "CURAND_STATUS_VERSION_MISMATCH";
@@ -144,7 +142,9 @@ const char* curandGetStatusString(curandStatus_t status) {
   }
   return "CURAND_STATUS_UNKNOWN_ERROR";
 }
+#endif
 
-}  // namespace kaldi
+} // namespace
 
-#endif  // HAVE_CUDA
+
+#endif  // KALDI_CUDAMATRIX_COMMON_H_

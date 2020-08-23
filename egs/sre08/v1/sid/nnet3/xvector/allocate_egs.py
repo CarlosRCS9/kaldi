@@ -175,7 +175,7 @@ def get_labels(utt2int_filename):
 
 # this function returns a random integer utterance index, limited to utterances
 # above a minimum length in frames, with probability proportional to its length.
-def get_random_utt(spkr, spk2utt):
+def get_random_utt(spkr, spk2utt, min_length):
     this_utts = spk2utt[spkr]
     this_num_utts = len(this_utts)
     i = random.randint(0, this_num_utts-1)
@@ -257,10 +257,8 @@ def main():
                 print("Ran out of speakers for archive {0}".format(archive_index + 1))
                 break
             spkr = spkrs.pop()
-            utt_len = 0
-            while utt_len < length:
-                utt = get_random_utt(spkr, spk2utt)
-                utt_len = utt2len[utt]
+            utt = get_random_utt(spkr, spk2utt, length)
+            utt_len = utt2len[utt]
             offset = get_random_offset(utt_len, length)
             this_egs.append( (utt, offset) )
         all_egs.append(this_egs)

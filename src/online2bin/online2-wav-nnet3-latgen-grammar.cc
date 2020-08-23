@@ -157,8 +157,8 @@ int main(int argc, char *argv[]) {
     }
 
     Matrix<double> global_cmvn_stats;
-    if (feature_opts.global_cmvn_stats_rxfilename != "")
-      ReadKaldiObject(feature_opts.global_cmvn_stats_rxfilename,
+    if (feature_info.global_cmvn_stats_rxfilename != "")
+      ReadKaldiObject(feature_info.global_cmvn_stats_rxfilename,
                       &global_cmvn_stats);
 
     TransitionModel trans_model;
@@ -179,7 +179,8 @@ int main(int argc, char *argv[]) {
     nnet3::DecodableNnetSimpleLoopedInfo decodable_info(decodable_opts,
                                                         &am_nnet);
 
-    fst::ConstGrammarFst fst;
+
+    fst::GrammarFst fst;
     ReadKaldiObject(fst_rxfilename, &fst);
 
     fst::SymbolTable *word_syms = NULL;
@@ -227,7 +228,7 @@ int main(int argc, char *argv[]) {
             feature_info.silence_weighting_config,
             decodable_opts.frame_subsampling_factor);
 
-        SingleUtteranceNnet3DecoderTpl<fst::ConstGrammarFst > decoder(
+        SingleUtteranceNnet3DecoderTpl<fst::GrammarFst> decoder(
             decoder_opts, trans_model,
             decodable_info, fst, &feature_pipeline);
 

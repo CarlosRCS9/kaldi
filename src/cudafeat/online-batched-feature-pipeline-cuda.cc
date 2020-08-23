@@ -16,11 +16,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if HAVE_CUDA
-
 #include "cudafeat/online-batched-feature-pipeline-cuda.h"
 
+#if HAVE_CUDA == 1
 #include <nvToolsExt.h>
+#endif
 
 namespace kaldi {
 
@@ -65,10 +65,12 @@ OnlineBatchedFeaturePipelineCuda::OnlineBatchedFeaturePipelineCuda(
   }
 
   if (info_.use_cmvn) {
-    if (info_.global_cmvn_stats.NumCols() == 0) {
-      KALDI_ERR << "global_cmvn_stats for OnlineCmvn must be non-empty.";
-    }
-    OnlineCmvnState cmvn_state(info_.global_cmvn_stats);
+    KALDI_ASSERT(info_.global_cmvn_stats_rxfilename != "");
+
+    Matrix<double> global_cmvn_stats;
+    ReadKaldiObject(info_.global_cmvn_stats_rxfilename, &global_cmvn_stats);
+
+    OnlineCmvnState cmvn_state(global_cmvn_stats);
     CudaOnlineCmvnState cu_cmvn_state(cmvn_state);
 
     // TODO do we want to parameterize stats coarsening factor?
@@ -94,7 +96,7 @@ OnlineBatchedFeaturePipelineCuda::OnlineBatchedFeaturePipelineCuda(
   current_samples_stash_ = new int32_t[num_channels_];
 
   // allocated pinned memory for storing channel desc
-  CU_SAFE_CALL(cudaMallocHost(&h_lanes_, sizeof(LaneDesc) * max_lanes_));
+  cudaMallocHost(&h_lanes_, sizeof(LaneDesc) * max_lanes_);
 
   // allocate device memory
   lanes_ =
@@ -108,13 +110,13 @@ OnlineBatchedFeaturePipelineCuda::~OnlineBatchedFeaturePipelineCuda() {
   if (cmvn_ != NULL) delete cmvn_;
   if (ivector_ != NULL) delete ivector_;
 
-  CU_SAFE_CALL(cudaFreeHost(h_lanes_));
+  cudaFreeHost(h_lanes_);
 
   delete[] current_samples_stash_;
 
   CuDevice::Instantiate().Free(lanes_);
 
-  CU_SAFE_CALL(cudaEventDestroy(event_));
+  cudaEventDestroy(event_);
 }
 
 void OnlineBatchedFeaturePipelineCuda::ComputeFeaturesBatched(
@@ -197,5 +199,3 @@ void OnlineBatchedFeaturePipelineCuda::ComputeFeaturesBatched(
 }
 
 }  // namespace kaldi
-
-#endif  // HAVE_CUDA

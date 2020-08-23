@@ -58,7 +58,7 @@ done | sort -k1,1 > $dir/trans_out.scp.aug
 
 if [ "$include_original" == "true" ]; then
   cat $dir/trans_tmp.*.scp | awk '{print $0}' | sort -k1,1 > $dir/trans_out.scp.clean
-  cat $dir/trans_out.scp.clean $dir/trans_out.scp.aug | sort -k1,1 > $dir/trans_out.scp.old
+  cat $dir/trans_out.scp.clean $dir/trans_out.scp.aug | sort -k1,1 > $dir/trans_out.scp
 else
   cat $dir/trans_out.scp.aug | sort -k1,1 > $dir/trans_out.scp.old
 fi

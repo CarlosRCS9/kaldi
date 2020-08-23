@@ -398,7 +398,7 @@ template bool DecodeUtteranceLatticeIncremental(
     double *like_ptr);
 
 template bool DecodeUtteranceLatticeIncremental(
-    LatticeIncrementalDecoderTpl<fst::ConstGrammarFst > &decoder,
+    LatticeIncrementalDecoderTpl<fst::GrammarFst> &decoder,
     DecodableInterface &decodable,
     const TransitionModel &trans_model,
     const fst::SymbolTable *word_syms,
@@ -411,6 +411,7 @@ template bool DecodeUtteranceLatticeIncremental(
     CompactLatticeWriter *compact_lattice_writer,
     LatticeWriter *lattice_writer,
     double *like_ptr);
+
 
 template bool DecodeUtteranceLatticeFaster(
     LatticeFasterDecoderTpl<fst::Fst<fst::StdArc> > &decoder,
@@ -428,7 +429,7 @@ template bool DecodeUtteranceLatticeFaster(
     double *like_ptr);
 
 template bool DecodeUtteranceLatticeFaster(
-    LatticeFasterDecoderTpl<fst::ConstGrammarFst > &decoder,
+    LatticeFasterDecoderTpl<fst::GrammarFst> &decoder,
     DecodableInterface &decodable,
     const TransitionModel &trans_model,
     const fst::SymbolTable *word_syms,
