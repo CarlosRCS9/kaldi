@@ -1,5 +1,10 @@
 FROM pytorch/pytorch:latest
 
+#RUN apt update
+#RUN apt -y install ffmpeg
+
+RUN pip install pandas
+RUN pip install scikit-learn
 RUN pip install matplotlib
 
 RUN pip install jupyter

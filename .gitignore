@@ -74,6 +74,7 @@ GSYMS
 
 # /egs/
 /egs/*/*/mfcc
+/egs/*/*/mfcc_test
 /egs/*/*/plp
 /egs/*/*/exp
 /egs/*/*/data

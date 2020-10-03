@@ -1,16 +1,17 @@
 #!/bin/bash
 
-data_folder=/export/b03/carlosc/data/2020/augmented
+base_folder=${1%/}
 temp_folder=/export/b03/carlosc/data/temp
 
-for callhome in callhome1 callhome2; do
-  for length in 0.5_0.1_0.5 1.0_0.3_0.5 1.5_0.5_0.5; do
-    for dimension in 128 400; do
-      mkdir -p $temp_folder/callhome/$callhome/augmented_0/$length/$dimension/exp/make_ivectors
-      cp $data_folder/callhome/$callhome/augmented_0/$length/$dimension/segments $temp_folder/callhome/$callhome/augmented_0/$length/$dimension/
-      cp $data_folder/callhome/$callhome/augmented_0/$length/$dimension/exp/make_ivectors/ivector.txt $temp_folder/callhome/$callhome/augmented_0/$length/$dimension/exp/make_ivectors/
-    done
-    cp $data_folder/callhome/$callhome/augmented_0/$length/ref.rttm $temp_folder/callhome/$callhome/augmented_0/$length/
-  done
+for folder in $(ls -d  $base_folder/*/); do
+#for folder in $base_folder/128/; do
+  folder_location=$( echo $folder | cut -d/ -f 7- )
+  output_folder=$temp_folder/$folder_location
+  mkdir -p $output_folder'exp'/make_ivectors
+  mkdir -p $output_folder'exp'/make_xvectors
+  cp $folder'exp'/make_ivectors/ivector.txt $output_folder'exp'/make_ivectors/ivector.txt
+  cp $folder'exp'/make_xvectors/xvector.txt $output_folder'exp'/make_xvectors/xvector.txt
+  cp $folder'ref.rttm' $output_folder'ref.rttm'
+  cp $folder'segments' $output_folder'segments'
+  rsync -r -e 'ssh -i /export/b03/carlosc/ccastillo-desktop-rodrigo.pem -p 1100' $temp_folder/ rodrigo@ccastillo.ddnsking.com:/mnt/ST001/data/2020
 done
-

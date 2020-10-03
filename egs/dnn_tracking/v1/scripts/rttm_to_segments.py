@@ -12,7 +12,6 @@ def get_stdin():
 
 def main():
   stdin = get_stdin()
-  #segments = [Segment(line) for line in stdin]
   segments = []
   for line in stdin:
     try:
@@ -23,8 +22,9 @@ def main():
   for file_id in sorted(files_segments.keys()):
     file_segments = files_segments[file_id]
     new_file_segments = get_segments_explicit_overlap(file_segments)
-    for segment in new_file_segments:
-      print(segment.get_rttm(), end = '')
+    for index, segment in enumerate(new_file_segments):
+      speaker = '-'.join([speaker.get_name() for speaker in segment.get_speakers()])
+      print(speaker + '-' + file_id + '-' + str(index).zfill(7), file_id, segment.get_turn_onset(), segment.get_turn_end())
 
 if __name__ == '__main__':
   main()

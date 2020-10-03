@@ -17,10 +17,10 @@ set -e
 mfccdir=`pwd`/mfcc
 vaddir=`pwd`/mfcc
 data_root=/export/corpora5/LDC
-stage=0
-nnet_dir=exp/xvector_nnet_1a_128/
+stage=8
+nnet_dir=exp/xvector_nnet_1a_400/
 num_components=1024 # the number of UBM components (used for VB resegmentation)
-ivector_dim=128 # the dimension of i-vector (used for VB resegmentation)
+ivector_dim=400 # the dimension of i-vector (used for VB resegmentation)
 
 # Prepare datasets
 if [ $stage -le 0 ]; then
@@ -202,7 +202,7 @@ if [ $stage -le 3 ]; then
   utils/fix_data_dir.sh data/train_combined_cmn_no_sil
 fi
 
-local/nnet3/xvector/tuning/run_xvector_1a.sh --stage $stage --train-stage -1 \
+local/nnet3/xvector/tuning/run_xvector_1a.sh --stage $stage --train-stage 56 \
   --data data/train_combined_cmn_no_sil --nnet-dir $nnet_dir \
   --egs-dir $nnet_dir/egs
 

@@ -55,29 +55,6 @@ class Ivector:
     return self.value
   def set_value(self, value):
     self.value = value
-    
-class Xvector:
-  def __init__(self, data):
-    if isinstance(data, str):
-      data = data.split('  [ ')
-      self.utterance_id = data[0].split('-')[0]
-      self.value        = numpy.array(data[1][:-3].split(' ')).astype(numpy.float32)
-    elif isinstance(data, Ivector):
-      self.utterance_id = data.get_utterance_id()
-      self.value        = data.get_value().copy()
-    elif isinstance(data, numpy.ndarray):
-      self.utterance_id = None
-      self.value        = data
-    else:
-      print('Xvector: unknown data type.')
-      self.utterance_id = None
-      self.value        = None
-  def get_utterance_id(self):
-    return self.utterance_id
-  def get_value(self):
-    return self.value
-  def set_value(self, value):
-    self.value = value
 
 class Segment:
   def __init__(self, data):
@@ -92,7 +69,6 @@ class Segment:
       self.confidence_score      = data[8]
       self.signal_lookahead_time = data[9]
       self.ivectors              = []
-      self.xvectors              = []
     elif isinstance(data, Segment):
       self.type                  = data.get_type()
       self.file_id               = data.get_file_id()
@@ -103,7 +79,6 @@ class Segment:
       self.confidence_score      = data.get_confidence_score()
       self.signal_lookahead_time = data.get_signal_lookahead_time()
       self.ivectors              = [Ivector(ivector) for ivector in data.get_ivectors()]
-      self.xvectors              = [Xvector(xvector) for xvector in data.get_xvectors()]
   def get_type(self):
     return self.type
   def get_file_id(self):
@@ -140,10 +115,6 @@ class Segment:
     return self.ivectors;
   def set_ivectors(self, ivectors):
     self.ivectors = ivectors
-  def get_xvectors(self):
-    return self.xvectors
-  def set_xvectors(self, xvectors):
-    self.xvectors = xvectors
   def get_rttm(self):
     output = ''
     for speaker in self.get_speakers():
@@ -160,8 +131,6 @@ class Segment:
     return output
   def has_timestamps_overlap(self, turn_onset, turn_end):
     return not (turn_end <= self.get_turn_onset() or self.get_turn_end() <= turn_onset)
-  def has_overlap(self, segment):
-    return self.has_timestamps_overlap(segment.get_turn_onset(), segment.get_turn_end())
   def __str__(self):
     return str(self.__class__) + ": " + str(self.__dict__)
 
@@ -289,7 +258,7 @@ def filter_by_speakers_length(speakers_segments, length):
       new_speakers_segments[speakers_names] = speakers_segments[speakers_names]
   return new_speakers_segments
 
-def get_rttm_segments_features(rttm_filepath, segments_filepath, ivectors_filepath, xvectors_filepath = None):
+def get_rttm_segments_features(rttm_filepath, segments_filepath, ivectors_filepath):
   f = open(rttm_filepath, 'r')
   segments = [Segment(line) for line in f.readlines()]
   f.close()
@@ -311,21 +280,12 @@ def get_rttm_segments_features(rttm_filepath, segments_filepath, ivectors_filepa
     ivectors_dict[ivector.get_utterance_id()] = ivector
   f.close()
 
-  if xvectors_filepath is not None:
-    xvectors_dict = {}
-    f = open(xvectors_filepath, 'r')
-    for line in f.readlines():
-      xvector = Xvector(line)
-      xvectors_dict[xvector.get_utterance_id()] = xvector
-
   for file_id, segments in files_segments.items():
     segments = get_segments_union(segments)
     for segment in segments:
+      #print(file_id, segment.get_turn_onset())
       ivector = ivectors_dict[utterances_turns_dict[file_id][segment.get_turn_onset()]]
       segment.set_ivectors([ivector])
-      if xvectors_filepath is not None:
-        xvector = xvectors_dict[utterances_turns_dict[file_id][segment.get_turn_onset()]]
-        segment.set_xvectors([xvector])
     files_segments[file_id] = segments
 
   return files_segments

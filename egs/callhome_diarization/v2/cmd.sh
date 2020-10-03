@@ -10,5 +10,5 @@
 # conf/queue.conf in http://kaldi-asr.org/doc/queue.html for more information,
 # or search for the string 'default_config' in utils/queue.pl or utils/slurm.pl.
 
+#export train_cmd="queue.pl -l hostname='!c2[34567]*&!b02*&!b1[48]*&!a*'"
 export train_cmd="queue.pl"
-
