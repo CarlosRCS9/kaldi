@@ -9,19 +9,16 @@ set -e
 mfccdir=`pwd`/mfcc
 vaddir=`pwd`/mfcc
 
-#nnet_dir=/export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/exp/xvector_nnet_1a
-#plda_dir=/export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/exp/xvector_nnet_1a/xvectors_rtve_2018_eval
 nnet_dir=/export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/exp/sre19-av-models/xvector_nnet_4a.1.vcc
 plda_dir=$nnet_dir/xvectors_rtve_2018${suffix}_train
 rtve_root=/export/corpora5/RTVE
-suffix=_2020_sad_paola
+suffix=_EXP003
 
 stage=0
 
 if [ $stage -le 0 ]; then
-  # Prepare the RTVE 2018 development set for evaluation.
-  local/make_rtve_2018_dev2.sh eval $rtve_root/RTVE2018DB/dev2 data/rtve_2018${suffix} false
-  local/make_rtve_2020_dev.sh eval $rtve_root/RTVE2020DB/dev data/rtve_2020${suffix} false
+  local/make_rtve_2018_dev2.sh eval $rtve_root/RTVE2018DB/dev2 data/rtve_2018${suffix} true false
+  local/make_rtve_2020_dev.sh eval $rtve_root/RTVE2020DB/dev data/rtve_2020${suffix} true false
   local/make_rtve_2020_test_diarization.sh $rtve_root/RTVE2020DB/test/audio/SD data/rtve_2020_test${suffix}
 fi
 
@@ -48,8 +45,6 @@ if [ $stage -le 1 ]; then
       data/$name
   done
 
-  exit 1
-
   # Although this is somewhat wasteful in terms of disk space, for diarization
   # it ends up being preferable to performing the CMN in memory.  If the CMN
   # were performed in memory (e.g., we used --apply-cmn true in
@@ -72,6 +67,8 @@ if [ $stage -le 1 ]; then
   #  utils/fix_data_dir.sh data/${name}_cmn
   #done
 fi
+
+exit 1
 
 if [ $stage -le 2 ]; then
   # Extract x-vectors for RTVE 2018 and 2020.

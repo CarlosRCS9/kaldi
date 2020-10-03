@@ -32,6 +32,10 @@ cat $data_dir/rttm/*ENVIRONMENT* \
   > $output_dir/environment.rttm
 sed "/unknown/d" -i $output_dir/environment.rttm
 sed -e "s/$/ <NA>/" -i $output_dir/environment.rttm
+sort -k4,4 -n $output_dir/environment.rttm > $output_dir/environment_tmp.rttm
+mv $output_dir/environment_tmp.rttm $output_dir/environment.rttm
+python3 tests/rttm_to_rttms.py $output_dir/environment.rttm
+cat $output_dir/environment/* > $output_dir/environment.rttm
 # ------------------------- place.rttm ------------------------- #
 cat $data_dir/rttm/*PLACE* \
   | iconv -f utf8 -t ascii//TRANSLIT \
@@ -40,6 +44,10 @@ cat $data_dir/rttm/*PLACE* \
   > $output_dir/place.rttm
 sed "/unknown/d" -i $output_dir/place.rttm
 sed -e "s/$/ <NA>/" -i $output_dir/place.rttm
+sort -k4,4 -n $output_dir/place.rttm > $output_dir/place_tmp.rttm
+mv $output_dir/place_tmp.rttm $output_dir/place.rttm
+python3 tests/rttm_to_rttms.py $output_dir/place.rttm
+cat $output_dir/place/* > $output_dir/place.rttm
 # ------------------------- sex.rttm ------------------------- #
 cat $data_dir/rttm/*SEX* \
   | iconv -f utf8 -t ascii//TRANSLIT \
@@ -48,6 +56,10 @@ cat $data_dir/rttm/*SEX* \
   > $output_dir/sex.rttm
 sed "/unknown/d" -i $output_dir/sex.rttm
 sed -e "s/$/ <NA>/" -i $output_dir/sex.rttm
+sort -k4,4 -n $output_dir/sex.rttm > $output_dir/sex_tmp.rttm
+mv $output_dir/sex_tmp.rttm $output_dir/sex.rttm
+python3 tests/rttm_to_rttms.py $output_dir/sex.rttm
+cat $output_dir/sex/* > $output_dir/sex.rttm
 # ------------------------- speaker.rttm ------------------------- #
 cat $data_dir/rttm/*SPKR* \
   | iconv -f utf8 -t ascii//TRANSLIT \
@@ -79,6 +91,7 @@ if [ $speaker_overlap = false ]; then
   mv $output_dir/speaker_tmp.rttm $output_dir/speaker.rttm
   # At this point the speaker.rttm does not have any overlapping speech instances
 fi
+python3 tests/rttm_to_rttms.py $output_dir/speaker.rttm
 if [ $speaker_rename = true ]; then
   cat $output_dir/speaker.rttm | python3 scripts/rttm_get_speaker_name.py rtve_2020_dev_speaker > $output_dir/speaker_name
 fi
