@@ -8,9 +8,9 @@ import numpy
 import itertools
 import random
 
-from models import Ivector
+from models import Ivector, Xvector
 
-def get_first_speakers(data, length):
+def get_first_speakers(data, length = None):
   if isinstance(data, dict):
     files_speakers_names = {}
     for file_id, segments in data.items():
@@ -18,7 +18,8 @@ def get_first_speakers(data, length):
     return files_speakers_names
   else:
     speakers_names = itertools.chain(*map(lambda segment: [speaker.get_name() for speaker in segment.get_speakers()], data))
-    return list(dict.fromkeys(speakers_names).keys())[:length]
+    speakers_names = list(dict.fromkeys(speakers_names).keys())
+    return speakers_names if length is None else speakers_names[:length]
 
 def get_best_speakers(segments, length):
   if isinstance(segments, dict):
@@ -129,17 +130,21 @@ def reduce_speakers_segments_indexes(accumulator, index_segment):
 def get_speakers_segments_indexes(indexes_segments):
   return functools.reduce(reduce_speakers_segments_indexes, indexes_segments, {})
 
-def get_speakers_models(segments, speakers_segments_indexes, models_generation_lengths):
+def get_speakers_models(segments, speakers_segments_indexes, models_generation_lengths, speakers = None):
   speakers_models = {}
   for speakers_names, indexes in speakers_segments_indexes.items():
-    speakers_models[speakers_names] = {}
-    for model_generation_length in models_generation_lengths:
-      speakers_models[speakers_names][model_generation_length] = {}
-      model_segments = [segments[index] for index in speakers_segments_indexes[speakers_names][:model_generation_length]]
-      model_ivectors = numpy.transpose([[ivector for ivector in segment.get_ivectors()] for segment in model_segments])
-      model_ivectors = [[ivector.get_value() for ivector in ivectors] for ivectors in model_ivectors]
-      model_ivectors = [Ivector(numpy.sum(ivectors, 0) / len(ivectors)) for ivectors in model_ivectors]
-      speakers_models[speakers_names][model_generation_length]['ivectors'] = model_ivectors
+    if speakers is None or speakers_names in speakers:
+      speakers_models[speakers_names] = {}
+      for model_generation_length in models_generation_lengths:
+        speakers_models[speakers_names][model_generation_length] = {}
+        model_segments = [segments[index] for index in speakers_segments_indexes[speakers_names][:model_generation_length]]   
+        
+        for name in ['ivectors', 'xvectors']:
+          get_embeddings = lambda name, segment: segment.get_ivectors() if name == 'ivectors' else segment.get_xvectors()
+          model_embeddings = numpy.transpose([get_embeddings(name, segment) for segment in model_segments])
+          model_embeddings = [[embedding.get_value() for embedding in embeddings] for embeddings in model_embeddings]
+          model_embeddings = [(Ivector if name == 'ivectors' else Xvector)(numpy.sum(embeddings, 0) / len(embeddings)) for embeddings in model_embeddings]
+          speakers_models[speakers_names][model_generation_length][name] = model_embeddings
   return speakers_models
 
 def get_speakers_permutations(speakers_models, length, include_zeros = True, include_overlaps = False):
