@@ -39,7 +39,7 @@ class Ivector:
       data = data.split('  [ ')
       self.utterance_id = data[0].split('-')[0]
       self.value        = numpy.array(data[1][:-3].split(' ')).astype(numpy.float32)
-    elif isinstance(data, Ivector):
+    elif isinstance(data, Xvector):
       self.utterance_id = data.get_utterance_id()
       self.value        = data.get_value().copy()
     elif isinstance(data, numpy.ndarray):
