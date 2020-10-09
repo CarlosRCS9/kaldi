@@ -73,7 +73,12 @@ def main():
       end = segment.get_turn_end()
       onset_frame = np.round(onset * frames_per_second).astype(int)
       end_frame = np.round(end * frames_per_second).astype(int)
-      ones = np.concatenate([np.zeros(onset_frame), np.ones(end_frame - onset_frame), np.zeros(vad.size - end_frame)])
+      zeros_length = vad.size - end_frame
+      zeros_length = 0 if zeros_length < 0 else zeros_length
+      if zeros_length > 0:
+        ones = np.concatenate([np.zeros(onset_frame), np.ones(end_frame - onset_frame), np.zeros(zeros_length)])
+      else:
+        ones = np.ones(vad.size)
       vad += ones
     vad_string = file_id + '  [ ' + ' '.join([str(number) for number in vad.astype(int)]) + ' ]'
     utterance_vad[file_id] = vad

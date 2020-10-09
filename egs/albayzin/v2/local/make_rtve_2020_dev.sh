@@ -60,45 +60,52 @@ sort -k4,4 -n $output_dir/sex.rttm > $output_dir/sex_tmp.rttm
 mv $output_dir/sex_tmp.rttm $output_dir/sex.rttm
 python3 tests/rttm_to_rttms.py $output_dir/sex.rttm
 cat $output_dir/sex/* > $output_dir/sex.rttm
-# ------------------------- speaker.rttm ------------------------- #
+# ------------------------- ref.rttm ------------------------- #
 cat $data_dir/rttm/*SPKR* \
   | iconv -f utf8 -t ascii//TRANSLIT \
   | sed -e 's/SPKR/SPEAKER/' \
   | sed -e 's/SPEAKER-INFO/SPEAKER/' \
-  > $output_dir/speaker.rttm
-sed "/unknown/d" -i $output_dir/speaker.rttm
-sed "/musica/d" -i $output_dir/speaker.rttm
-sed -e "s/$/ <NA>/" -i $output_dir/speaker.rttm
+  > $output_dir/ref.rttm
+sed "/unknown/d" -i $output_dir/ref.rttm
+sed "/musica/d" -i $output_dir/ref.rttm
+sed -e "s/$/ <NA>/" -i $output_dir/ref.rttm
 # At this point the rttm files has the standard sctructure, with no music and no unknown
 if [ $speaker_rename = true ]; then
-  cat $output_dir/speaker.rttm | python3 scripts/rttm_get_file_name.py rtve_2020_dev > $output_dir/recording_name
-  cat $output_dir/speaker.rttm | python3 scripts/rename.py $output_dir/recording_name > $output_dir/speaker_tmp.rttm
-  mv $output_dir/speaker_tmp.rttm $output_dir/speaker.rttm
-  # At this point the speaker.rttm file has new recordings ids
+  cat $output_dir/ref.rttm | python3 scripts/rttm_get_file_name.py rtve_2020_dev > $output_dir/recording_name
+
+  cat $output_dir/environment.rttm | python3 scripts/rename.py $output_dir/recording_name > $output_dir/environment_tmp.rttm
+  mv $output_dir/environment_tmp.rttm $output_dir/environment.rttm
+  cat $output_dir/place.rttm | python3 scripts/rename.py $output_dir/recording_name > $output_dir/place_tmp.rttm
+  mv $output_dir/place_tmp.rttm $output_dir/place.rttm
+  cat $output_dir/sex.rttm | python3 scripts/rename.py $output_dir/recording_name > $output_dir/sex_tmp.rttm
+  mv $output_dir/sex_tmp.rttm $output_dir/sex.rttm
+  cat $output_dir/ref.rttm | python3 scripts/rename.py $output_dir/recording_name > $output_dir/ref_tmp.rttm
+  mv $output_dir/ref_tmp.rttm $output_dir/ref.rttm
+  # At this point the ref.rttm file has new recordings ids
 fi
 if [ $mode = train ]; then
-  cat $output_dir/speaker.rttm \
+  cat $output_dir/ref.rttm \
   | python3 scripts/rttm_explicit_overlap.py \
   | python3 scripts/rttm_split.py 86400 0 --min-length=0.5 \
-  > $output_dir/speaker_tmp.rttm
-  mv $output_dir/speaker_tmp.rttm $output_dir/speaker.rttm
-  # At this point the speaker.rttm has explicit overlaps and the segments shorter than 0.5 s have been removed
+  > $output_dir/ref_tmp.rttm
+  mv $output_dir/ref_tmp.rttm $output_dir/ref.rttm
+  # At this point the ref.rttm has explicit overlaps and the segments shorter than 0.5 s have been removed
 fi
 if [ $speaker_overlap = false ]; then
-  cat $output_dir/speaker.rttm  \
+  cat $output_dir/ref.rttm  \
   | python3 scripts/rttm_split_filter.py 86400 0 --max-file-speakers=1000 --max-segment-speakers=1 \
-  > $output_dir/speaker_tmp.rttm
-  mv $output_dir/speaker_tmp.rttm $output_dir/speaker.rttm
-  # At this point the speaker.rttm does not have any overlapping speech instances
+  > $output_dir/ref_tmp.rttm
+  mv $output_dir/ref_tmp.rttm $output_dir/ref.rttm
+  # At this point the ref.rttm does not have any overlapping speech instances
 fi
-python3 tests/rttm_to_rttms.py $output_dir/speaker.rttm
+python3 tests/rttm_to_rttms.py $output_dir/ref.rttm
 if [ $speaker_rename = true ]; then
-  cat $output_dir/speaker.rttm | python3 scripts/rttm_get_speaker_name.py rtve_2020_dev_speaker > $output_dir/speaker_name
+  cat $output_dir/ref.rttm | python3 scripts/rttm_get_speaker_name.py rtve_2020_dev_speaker > $output_dir/speaker_name
 fi
 
 # ------------------------- segments ------------------------- #
 if [ $mode = "train" ]; then
-  cat $output_dir/speaker.rttm \
+  cat $output_dir/ref.rttm \
     | python3 scripts/rttm_explicit_overlap.py \
     | python3 scripts/rttm_to_segments.py > $output_dir/segments
   if [ $speaker_rename = true ]; then
@@ -109,7 +116,7 @@ fi
 
 # ------------------------- utt2spk ------------------------- #
 if [ $mode = "train" ]; then
-  cat $output_dir/speaker.rttm \
+  cat $output_dir/ref.rttm \
     | python3 scripts/rttm_explicit_overlap.py \
     | python3 scripts/rttm_to_utt2spk.py > $output_dir/utt2spk
   if [ $speaker_rename = true ]; then
@@ -148,7 +155,7 @@ cat $output_dir/utt2spk | utils/utt2spk_to_spk2utt.pl > $output_dir/spk2utt
 
 # ------------------------- reco2num_spk ------------------------- #
 if [ $mode = "oracle" ] || [ $mode = "train" ]; then
-  cat $output_dir/speaker.rttm | python3 scripts/rttm_to_reco2num_spk.py > $output_dir/reco2num_spk
+  cat $output_dir/ref.rttm | python3 scripts/rttm_to_reco2num_spk.py > $output_dir/reco2num_spk
 fi
 
 utils/fix_data_dir.sh $output_dir
