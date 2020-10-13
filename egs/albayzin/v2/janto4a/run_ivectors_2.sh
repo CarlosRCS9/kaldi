@@ -10,11 +10,11 @@ set -e
 num_components=2048
 ivector_dim=128
 
-suffix=_EXP006
+suffix=_EXP007
 extractor_dir=exp/${suffix}_extractor_c${num_components}_i${ivector_dim}
 rtve_root=/export/corpora5/RTVE
 
-stage=11
+stage=0
 
 if [ $stage -le 0 ]; then
   # <speaker-overlap> <speaker-rename>
@@ -172,8 +172,8 @@ if [ $stage -le 6 ]; then
 fi
 
 if [ $stage -le 7 ]; then
-  local/make_rtve_2018_dev2.sh eval $rtve_root/RTVE2018DB/dev2 data/rtve_2018${suffix} false true
-  local/make_rtve_2020_dev.sh eval $rtve_root/RTVE2020DB/dev data/rtve_2020${suffix} false true
+  local/make_rtve_2018_dev2.sh oracle $rtve_root/RTVE2018DB/dev2 data/rtve_2018${suffix} false true
+  local/make_rtve_2020_dev.sh oracle $rtve_root/RTVE2020DB/dev data/rtve_2020${suffix} false true
   local/make_rtve_2020_test_diarization.sh $rtve_root/RTVE2020DB/test/audio/SD data/rtve_2020_test${suffix}
 fi
 
@@ -190,45 +190,53 @@ if [ $stage -le 8 ]; then
     utils/fix_data_dir.sh data/$name
   done
 
-  for name in rtve_2018${suffix} rtve_2020${suffix} rtve_2020_test${suffix}; do
+  for name in rtve_2018${suffix} rtve_2020${suffix}; do
+    python3 scripts/make_oracle_vad.py data/$name
+  done
+
+  for name in rtve_2020_test${suffix}; do
     exp/0012_sad_v1/local/segmentation/detect_speech_activity.sh \
       --cmd "$train_cmd" --nj 9 \
       data/$name \
-      exp/0012_sad_v1/exp/segmentation_1a/tdnn_stats_sad_1a \
+     exp/0012_sad_v1/exp/segmentation_1a/tdnn_stats_sad_1a \
       data/$name/mfcc_hires \
       data/$name \
       data/$name
   done
 
-  for name in rtve_2018${suffix} rtve_2020${suffix} rtve_2020_test${suffix}; do
+  for name in rtve_2018${suffix} rtve_2020${suffix} rtve_2020_test${suffix}_seg; do
     rm -rf data/${name}_cmn
     local/nnet3/xvector/prepare_feats.sh \
       --nj 9 \
       --cmd "$train_cmd" \
-      data/${name}_seg \
+      data/${name} \
       data/${name}_cmn \
       exp/${name}_cmn
-    if [ -f data/${name}_seg/vad.scp ]; then
-      cp data/${name}_seg/vad.scp data/${name}_cmn/
+    if [ -f data/${name}/vad.scp ]; then
+      cp data/${name}/vad.scp data/${name}_cmn/
     fi
-    if [ -f data/${name}_seg/segments ]; then
-      cp data/${name}_seg/segments data/${name}_cmn/
+    if [ -f data/${name}/segments ]; then
+      cp data/${name}/segments data/${name}_cmn/
     fi
     utils/fix_data_dir.sh data/${name}_cmn
   done
 
-  #echo "0.01" > data/rtve_2018${suffix}_cmn/frame_shift
-  #echo "0.01" > data/rtve_2020${suffix}_cmn/frame_shift
-  #echo "0.01" > data/rtve_2020_test${suffix}_cmn/frame_shift
+  mv data/rtve_2020_test${suffix}_seg_cmn data/rtve_2020_test${suffix}_cmn
 
-  #for name in rtve_2018${suffix} rtve_2020${suffix} rtve_2020_test${suffix}; do
-  #  rm -rf data/${name}_cmn_segmented
-  #  diarization/vad_to_segments.sh \
-  #    --nj 9 \
-  #    --cmd "$train_cmd" \
-  #    data/${name}_cmn \
-  #    data/${name}_cmn_segmented
-  #done
+  echo "0.01" > data/rtve_2018${suffix}_cmn/frame_shift
+  echo "0.01" > data/rtve_2020${suffix}_cmn/frame_shift
+  echo "0.01" > data/rtve_2020_test${suffix}_cmn/frame_shift
+
+  for name in rtve_2018${suffix} rtve_2020${suffix}; do
+    rm -rf data/${name}_cmn_segmented
+    diarization/vad_to_segments.sh \
+     --nj 9 \
+      --cmd "$train_cmd" \
+      data/${name}_cmn \
+      data/${name}_cmn_segmented
+  done
+
+  mv data/rtve_2020_test${suffix}_cmn data/rtve_2020_test${suffix}_cmn_segmented
 fi
 
 if [ $stage -le 9 ]; then
@@ -236,7 +244,7 @@ if [ $stage -le 9 ]; then
     diarization/extract_ivectors.sh \
       --cmd "$train_cmd --mem 25G" --nj 9 --window 3.0 --period 10.0 --min-segment 1.5 --apply-cmn false --hard-min true \
       $extractor_dir \
-      data/${name}_cmn \
+      data/${name}_cmn_segmented \
       exp/ivectors_${name}
   done
 fi
