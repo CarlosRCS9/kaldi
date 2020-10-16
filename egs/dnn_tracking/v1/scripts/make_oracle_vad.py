@@ -30,71 +30,65 @@ def main():
   if not os.path.isfile(args.data_dir + '/utt2dur'):
     sys.exit(args.data_dir + '/utt2dur not found')
 
-  segments = []
+  ref_rttm = []
   f = open(args.data_dir + '/ref.rttm', 'r')
   for line in f.readlines():
     try:
-      segments.append(Segment(line))
+      ref_rttm.append(Segment(line))
     except:
       pass
   f.close()
-  utterance_num_frames = {}
+
+  utt2num_frames = {}
   f = open(args.data_dir + '/utt2num_frames')
   for line in f.readlines():
     try:
       utterance_id, num_frames = line.rstrip().split()
-      utterance_num_frames[utterance_id] = int(num_frames)
+      utt2num_frames[utterance_id] = int(num_frames)
     except:
       pass
   f.close()
-  utterance_duration = {}
+
+  utt2dur = {}
   f = open(args.data_dir + '/utt2dur', 'r')
   for line in f.readlines():
     try:
       utterance_id, duration = line.rstrip().split()
-      utterance_duration[utterance_id] = float(duration)
+      utt2dur[utterance_id] = float(duration)
     except:
       pass
   f.close()
 
-  utterance_vad = {}
-  utterance_vad_string = {}
-  files_segments = sort_segments_by_file_id(segments)
-  for file_id in sorted(files_segments.keys()):
-    num_frames = utterance_num_frames[file_id]
-    duration = utterance_duration[file_id] # seconds
-
-    frames_per_second = np.round(num_frames / duration).astype(int)
+  recordings_ref_rttm = sort_segments_by_file_id(ref_rttm)
+  recordings_vad = {}
+  for recording_id in sorted(recordings_ref_rttm.keys()):
+    number_of_frames = utt2num_frames[recording_id]
+    duration = utt2dur[recording_id]
+    frames_per_second = np.round(number_of_frames / duration).astype(int)
     frame_duration = 1 / frames_per_second
-    vad = np.zeros(num_frames)
-    segments = get_segments_explicit_overlap(files_segments[file_id])
-    for segment in segments:
-      onset = segment.get_turn_onset()
-      end = segment.get_turn_end()
-      onset_frame = np.round(onset * frames_per_second).astype(int)
-      end_frame = np.round(end * frames_per_second).astype(int)
-      zeros_length = vad.size - end_frame
-      zeros_length = 0 if zeros_length < 0 else zeros_length
-      if zeros_length > 0:
-        ones = np.concatenate([np.zeros(onset_frame), np.ones(end_frame - onset_frame), np.zeros(zeros_length)])
-      else:
-        ones = np.ones(vad.size)
+
+    recording_ref_rttm =recordings_ref_rttm[recording_id]
+    vad = np.zeros(number_of_frames)
+    for segment in recording_ref_rttm:
+      begin_frame = np.floor(segment.get_turn_onset() * frames_per_second).astype(int)
+      end_frame = np.ceil(segment.get_turn_end() * frames_per_second).astype(int)
+      ones = np.concatenate([np.zeros(begin_frame), np.ones(end_frame - begin_frame), np.zeros(number_of_frames - end_frame)])
       vad += ones
-    vad_string = file_id + '  [ ' + ' '.join([str(number) for number in vad.astype(int)]) + ' ]'
-    utterance_vad[file_id] = vad
-    utterance_vad_string[file_id] = vad_string
+    vad = (vad > 0).astype(int)
+    recordings_vad[recording_id] = { 'value': vad, 'string': recording_id + '  [ ' + ' '.join([str(value) for value in vad]) + ' ]' }
 
   os.makedirs(args.output_dir + '/data', exist_ok = True)
-  f_scp = open(args.output_dir + '/vad.scp', 'w')
-  utterance_count = 0
-  for file_id in sorted(utterance_vad_string.keys()):
-    ark_filepath = args.output_dir + '/data/vad.' + str(utterance_count) + '.ark'
-    f_scp.write(file_id + ' ' + os.path.abspath(ark_filepath) + ':' + str(len(file_id) + 2) + '\n')
+  f_vad_scp = open(args.output_dir + '/vad.scp', 'w')
+  recordings_count = 0
+  for recording_id in sorted(recordings_vad.keys()):
+    #ark_filepath = args.output_dir + '/data/ark.' + str(recordings_count) + '.ark'
+    ark_filepath = args.output_dir + '/data/' + recording_id + '.sad'
+    f_vad_scp.write(recording_id + ' ' + os.path.abspath(ark_filepath) + ':' + str(len(recording_id) + 2) + '\n')
     f = open(ark_filepath, 'w')
-    f.write(utterance_vad_string[file_id] + '\n')
+    f.write(recordings_vad[recording_id]['string'] + '\n')
     f.close()
-    utterance_count += 1
-  f_scp.close()
+    recordings_count += 1
+  f_vad_scp.close()
 
 if __name__ == '__main__':
   main()
