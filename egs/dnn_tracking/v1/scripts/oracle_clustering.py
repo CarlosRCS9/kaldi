@@ -49,18 +49,16 @@ def main():
 
   recordings_rttm = sort_segments_by_file_id(ref_rttm)
   for recording_id in sorted(recordings_rttm.keys()):
-    rttm = get_segments_explicit_overlap(recordings_rttm[recording_id])
+    #rttm = get_segments_explicit_overlap(recordings_rttm[recording_id])
+    rttm = recordings_rttm[recording_id]
     segments = recordings_segments[recording_id]
     for segment in segments:
       utterance_id = segment['utterance_id']
       onset = segment['onset']
       end = segment['end']
-      #segment_rttm = list(filter(lambda rttm: onset <= rttm.get_turn_onset() and rttm.get_turn_end() <= end, rttm))
+      #segment_rttm = list(filter(lambda rttm: end <= rttm.get_turn_onset() or rttm.get_turn_end() <= onset, rttm))
       segment_rttm = list(filter(lambda rttm: rttm.has_timestamps_overlap(onset, end), rttm))
       if len(segment_rttm) > 0:
-        #print(utterance_id, onset, end)
-        #for segment in segment_rttm:
-        #  print(segment.get_rttm(), end = '')
         speaker_ids = set(itertools.chain(*[[speaker.get_name() for speaker in segment.get_speakers()] for segment in segment_rttm]))
         for speaker_id in speaker_ids:
           print(' '.join(['SPEAKER', recording_id, '1', str(onset), str(end - onset), '<NA>', '<NA>', speaker_id, '<NA>', '<NA>']))

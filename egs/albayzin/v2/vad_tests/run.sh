@@ -7,15 +7,15 @@
 . ./path.sh
 set -e
 
-suffix=_EXP009
+suffix=_EXP010
 rtve_root=/export/corpora5/RTVE
 
 stage=0
 
 if [ $stage -le 0 ]; then
   # <speaker-overlap> <speaker-rename>
-  local/make_rtve_2018_dev2_2.sh oracle $rtve_root/RTVE2018DB/dev2 data/rtve_2018${suffix}_oracle true false
-  local/make_rtve_2020_dev_2.sh oracle $rtve_root/RTVE2020DB/dev data/rtve_2020${suffix}_oracle true false
+  local/make_rtve_2018_dev2_2.sh oracle $rtve_root/RTVE2018DB/dev2 data/rtve_2018${suffix}_oracle true true
+  local/make_rtve_2020_dev_2.sh oracle $rtve_root/RTVE2020DB/dev data/rtve_2020${suffix}_oracle true true
 fi
 
 if [ $stage -le 1 ]; then
@@ -75,7 +75,7 @@ if [ $stage -le 2 ]; then
   for name in rtve_2018${suffix} rtve_2020${suffix}; do
     python3 scripts/oracle_clustering.py data/${name}_oracle/ref.rttm data/${name}_oracle_segmented/segments > data/${name}_oracle_segmented/rttm
 
-    md-eval.pl \
+    md-eval.pl -1 -c 0.25\
       -r data/${name}_oracle/ref.rttm \
       -s data/${name}_oracle_segmented/rttm \
       2> data/${name}_oracle_segmented/threshold.log \
