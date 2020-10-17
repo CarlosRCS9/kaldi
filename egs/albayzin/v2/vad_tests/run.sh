@@ -10,7 +10,7 @@ set -e
 suffix=_EXP010
 rtve_root=/export/corpora5/RTVE
 
-stage=0
+stage=2
 
 if [ $stage -le 0 ]; then
   # <speaker-overlap> <speaker-rename>
@@ -75,7 +75,7 @@ if [ $stage -le 2 ]; then
   for name in rtve_2018${suffix} rtve_2020${suffix}; do
     python3 scripts/oracle_clustering.py data/${name}_oracle/ref.rttm data/${name}_oracle_segmented/segments > data/${name}_oracle_segmented/rttm
 
-    md-eval.pl -1 -c 0.25\
+    md-eval.pl \
       -r data/${name}_oracle/ref.rttm \
       -s data/${name}_oracle_segmented/rttm \
       2> data/${name}_oracle_segmented/threshold.log \
