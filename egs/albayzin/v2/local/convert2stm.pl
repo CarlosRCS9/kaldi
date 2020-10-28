@@ -1,0 +1,1 @@
+../../../ami/s5c/local/convert2stm.pl

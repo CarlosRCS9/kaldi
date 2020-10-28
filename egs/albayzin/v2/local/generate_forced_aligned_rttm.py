@@ -1,0 +1,1 @@
+../../../ami/s5c/local/generate_forced_aligned_rttm.py

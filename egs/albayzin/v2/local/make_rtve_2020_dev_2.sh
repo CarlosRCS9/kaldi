@@ -18,6 +18,7 @@ fi
 
 data_dir=$2
 output_dir=$3
+audio_dir=/export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/data/audio
 speaker_overlap=$([ ${4:-true} = true ] && echo true || echo false)
 speaker_rename=$([ ${5:-false} = true ] && echo true || echo false)
 
@@ -154,8 +155,15 @@ for filepath in $(ls -d $data_dir/audio/*.aac); do
   fi
 
   # ------------------------- wav.scp ------------------------- #
-  echo "$name ffmpeg -i $filepath -f wav -ar 16000 -ac 1 - |" \
-    >> $output_dir/wav.scp
+  mkdir -p $audio_dir
+  filepath_new=$audio_dir/${name}.wav
+  if [ -f $filepath_new ]; then
+    echo "$name $filepath_new" \
+      >> $output_dir/wav.scp
+  else
+    echo "$name ffmpeg -i $filepath -f wav -ar 16000 -ac 1 $filepath_new; cat $filepath_new |" \
+      >> $output_dir/wav.scp
+  fi
 done
 
 if [ $mode = 'train' ]; then

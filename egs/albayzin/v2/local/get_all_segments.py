@@ -1,0 +1,1 @@
+../../../ami/s5c/local/get_all_segments.py

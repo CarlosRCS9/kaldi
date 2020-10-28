@@ -18,6 +18,7 @@ fi
 
 data_dir=$2
 output_dir=$3
+audio_dir=/export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/data/audio
 speaker_overlap=$([ ${4:-true} = true ] && echo true || echo false)
 speaker_rename=$([ ${5:-false} = true ] && echo true || echo false)
 
@@ -45,7 +46,7 @@ if [ $speaker_rename = true ]; then
   mv $output_dir/ref_tmp.rttm $output_dir/ref.rttm
   # At this point the ref.rttm file has new recordings ids
 fi
-if [ $mode = train ]; then
+if [ $mode = "train" ]; then
   cat $output_dir/ref.rttm \
   | python3 scripts/rttm_split.py 86400 0 --min-length=0.5 \
   > $output_dir/ref_tmp.rttm
@@ -92,16 +93,28 @@ for filepath in $(ls -d $data_dir/audio/*.aac); do
   fi
 
   # ------------------------- utt2spk ------------------------- #
-  if [ $mode = 'eval' ] || [ $mode = 'oracle' ]; then
+  if [ $mode = "eval" ] || [ $mode = "oracle" ]; then
     echo $name $name >> $output_dir/utt2spk
   fi
 
   # ------------------------- wav.scp ------------------------- #
-  echo "$name ffmpeg -i $filepath -f wav -ar 16000 -ac 1 - |" \
+  if [ $mode = "train" ]; then
+    echo "$name ffmpeg -i $filepath -f wav -ar 16000 -ac 1 - |" \
     >> $output_dir/wav.scp
+  else
+    mkdir -p $audio_dir
+    filepath_new=$audio_dir/${name}.wav
+    if [ -f $filepath_new ]; then
+      echo "$name $filepath_new" \
+        >> $output_dir/wav.scp
+    else
+      echo "$name ffmpeg -i $filepath -f wav -ar 16000 -ac 1 $filepath_new; cat $filepath_new |" \
+        >> $output_dir/wav.scp
+    fi
+  fi
 done
 
-if [ $mode = 'train' ]; then
+if [ $mode = "train" ]; then
   python3 scripts/segments_to_wav.py $output_dir $output_dir
   mv $output_dir/segments $output_dir/segments.backup
   mv $output_dir/segments_tmp $output_dir/segments
@@ -113,7 +126,7 @@ fi
 cat $output_dir/utt2spk | utils/utt2spk_to_spk2utt.pl > $output_dir/spk2utt
 
 # ------------------------- reco2num_spk ------------------------- #
-if [ $mode = "oracle" ] || [ $mode = "train" ]; then
+if [ $mode = "oracle" ]; then
   cat $output_dir/ref.rttm | python3 scripts/rttm_to_reco2num_spk.py > $output_dir/reco2num_spk
 fi
 

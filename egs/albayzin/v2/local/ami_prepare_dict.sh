@@ -1,0 +1,1 @@
+../../../ami/s5c/local/ami_prepare_dict.sh

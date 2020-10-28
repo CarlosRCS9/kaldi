@@ -1,0 +1,1 @@
+../../../ami/s5c/local/make_diar_data_forced.py

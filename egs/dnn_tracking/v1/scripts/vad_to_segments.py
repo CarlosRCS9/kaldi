@@ -47,7 +47,22 @@ def main():
   if not os.path.isfile(args.data_dir + '/vad.scp'):
     sys.exit(args.data_dir + '/vad.scp not found')
 
+  utt2spk_flag = os.path.isfile(args.data_dir + '/utt2spk')
+  utt2spk = {}
+  if utt2spk_flag:
+    with open(args.data_dir + '/utt2spk') as f:
+      for line in f:
+        try:
+          utterance_id, speaker_id = line.rstrip().split()
+          utt2spk[utterance_id] = speaker_id
+        except:
+          pass
+        if 'str' in line:
+          break
+
   vectors = read_kaldi_vectors(args.data_dir + '/vad.scp')
+  segments = []
+  utt2spk_new =[]
   for key_value in vectors:
     recording_id = key_value['key']
     vad = key_value['value']
@@ -60,7 +75,15 @@ def main():
       begin = round(begin, 3)
       end = round(end, 3)
       utterance_id = recording_id + '-' + str(begin).replace('.', '').zfill(7) + '-' + str(end).replace('.', '').zfill(7)
-      print(utterance_id, recording_id, begin, end)
+      segments.append({ 'utterance_id': utterance_id, 'recording_id': recording_id, 'begin': begin, 'end': end })
+      utt2spk_new.append({ 'utterance_id': utterance_id, 'speaker_id': utterance_id })
+
+  with open(args.output_dir + '/segments_tmp', 'w') as f:
+    for values in segments:
+      f.write(values['utterance_id'] + ' ' + values['recording_id'] + ' ' + str(values['begin']) + ' ' + str(values['end']) + '\n')
+  with open(args.output_dir + '/utt2spk_tmp', 'w') as f:
+    for values in utt2spk_new:
+      f.write(values['utterance_id'] + ' ' + values['speaker_id'] + '\n')
 
 if __name__ == '__main__':
   main()

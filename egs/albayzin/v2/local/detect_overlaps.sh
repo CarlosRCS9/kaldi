@@ -1,0 +1,1 @@
+../../../ami/s5c/local/detect_overlaps.sh

@@ -1,0 +1,1 @@
+../../../ami/s5c/local/convert_rttm_to_utt2spk_and_segments.py

@@ -1,0 +1,37 @@
+AT-20180422
+reference_speakers: 19
+result_speakers: 10
+error: -0.47368421052631576
+AT-20180627
+reference_speakers: 16
+result_speakers: 14
+error: -0.125
+AT-20180829
+reference_speakers: 17
+result_speakers: 10
+error: -0.4117647058823529
+AT-20180920
+reference_speakers: 23
+result_speakers: 5
+error: -0.782608695652174
+AT-20181010
+reference_speakers: 17
+result_speakers: 10
+error: -0.4117647058823529
+AT-20181111
+reference_speakers: 16
+result_speakers: 7
+error: -0.5625
+BR-C1
+reference_speakers: 14
+result_speakers: 5
+error: -0.6428571428571429
+BR-C2
+reference_speakers: 9
+result_speakers: 6
+error: -0.3333333333333333
+BR-C3
+reference_speakers: 9
+result_speakers: 5
+error: -0.4444444444444444
+total error: -0.46532858206423516

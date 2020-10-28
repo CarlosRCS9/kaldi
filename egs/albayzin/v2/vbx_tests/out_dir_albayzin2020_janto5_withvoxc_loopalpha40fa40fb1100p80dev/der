@@ -1,0 +1,60 @@
+command line (run on 2020 Oct 22 at 17:34:43) Version: 22  /export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/md.eval-v22.pl -c 0.25 -b -r /export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/vbx_tests/out_dir_albayzin2020_janto5_withvoxc_loopalpha40fa40fb1100p80dev/reference.rttm -s /export/b03/carlosc/repositories/kaldi/egs/albayzin/v2/vbx_tests/out_dir_albayzin2020_janto5_withvoxc_loopalpha40fa40fb1100p80dev/results.rttm
+
+Time-based metadata alignment
+
+Metadata evaluation parameters:
+    time-optimized metadata mapping
+        max gap between matching metadata events = 1 sec
+        max extent to match for SU's = 0.5 sec
+
+Speaker Diarization evaluation parameters:
+    The max time to extend no-score zones for NON-LEX exclusions is 0.5 sec
+    The no-score collar at SPEAKER boundaries is 0.25 sec
+
+Exclusion zones for evaluation and scoring are:
+                             -----MetaData-----        -----SpkrData-----
+     exclusion set name:     DEFAULT    DEFAULT        DEFAULT    DEFAULT
+     token type/subtype      no-eval   no-score        no-eval   no-score
+             (UEM)              X                         X
+         LEXEME/un-lex                    X                          
+        NON-LEX/breath                                              X
+        NON-LEX/cough                                               X
+        NON-LEX/laugh                                               X
+        NON-LEX/lipsmack                                            X
+        NON-LEX/other                                               X
+        NON-LEX/sneeze                                              X
+        NOSCORE/<na>            X         X               X         X
+ NO_RT_METADATA/<na>            X                                    
+             SU/unannotated               X                          
+
+*** Performance analysis for Speaker Diarization for ALL ***
+
+    EVAL TIME =  14010.92 secs
+  EVAL SPEECH =  10915.44 secs ( 77.9 percent of evaluated time)
+  SCORED TIME =  12364.78 secs ( 88.3 percent of evaluated time)
+SCORED SPEECH =   9731.37 secs ( 78.7 percent of scored time)
+   EVAL WORDS =      0        
+ SCORED WORDS =      0         (100.0 percent of evaluated words)
+---------------------------------------------
+MISSED SPEECH =    367.71 secs (  3.0 percent of scored time)
+FALARM SPEECH =   1177.76 secs (  9.5 percent of scored time)
+ MISSED WORDS =      0         (100.0 percent of scored words)
+---------------------------------------------
+SCORED SPEAKER TIME =   9860.49 secs (101.3 percent of scored speech)
+MISSED SPEAKER TIME =    496.83 secs (  5.0 percent of scored speaker time)
+FALARM SPEAKER TIME =   1177.76 secs ( 11.9 percent of scored speaker time)
+ SPEAKER ERROR TIME =   2775.51 secs ( 28.1 percent of scored speaker time)
+SPEAKER ERROR WORDS =      0         (100.0 percent of scored speaker words)
+---------------------------------------------
+ OVERALL SPEAKER DIARIZATION ERROR = 45.13 percent of scored speaker time  `(ALL)
+---------------------------------------------
+ Speaker type confusion matrix -- speaker weighted
+  REF\SYS (count)      unknown               MISS              
+unknown                  78 /  55.7%         62 /  44.3%
+  FALSE ALARM            21 /  15.0%
+---------------------------------------------
+ Speaker type confusion matrix -- time weighted
+  REF\SYS (seconds)    unknown               MISS              
+unknown             9363.66 /  95.0%     496.83 /   5.0%
+  FALSE ALARM       1177.76 /  11.9%
+---------------------------------------------

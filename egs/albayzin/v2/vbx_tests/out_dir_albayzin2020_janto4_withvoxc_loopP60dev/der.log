@@ -1,0 +1,28 @@
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = (unset),
+	LC_MEASUREMENT = "es_MX.UTF-8",
+	LC_PAPER = "es_MX.UTF-8",
+	LC_MONETARY = "es_MX.UTF-8",
+	LC_NAME = "es_MX.UTF-8",
+	LC_ADDRESS = "es_MX.UTF-8",
+	LC_NUMERIC = "es_MX.UTF-8",
+	LC_TELEPHONE = "es_MX.UTF-8",
+	LC_IDENTIFICATION = "es_MX.UTF-8",
+	LC_TIME = "es_MX.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to a fallback locale ("en_US.UTF-8").
+WARNING:  speaker manuel_huedo speaking more than once at time 497.698
+WARNING:  speaker #_1 speaking more than once at time 893.241
+WARNING:  speaker #_8 speaking more than once at time 1089.316
+WARNING:  speaker manuel_huedo speaking more than once at time 497.698
+WARNING:  speaker #_1 speaking more than once at time 893.241
+WARNING:  speaker #_8 speaking more than once at time 1089.316
+WARNING:  speaker maria_de_nati speaking more than once at time 621.85
+WARNING:  speaker maria_de_nati speaking more than once at time 621.85
+WARNING:  speaker angi_fernandez speaking more than once at time 555.489
+WARNING:  speaker guillermo_campra speaking more than once at time 840.914
+WARNING:  speaker angi_fernandez speaking more than once at time 555.489
+WARNING:  speaker guillermo_campra speaking more than once at time 840.914

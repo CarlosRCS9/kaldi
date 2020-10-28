@@ -1,0 +1,1 @@
+../../../ami/s5c/local/prepare_data.py

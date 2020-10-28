@@ -31,6 +31,7 @@ def main():
     if file_id not in files_map:
       files_map[file_id] = args.name + '-' + str(files_count).zfill(5)
       files_count += 1
+    #print(file_id, file_id.replace('-', '_'))
     print(file_id, files_map[file_id])
 
 if __name__ == '__main__':
