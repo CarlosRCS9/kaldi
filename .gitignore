@@ -164,3 +164,6 @@ GSYMS
 # They are added here to avoid accidently checkin.
 /src/**/CMakeLists.txt
 /build*
+
+/egs/chime6/s5_track1/CHiME6/
+/egs/chime6/s5_track1/chime6-synchronisation/
