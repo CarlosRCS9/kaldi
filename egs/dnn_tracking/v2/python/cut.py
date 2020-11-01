@@ -70,6 +70,8 @@ class Speaker:
         return self.name
     def get_conf(self):
         return self.conf
+    def __str__(self):
+        return ' '.join(['name:', self.get_name()])
 
 class Channel:
     def __init__(self, data):
@@ -133,6 +135,11 @@ class Channel:
         for speaker_name, speaker in channel.get_speakers().items():
             if speaker_name not in self.get_speakers():
                 self.get_speakers()[speaker_name] = Speaker(speaker)
+    def __str__(self):
+        output = ' '.join(['channel_id:', self.get_channel_id(), 'begin_time:', str(self.get_begin_time()), 'end_time:', str(self.get_end_time())]) + '\n'
+        for speaker in self.get_speakers().values():
+            output += '  ' + speaker.__str__() + '\n'
+        return output
 
 class Cut:
     def __init__(self, data):
@@ -199,11 +206,10 @@ class Cut:
                         + channel.get_stype() + ' ' + speaker_id + ' ' + speaker.get_conf() + ' ' + channel.get_slat() + '\n'
         return output[:-1]
     def __str__(self):        
-        output = 'begin_time: ' + str(self.get_begin_time()) + ', end_time: ' + str(self.get_end_time()) + '\n'
-        for channel_id, channel in self.get_channels().items():
-            output += '  channel_id: ' + channel_id + ', begin_time: ' + str(self.get_begin_time()) + ', end_time: ' + str(self.get_end_time()) + '\n'
-            for speaker_name, speaker in channel.get_speakers().items():
-                output += '    speaker_name: ' + speaker_name + '\n'
+        output = ' '.join(['begin_time:', str(self.get_begin_time()), 'end_time:', str(self.get_end_time())]) + '\n'
+        for channel in self.get_channels().values():
+            for line in channel.__str__().split('\n'):
+                output += ' ' + line + '\n'
         return output[:-1]
 
 class Recording:
@@ -235,6 +241,11 @@ class Recording:
         output = ''
         for cut in self.get_cuts():
             output += cut.get_rttm_string() + '\n'
+        return output[:-1]
+    def __str__(self):
+        output = ' '.join(['recording_id:', self.get_recording_id()]) + '\n'
+        for cut in self.get_cuts():
+            output += cut.__str__()
         return output[:-1]
 
 def cuts_to_recordings(cuts, array = True):

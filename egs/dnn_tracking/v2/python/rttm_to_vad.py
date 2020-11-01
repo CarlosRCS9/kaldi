@@ -52,7 +52,7 @@ def main():
     for recording_id in sorted(recordings.keys()):
         recording = recordings[recording_id]
         recording.explicit_overlap()
-        print(recording.get_rttm_string())
+        print(recording, end = '')
 
 if __name__ == '__main__':
     main()
