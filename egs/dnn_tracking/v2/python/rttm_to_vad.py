@@ -3,7 +3,7 @@
 # Copyright 2020 Carlos Castillo
 # Apache 2.0.
 
-from cut import Rttm, Cut, get_cuts_explicit_overlap
+from cut import Rttm, Cut, cuts_to_recordings
 import argparse
 import os
 import sys
@@ -47,8 +47,11 @@ def main():
     for line in f.readlines():
         cuts.append(Cut(Rttm(line)))
     f.close()
+    recordings = cuts_to_recordings(cuts, array = False)
 
-    print(get_cuts_explicit_overlap(cuts, args.min_duration))
+    for recording_id in sorted(recordings.keys()):
+        recording = recordings[recording_id]
+        recording.explicit_overlap()
 
 if __name__ == '__main__':
     main()
