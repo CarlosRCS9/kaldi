@@ -120,12 +120,19 @@ class Channel:
     def limit_end_time(self, end_time):
         if self.get_end_time() > end_time:
             self.set_end_time(end_time)
+    def limit_begin_end_time(self, begin_time, end_time):
+        self.limit_begin_time(begin_time)
+        self.limit_end_time(end_time)
     def get_stype(self):
         return self.stype
     def get_slat(self):
         return self.slat
     def get_speakers(self):
         return self.speakers
+    def mix_channel(self, channel):
+        for speaker_name, speaker in channel.get_speakers().items():
+            if speaker_name not in self.get_speakers():
+                self.get_speakers()[speaker_name] = Speaker(speaker)
 
 class Cut:
     def __init__(self, data):
@@ -175,6 +182,14 @@ class Cut:
         return self.channels
     def is_out_of_timestamps(self, begin_time, end_time):
         return end_time <= self.get_begin_time() or self.get_end_time() <= begin_time
+    def mix_cut(self, cut):
+        for channel_id, channel in cut.get_channels().items():
+            if channel_id in self.get_channels():
+                self.get_channels()[channel_id].mix_channel(channel)
+            else:
+                self.get_channels()[channel_id] = Channel(channel)
+        for channel in self.get_channels().values():
+            channel.limit_begin_end_time(self.get_begin_time(), self.get_end_time())
     def get_rttm_string(self):
         output = ''
         for channel_id, channel in self.get_channels().items():
@@ -182,7 +197,14 @@ class Cut:
                 output += channel.get_type() + ' ' + self.get_recording_id() + ' ' + channel_id + ' ' \
                         + str(self.get_begin_time()) + ' ' + str(self.get_duration_time()) + ' ' + speaker.get_ortho() + ' ' \
                         + channel.get_stype() + ' ' + speaker_id + ' ' + speaker.get_conf() + ' ' + channel.get_slat() + '\n'
-        return output
+        return output[:-1]
+    def __str__(self):        
+        output = 'begin_time: ' + str(self.get_begin_time()) + ', end_time: ' + str(self.get_end_time()) + '\n'
+        for channel_id, channel in self.get_channels().items():
+            output += '  channel_id: ' + channel_id + ', begin_time: ' + str(self.get_begin_time()) + ', end_time: ' + str(self.get_end_time()) + '\n'
+            for speaker_name, speaker in channel.get_speakers().items():
+                output += '    speaker_name: ' + speaker_name + '\n'
+        return output[:-1]
 
 class Recording:
     def __init__(self, recording_id):
@@ -192,16 +214,28 @@ class Recording:
         return self.recording_id
     def get_cuts(self):
         return self.cuts
+    def set_cuts(self, cuts):
+        self.cuts = cuts
     def append_cut(self, cut):
         return self.get_cuts().append(cut)
     def explicit_overlap(self):
         timestamps = sorted(set(itertools.chain(*[[cut.get_begin_time(), cut.get_end_time()] for cut in self.get_cuts()])))
         timestamps_pairs = [(timestamps[index], timestamps[index + 1]) for index, _ in enumerate(timestamps[:-1])]
+        new_cuts = []
         for begin_time, end_time in timestamps_pairs:
             timestamps_cuts = [cut for cut in self.get_cuts() if not cut.is_out_of_timestamps(begin_time, end_time)]
             if len(timestamps_cuts) > 0:
-                print('begin_time', begin_time, 'end_time', end_time)
-                print(len(timestamps_cuts))
+                new_cut = Cut(timestamps_cuts[0])
+                for cut in timestamps_cuts[1:]:
+                    new_cut.mix_cut(cut)
+                new_cut.limit_begin_end_time(begin_time, end_time)
+                new_cuts.append(new_cut)
+        self.set_cuts(new_cuts)
+    def get_rttm_string(self):
+        output = ''
+        for cut in self.get_cuts():
+            output += cut.get_rttm_string() + '\n'
+        return output[:-1]
 
 def cuts_to_recordings(cuts, array = True):
     output = {}
