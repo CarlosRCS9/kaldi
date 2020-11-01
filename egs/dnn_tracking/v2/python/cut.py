@@ -197,12 +197,18 @@ class Cut:
                 self.get_channels()[channel_id] = Channel(channel)
         for channel in self.get_channels().values():
             channel.limit_begin_end_time(self.get_begin_time(), self.get_end_time())
-    def get_rttm_string(self):
+    def get_rttm_string(self, frame_shift = None):
+        try:
+            decimals = len(str(float(frame_shift)).split('.')[1])
+        except:
+            decimals = None
         output = ''
         for channel_id, channel in self.get_channels().items():
             for speaker_id, speaker in channel.get_speakers().items():
+                begin_time = self.get_begin_time ()  if decimals is None else np.round(self.get_begin_time() * 10 ** decimals) / 10 ** decimals
+                duration_time = self.get_duration_time() if decimals is None else np.round(self.get_duration_time() * 10 ** decimals) / 10 ** decimals
                 output += channel.get_type() + ' ' + self.get_recording_id() + ' ' + channel_id + ' ' \
-                        + str(self.get_begin_time()) + ' ' + str(self.get_duration_time()) + ' ' + speaker.get_ortho() + ' ' \
+                        + str(begin_time) + ' ' + str(duration_time) + ' ' + speaker.get_ortho() + ' ' \
                         + channel.get_stype() + ' ' + speaker_id + ' ' + speaker.get_conf() + ' ' + channel.get_slat() + '\n'
         return output[:-1]
     def __str__(self):        
@@ -237,10 +243,10 @@ class Recording:
                 new_cut.limit_begin_end_time(begin_time, end_time)
                 new_cuts.append(new_cut)
         self.set_cuts(new_cuts)
-    def get_rttm_string(self):
+    def get_rttm_string(self, frame_shift = None):
         output = ''
         for cut in self.get_cuts():
-            output += cut.get_rttm_string() + '\n'
+            output += cut.get_rttm_string(frame_shift) + '\n'
         return output[:-1]
     def __str__(self):
         output = ' '.join(['recording_id:', self.get_recording_id()]) + '\n'

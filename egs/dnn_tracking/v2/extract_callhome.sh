@@ -36,9 +36,9 @@ if [ $stage -le 2 ]; then
 
   for name in callhome1 callhome2; do
     data_dir=data/${name}_oracle
-    echo "0.1" > $data_dir/frame_shift
+    echo "0.01" > $data_dir/frame_shift
     cat $data_dir/wav.scp | awk '{print $1" "$1}' > $data_dir/utt2spk
     local/get_utt2num_frames.sh $data_dir
-    python3 python/rttm_to_vad.py $data_dir
+    python3 python/rttm_to_vad.py $data_dir > $data_dir/ref_tmp.rttm
   done
 fi
