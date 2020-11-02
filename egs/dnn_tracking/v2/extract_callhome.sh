@@ -26,19 +26,19 @@ fi
 
 # Make callhome1 and callhome2 oracle data directories
 if [ $stage -le 2 ]; then
-  #for name in callhome1 callhome2; do
-  #  data_dir=data/$name
-  #  output_dir=data/${name}_oracle
-  #  rm -rf $output_dir
-  #  mkdir -p $output_dir
-  #  cp $data_dir/{reco2num_spk,ref.rttm,wav.scp} $output_dir/
-  #done
+  for name in callhome1 callhome2; do
+    data_dir=data/$name
+    output_dir=data/${name}_oracle
+    rm -rf $output_dir
+    mkdir -p $output_dir
+    cp $data_dir/{reco2num_spk,ref.rttm,wav.scp} $output_dir/
+  done
 
   for name in callhome1 callhome2; do
     data_dir=data/${name}_oracle
     echo "0.01" > $data_dir/frame_shift
     cat $data_dir/wav.scp | awk '{print $1" "$1}' > $data_dir/utt2spk
     local/get_utt2num_frames.sh $data_dir
-    python3 python/rttm_to_vad.py $data_dir > $data_dir/ref_tmp.rttm
+    python3 python/rttm_to_vad.py $data_dir
   done
 fi

@@ -5,6 +5,7 @@
 
 import numpy as np
 import itertools
+import os
 
 class Rttm:
     def __init__(self, string):
@@ -162,6 +163,8 @@ class Cut:
         return self.recording_id
     def get_begin_time(self):
         return self.begin_time
+    def get_begin_frame(self, frame_shift):
+        return np.round(self.get_begin_time() / frame_shift).astype(int)
     def set_begin_time(self, begin_time):
         self.begin_time = begin_time
     def limit_begin_time(self, begin_time):
@@ -175,6 +178,8 @@ class Cut:
         self.duration_time = duration_time
     def get_end_time(self):
         return self.get_begin_time() + self.get_duration_time()
+    def get_end_frame(self, frame_shift):
+        return np.round(self.get_end_time() / frame_shift).astype(int)
     def set_end_time(self, end_time):
         self.set_duration_time(end_time - self.get_begin_time())
     def limit_end_time(self, end_time):
@@ -211,6 +216,18 @@ class Cut:
                         + str(begin_time) + ' ' + str(duration_time) + ' ' + speaker.get_ortho() + ' ' \
                         + channel.get_stype() + ' ' + speaker_id + ' ' + speaker.get_conf() + ' ' + channel.get_slat() + '\n'
         return output[:-1]
+    def get_vad(self, number_of_frames, frame_shift):
+        if number_of_frames > 0 and frame_shift > 0:
+            preceding_zeros_length = self.get_begin_frame(frame_shift)
+            twos_length = self.get_end_frame(frame_shift) - preceding_zeros_length
+            twos_length = twos_length + (number_of_frames - twos_length - preceding_zeros_length) if number_of_frames - twos_length - preceding_zeros_length < 0 else twos_length
+            succeding_zeros_length = number_of_frames - twos_length - preceding_zeros_length
+            if twos_length > 0:
+                return np.concatenate([np.zeros(preceding_zeros_length), np.full(twos_length, 2), np.zeros(succeding_zeros_length)]).astype(np.int32)
+            else:
+                return np.zeros(number_of_frames)
+        else:
+            return None
     def __str__(self):        
         output = ' '.join(['begin_time:', str(self.get_begin_time()), 'end_time:', str(self.get_end_time())]) + '\n'
         for channel in self.get_channels().values():
@@ -248,6 +265,11 @@ class Recording:
         for cut in self.get_cuts():
             output += cut.get_rttm_string(frame_shift) + '\n'
         return output[:-1]
+    def get_vad(self, number_of_frames, frame_shift):
+        vad = np.zeros(number_of_frames)
+        for cut in self.get_cuts():
+            vad += cut.get_vad(number_of_frames, frame_shift)
+        return vad.astype(np.int32)
     def __str__(self):
         output = ' '.join(['recording_id:', self.get_recording_id()]) + '\n'
         for cut in self.get_cuts():
@@ -262,4 +284,18 @@ def cuts_to_recordings(cuts, array = True):
             output[recording_id] = Recording(recording_id)
         output[recording_id].append_cut(cut)
     return list(output.values()) if array == True else output
+
+def write_kaldi_vector(vector_dict, scp_filepath, ark_filepath):
+    scp_f = open(scp_filepath, 'w')
+    ark_f = open(ark_filepath, 'w')
+    ark_length = 0
+    for key in sorted(vector_dict.keys()):
+        vector = vector_dict[key]
+        scp_line = key + ' ' + os.path.abspath(ark_filepath) + ':' + str(len(key) + 2 + ark_length) + '\n'
+        ark_line = key + '  [ ' + ' '.join([str(value) for value in vector]) + ' ]\n'
+        ark_length += len(ark_line)
+        scp_f.write(scp_line)
+        ark_f.write(ark_line)
+    scp_f.close()
+    ark_f.close()
 
