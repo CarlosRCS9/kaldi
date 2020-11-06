@@ -225,7 +225,7 @@ class Cut:
             if twos_length > 0:
                 return np.concatenate([np.zeros(preceding_zeros_length), np.full(twos_length, 2), np.zeros(succeding_zeros_length)]).astype(np.int32)
             else:
-                return np.zeros(number_of_frames)
+                return np.zeros(number_of_frames).astype(np.int32)
         else:
             return None
     def __str__(self):        
