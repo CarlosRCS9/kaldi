@@ -54,7 +54,7 @@ if [ $stage -le 2 ]; then
     diarization/vad_to_segments.sh \
       --nj $nj \
       --cmd "$train_cmd" \
-      --segmentation-opts '--silence-proportion 0.011' \
+      --segmentation-opts '--silence-proportion 0.01000000000000001' \
       $data_dir \
       $output_dir
   done
