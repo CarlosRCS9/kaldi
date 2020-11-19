@@ -1,0 +1,6 @@
+dask-worker-space/
+log/
+
+qsub.log
+wav2vec_large.pt
+
