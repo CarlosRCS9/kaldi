@@ -12,3 +12,7 @@
 
 export train_cmd="queue.pl -l hostname='!c06*&!c2[34567]*&!b02*&!b1[48]*&!a*'"
 
+export CONDA_ROOT=/export/b03/carlosc/miniconda3
+. $CONDA_ROOT/etc/profile.d/conda.sh conda activate
+conda activate wav2vec
+
