@@ -72,8 +72,13 @@ def main():
     for segment in recording_ref_rttm:
       begin_frame = np.floor(segment.get_turn_onset() * frames_per_second).astype(int)
       end_frame = np.ceil(segment.get_turn_end() * frames_per_second).astype(int)
+      if end_frame > number_of_frames:
+        end_frame = number_of_frames
       #ones = np.concatenate([np.zeros(begin_frame), np.ones(end_frame - begin_frame), np.zeros(number_of_frames - end_frame)])
-      twos = np.concatenate([np.zeros(begin_frame), np.full(end_frame - begin_frame, 2), np.zeros(number_of_frames - end_frame)])
+      if end_frame - begin_frame < 0:
+        twos = np.zeros(number_of_frames)
+      else:
+        twos = np.concatenate([np.zeros(begin_frame), np.full(end_frame - begin_frame, 2), np.zeros(number_of_frames - end_frame)])
       #vad += ones
       vad += twos
     vad = (vad > 0).astype(int)

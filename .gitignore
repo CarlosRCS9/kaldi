@@ -85,6 +85,7 @@ GSYMS
 /egs/*/*/notebooks/batch
 /egs/*/*/data2
 /egs/*/*/augmented
+/egs/dnn_tracking/v3/audio
  
 # /tools/
 /tools/pocolm/

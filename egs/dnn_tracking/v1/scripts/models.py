@@ -67,7 +67,7 @@ class Segment:
       self.orthography_field     = data[5]
       self.speakers              = [Speaker([data[2], data[6], data[7]])]
       self.confidence_score      = data[8]
-      self.signal_lookahead_time = data[9]
+      self.signal_lookahead_time = data[9] if len(data) == 10 else '<NA>'
       self.ivectors              = []
     elif isinstance(data, Segment):
       self.type                  = data.get_type()

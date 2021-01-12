@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 #
 # Copyright 2020 Carlos Castillo
@@ -192,8 +193,19 @@ class Cut:
         self.limit_end_time(end_time)
     def get_channels(self):
         return self.channels
+    def get_speakers(self):
+        channels = {}
+        for channel_id, channel in self.get_channels().items():
+            channels[channel_id] = channel.get_speakers()
+        return channels
+    def get_speakers_length(self):
+        length = 0
+        for channel_id, speakers in self.get_speakers().items():
+            length += len(speakers.keys())
+        return length
     def is_out_of_timestamps(self, begin_time, end_time):
         return end_time <= self.get_begin_time() or self.get_end_time() <= begin_time
+        #return end_time < self.get_begin_time() or self.get_end_time() < begin_time
     def mix_cut(self, cut):
         for channel_id, channel in cut.get_channels().items():
             if channel_id in self.get_channels():

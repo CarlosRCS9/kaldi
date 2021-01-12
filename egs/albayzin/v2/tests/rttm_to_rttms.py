@@ -23,8 +23,6 @@ def main():
       if recording_id not in recording_rttm:
         recording_rttm[recording_id] = []
       recording_rttm[recording_id].append(line)
-      if 'str' in line:
-        break
 
   filename, file_extension = os.path.splitext(args.rttm)
   os.makedirs(filename, exist_ok = True)

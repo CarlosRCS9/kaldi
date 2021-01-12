@@ -1,0 +1,1 @@
+../../../callhome_diarization/v1/local/make_callhome.sh

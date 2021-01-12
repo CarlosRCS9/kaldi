@@ -25,24 +25,26 @@ def main():
     for line in f:
       try:
         reference_segments.append(Segment(line))
-      except:
+      except Exception as e:
+        print(e)
+        print(line)
         pass
-      if 'str' in line:
-        break
   test_segments = []
   with open(args.test_rttm) as f:
     for line in f:
       try:
         test_segments.append(Segment(line))
-      except:
+      except Exception as e:
+        print(e)
+        print(line)        
         pass
-      if 'str' in line:
-        break
   reference_recordings_segments = sort_segments_by_file_id(reference_segments)
   test_recordings_segments = sort_segments_by_file_id(test_segments)
 
   total_error = 0
   total_count = 0
+  print(len(reference_recordings_segments.keys()))
+  print(len(test_recordings_segments.keys()))
   for recording_id in sorted(reference_recordings_segments.keys()):
     reference_segments = reference_recordings_segments[recording_id]
     test_segments = test_recordings_segments[recording_id]

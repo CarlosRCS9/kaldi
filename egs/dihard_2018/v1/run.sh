@@ -15,15 +15,15 @@ set -e
 mfccdir=`pwd`/mfcc
 vaddir=`pwd`/mfcc
 
-voxceleb1_root=/export/corpora/VoxCeleb1
-voxceleb2_root=/export/corpora/VoxCeleb2
+voxceleb1_root=/export/corpora5/VoxCeleb1_v1
+voxceleb2_root=/export/corpora5/VoxCeleb2
 dihard_2018_dev=/export/corpora/LDC/LDC2018E31
 dihard_2018_eval=/export/corpora/LDC/LDC2018E32v1.1
 num_components=2048
 ivector_dim=400
 ivec_dir=exp/extractor_c${num_components}_i${ivector_dim}
 
-stage=0
+stage=4
 
 if [ $stage -le 0 ]; then
   local/make_voxceleb2.pl $voxceleb2_root dev data/voxceleb2_train
@@ -32,22 +32,23 @@ if [ $stage -le 0 ]; then
   # Now prepare the VoxCeleb1 train and test data.  If you downloaded the corpus soon
   # after it was first released, you may need to use an older version of the script, which
   # can be invoked as follows:
-  # local/make_voxceleb1.pl $voxceleb1_root data
-  local/make_voxceleb1_v2.pl $voxceleb1_root dev data/voxceleb1_train
-  local/make_voxceleb1_v2.pl $voxceleb1_root test data/voxceleb1_test
+  local/make_voxceleb1.pl $voxceleb1_root data
+  #local/make_voxceleb1_v2.pl $voxceleb1_root dev data/voxceleb1_train
+  #local/make_voxceleb1_v2.pl $voxceleb1_root test data/voxceleb1_test
 
   # We'll train on all of VoxCeleb2, plus the training portion of VoxCeleb1.
   # This should give 7,351 speakers and 1,277,503 utterances.
   utils/combine_data.sh data/train data/voxceleb2_train data/voxceleb2_test data/voxceleb1_train
 
   # Prepare the development and evaluation set for DIHARD 2018.
-  local/make_dihard_2018_dev.sh $dihard_2018_dev data/dihard_2018_dev
-  local/make_dihard_2018_eval.sh $dihard_2018_eval data/dihard_2018_eval
+  #local/make_dihard_2018_dev.sh $dihard_2018_dev data/dihard_2018_dev
+  #local/make_dihard_2018_eval.sh $dihard_2018_eval data/dihard_2018_eval
 fi
 
 if [ $stage -le 1 ]; then
   # Make MFCCs for each dataset
-  for name in train dihard_2018_dev dihard_2018_eval; do
+  #for name in train dihard_2018_dev dihard_2018_eval; do
+  for name in train; do
     steps/make_mfcc.sh --write-utt2num-frames true \
       --mfcc-config conf/mfcc.conf --nj 40 --cmd "$train_cmd --max-jobs-run 20" \
       data/${name} exp/make_mfcc $mfccdir
@@ -64,7 +65,8 @@ if [ $stage -le 1 ]; then
   # it ends up being preferable to performing the CMN in memory.  If the CMN
   # were performed in memory it would need to be performed after the subsegmentation,
   # which leads to poorer results.
-  for name in train dihard_2018_dev dihard_2018_eval; do
+  #for name in train dihard_2018_dev dihard_2018_eval; do
+  for name in train; do
     local/prepare_feats.sh --nj 40 --cmd "$train_cmd" \
       data/$name data/${name}_cmn exp/${name}_cmn
     if [ -f data/$name/vad.scp ]; then
@@ -123,15 +125,15 @@ if [ $stage -le 4 ]; then
   # Extract i-vectors for DIHARD 2018 development and evaluation set. 
   # We set apply-cmn false and apply-deltas false because we already add
   # deltas and apply cmn in stage 1.
-  diarization/extract_ivectors.sh --cmd "$train_cmd --mem 20G" \
-    --nj 40 --window 1.5 --period 0.75 --apply-cmn false --apply-deltas false \
-    --min-segment 0.5 $ivec_dir \
-    data/dihard_2018_dev_cmn $ivec_dir/ivectors_dihard_2018_dev
+  #diarization/extract_ivectors.sh --cmd "$train_cmd --mem 20G" \
+  #  --nj 40 --window 1.5 --period 0.75 --apply-cmn false --apply-deltas false \
+  #  --min-segment 0.5 $ivec_dir \
+  #  data/dihard_2018_dev_cmn $ivec_dir/ivectors_dihard_2018_dev
 
-  diarization/extract_ivectors.sh --cmd "$train_cmd --mem 20G" \
-    --nj 40 --window 1.5 --period 0.75 --apply-cmn false --apply-deltas false \
-    --min-segment 0.5 $ivec_dir \
-    data/dihard_2018_eval_cmn $ivec_dir/ivectors_dihard_2018_eval
+  #diarization/extract_ivectors.sh --cmd "$train_cmd --mem 20G" \
+  #  --nj 40 --window 1.5 --period 0.75 --apply-cmn false --apply-deltas false \
+  #  --min-segment 0.5 $ivec_dir \
+  #  data/dihard_2018_eval_cmn $ivec_dir/ivectors_dihard_2018_eval
 
   # Reduce the amount of training data for the PLDA training.
   utils/subset_data_dir.sh data/train_cmn_segmented 128000 data/train_cmn_segmented_128k

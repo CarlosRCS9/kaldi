@@ -1,0 +1,1 @@
+../../../wsj/s5/utils/data/get_utt2dur.sh
