@@ -16,7 +16,11 @@ if [ $stage -le 1 ]; then
   for name in callhome1 callhome2; do
     data_dir=data/$name
     output_dir=data/$prefix$name
+    echo "0.01" > $output_dir/frame_shift
     local/wav_scp_2_wav.sh $data_dir/wav.scp $output_dir $audio_dir false
+    cp data/callhome/fullref.rttm $output_dir/ref.rttm
+    python3 local/fix_ref_rttm.py $output_dir
   done
 fi
 
+#test
