@@ -86,6 +86,7 @@ GSYMS
 /egs/*/*/data2
 /egs/*/*/augmented
 /egs/dnn_tracking/v3/audio
+/egs/dnn_tracking/v3/wav2vec_audio
  
 # /tools/
 /tools/pocolm/
