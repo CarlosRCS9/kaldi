@@ -3,7 +3,7 @@
 #
 # Apache 2.0
 
-import argparse, os, sys, torch, fairseq
+import argparse, os, sys, torch, fairseq, kaldi_io
 import numpy as np
 from scipy.io import wavfile
 
@@ -14,6 +14,7 @@ def get_args():
   parser = argparse.ArgumentParser(description = '')
   parser.add_argument('data_dir', type = str, help = '')
   parser.add_argument('output_dir', type = str, help = '')
+  parser.add_argument('--rename-speakers', type = bool, default = False, help = '')
   args = parser.parse_args()
   return args
 
@@ -42,7 +43,7 @@ def main():
   recordings_ref_rttm = {}
   f = open(args.data_dir + '/ref.rttm', 'r')
   for line in f.readlines():
-    ref_rttm = Ref_rttm(line)
+    ref_rttm = Ref_rttm(line, args.rename_speakers)
     if ref_rttm.file not in recordings_ref_rttm:
       recordings_ref_rttm[ref_rttm.file] = []
     recordings_ref_rttm[ref_rttm.file].append(ref_rttm)
@@ -73,6 +74,14 @@ def main():
   model = model[0]
   model.eval()
 
+  utt2spk_file = open(args.output_dir + '/utt2spk', 'w')
+  segments_file = open(args.output_dir + '/segments', 'w')
+  wav2vec_z_copy_vector = 'ark:| copy-vector ark:- ark,scp:' + args.output_dir + '/wav2vec_z.ark,' + args.output_dir + '/wav2vec_z.scp'
+  wav2vec_c_copy_vector = 'ark:| copy-vector ark:- ark,scp:' + args.output_dir + '/wav2vec_c.ark,' + args.output_dir + '/wav2vec_c.scp'
+  wav2vec_z_file = kaldi_io.open_or_fd(wav2vec_z_copy_vector, 'wb')
+  wav2vec_c_file = kaldi_io.open_or_fd(wav2vec_c_copy_vector, 'wb')
+  ref_rttm_file = open(args.output_dir + '/ref.rttm', 'w') 
+
   for recording_id in sorted(recordings_ref_rttm.keys()):
     ref_rttm = recordings_ref_rttm[recording_id]
     recording = recordings[recording_id]
@@ -82,6 +91,9 @@ def main():
     rate, data = wavfile.read(wav_scp.get_filepath())
     tensor = torch.tensor(np.copy(data))
     z = model.feature_extractor(tensor.unsqueeze(0))
+    c = model.feature_aggregator(z)
+    z_numpy =  z.detach().numpy()[0]
+    c_numpy =  c.detach().numpy()[0]
     
     if utt2dur.get_duration_frames() - z.shape[2] == 2:
       segmented_recording = Recording(recording)
@@ -96,13 +108,24 @@ def main():
         segment = Segment(recording)
         segment.set_begin_time(begin)
         segment.set_end_time(end)
+        segment.set_feature('wav2vec_z', z_numpy[:, index])
+        segment.set_feature('wav2vec_c', c_numpy[:, index])
         if len(speakers) > 0:
           for speaker in speakers:
             segment.add_speaker(speaker)
-          print(segment.get_utt2spk_string(index + 1))
+          utt2spk_file.write(segment.get_utt2spk_string(frame))
         segmented_recording.add_segment(segment)
-        # print(segment.get_segments_string(index + 1))
-    break
+
+        segments_file.write(segment.get_segments_string(frame))
+        kaldi_io.write_vec_flt(wav2vec_z_file, segment.get_feature('wav2vec_z'), key = segment.get_utterance_id(frame))
+        kaldi_io.write_vec_flt(wav2vec_c_file, segment.get_feature('wav2vec_c'), key = segment.get_utterance_id(frame))
+      ref_rttm_file.write(segmented_recording.get_rttm())
+
+  utt2spk_file.close()
+  segments_file.close()
+  wav2vec_z_file.close()
+  wav2vec_c_file.close()
+  ref_rttm_file.close()
 
 if __name__ == '__main__':
   main()

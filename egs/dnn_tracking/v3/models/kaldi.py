@@ -34,7 +34,7 @@ class Utt2dur:
     return self.frames
 
 class Ref_rttm:
-  def __init__(self, data):
+  def __init__(self, data, rename_speakers = False):
     if isinstance(data, str):
       line = data.strip()
       values = line.split(' ')
@@ -45,7 +45,7 @@ class Ref_rttm:
       self.tdur = np.float32(values[4])
       self.ortho = values[5]
       self.stype = values[6]
-      self.name = values[7]
+      self.name = self.file + '_' + values[7] if rename_speakers else values[7]
       self.conf = values[8]
       self.slat = values[9]
   def get_file(self):
@@ -101,7 +101,8 @@ class Segment:
       self.begin_time = 0
       self.duration_time = 0
       self.speakers = []
-      self.frame_shift = recording.get_frame_shift() 
+      self.frame_shift = recording.get_frame_shift()
+      self.features = {}
     elif isinstance(data, Segment):
       segment = data
       self.recording_id = segment.get_recording_id()
@@ -109,6 +110,7 @@ class Segment:
       self.duration_time = segment.get_duration_time()
       self.speakers = [Speaker(speaker) for speaker in segment.get_speakers()]
       self.frame_shift = segment.get_frame_shift()
+      self.features = {}
     elif isinstance(data, Ref_rttm):
       ref_rttm = data
       self.recording_id = ref_rttm.get_file()
@@ -116,6 +118,7 @@ class Segment:
       self.duration_time = ref_rttm.get_duration_time()
       self.speakers = [Speaker(ref_rttm)]
       self.frame_shift = 0.01
+      self.features = {}
   def get_recording_id(self):
     return self.recording_id
   def get_begin_time(self):
@@ -152,6 +155,11 @@ class Segment:
     self.speakers = []
   def get_frame_shift(self):
     return self.frame_shift
+  def get_feature(self, key):
+    if key in self.features:
+      return self.features[key]
+  def set_feature(self, key, value):
+    self.features[key] = value
   def overlap_timestamps(self, begin_time, end_time):
     return begin_time < self.get_end_time() and self.get_begin_time() < end_time
   def frame_shift_to_decimal_places(self):
@@ -167,7 +175,7 @@ class Segment:
     '\n'
   def get_utt2spk_string(self, index):
     return self.get_utterance_id(index) + \
-    ' ' + ','.join(sorted([speaker.get_name() for speaker in self.get_speakers()]))
+    ' ' + ','.join(sorted([speaker.get_name() for speaker in self.get_speakers()])) + \
     '\n'
   def __str__(self):
     output = 'segment:' + \

@@ -43,6 +43,9 @@ if [ $stage -le 3 ]; then
   for name in callhome1 callhome2; do
     data_dir=data/${prefix}wav2vec_${name}
     output_dir=$data_dir/wav2vec
-    python local/extract_wav2vec.py $data_dir $output_dir
+    python local/extract_wav2vec.py $data_dir $output_dir --rename-speakers true
+    copy-vector scp:${output_dir}/wav2vec_z.scp ark,t:${output_dir}/wav2vec_z.txt
+    copy-vector scp:${output_dir}/wav2vec_c.scp ark,t:${output_dir}/wav2vec_c.txt
+    cat ${output_dir}/utt2spk | utils/utt2spk_to_spk2utt.pl > ${output_dir}/spk2utt
   done
 fi
