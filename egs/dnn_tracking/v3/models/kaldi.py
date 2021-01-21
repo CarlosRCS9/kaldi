@@ -14,6 +14,8 @@ class Wav_scp:
       recording_id, wav = line.split(' ', 1)
       self.recording_id = recording_id
       self.wav = wav
+  def get_filepath(self):
+    return self.wav
 
 class Utt2dur:
   def __init__(self, data, frame_shift = 0.01):
@@ -48,6 +50,8 @@ class Ref_rttm:
       self.slat = values[9]
   def get_file(self):
     return self.file
+  def get_chnl(self):
+    return self.chnl
   def get_begin_time(self):
     return self.tbeg
   def set_begin_time(self, begin_time):
@@ -69,23 +73,51 @@ class Ref_rttm:
 
 class Speaker:
   def __init__(self, data):
-    if isinstance(data, Ref_rttm):
+    if isinstance(data, Speaker):
+      speaker = data
+      self.channel = speaker.get_channel()
+      self.name = speaker.get_name()
+    elif isinstance(data, Ref_rttm):
       ref_rttm = data
+      self.channel = ref_rttm.get_chnl()
       self.name = ref_rttm.get_name()
+  def get_channel(self):
+    return self.channel
   def get_name(self):
     return self.name
   def is_same_speaker(self, data):
-    if isinstance(data, Ref_rttm):
+    if isinstance(data, Speaker):
+      speaker = data
+      return self.channel == speaker.get_channel() and self.name == speaker.get_name()
+    elif isinstance(data, Ref_rttm):
       ref_rttm = data
-      return self.name == ref_rttm.get_name()
+      return self.channel == ref_rttm.get_chnl() and self.name == ref_rttm.get_name()
 
 class Segment:
   def __init__(self, data):
-    if isinstance(data, Ref_rttm):
+    if isinstance(data, Recording):
+      recording = data
+      self.recording_id = recording.get_recording_id()
+      self.begin_time = 0
+      self.duration_time = 0
+      self.speakers = []
+      self.frame_shift = recording.get_frame_shift() 
+    elif isinstance(data, Segment):
+      segment = data
+      self.recording_id = segment.get_recording_id()
+      self.begin_time = segment.get_begin_time()
+      self.duration_time = segment.get_duration_time()
+      self.speakers = [Speaker(speaker) for speaker in segment.get_speakers()]
+      self.frame_shift = segment.get_frame_shift()
+    elif isinstance(data, Ref_rttm):
       ref_rttm = data
+      self.recording_id = ref_rttm.get_file()
       self.begin_time = ref_rttm.get_begin_time()
       self.duration_time = ref_rttm.get_duration_time()
       self.speakers = [Speaker(ref_rttm)]
+      self.frame_shift = 0.01
+  def get_recording_id(self):
+    return self.recording_id
   def get_begin_time(self):
     return self.begin_time
   def set_begin_time(self, begin_time):
@@ -98,15 +130,45 @@ class Segment:
     return self.begin_time + self.duration_time
   def set_end_time(self, end_time):
     self.duration_time = end_time - self.begin_time
+  def get_speakers(self):
+    return self.speakers
   def has_speaker(self, data):
-    if isinstance(data, Ref_rttm):
+    if isinstance(data, Speaker):
+      speaker = data
+      return any([self_speaker.is_same_speaker(speaker) for self_speaker in self.speakers])
+    elif isinstance(data, Ref_rttm):
       ref_rttm = data
       return any([speaker.is_same_speaker(ref_rttm) for speaker in self.speakers])
   def add_speaker(self, data):
-    if isinstance(data, Ref_rttm):
+    if isinstance(data, Speaker):
+      speaker = data
+      if not self.has_speaker(speaker):
+        self.speakers.append(Speaker(speaker)) 
+    elif isinstance(data, Ref_rttm):
       ref_rttm = data
       if not self.has_speaker(ref_rttm):
         self.speakers.append(Speaker(ref_rttm))
+  def delete_speakers(self):
+    self.speakers = []
+  def get_frame_shift(self):
+    return self.frame_shift
+  def overlap_timestamps(self, begin_time, end_time):
+    return begin_time < self.get_end_time() and self.get_begin_time() < end_time
+  def frame_shift_to_decimal_places(self):
+    return len(str(float(self.frame_shift)).split('.')[1])
+  def get_utterance_id(self, index):
+    return self.recording_id + '_' + str(index).zfill(8) + \
+    '-' + str(round(self.get_begin_time() * 10 ** self.frame_shift_to_decimal_places())).zfill(8) + \
+    '-' + str(round(self.get_end_time() * 10 ** self.frame_shift_to_decimal_places())).zfill(8)
+  def get_segments_string(self, index):
+    return self.get_utterance_id(index) + ' ' + self.recording_id + \
+    ' ' + str(round(self.get_begin_time(), self.frame_shift_to_decimal_places())) + \
+    ' ' + str(round(self.get_end_time(), self.frame_shift_to_decimal_places())) + \
+    '\n'
+  def get_utt2spk_string(self, index):
+    return self.get_utterance_id(index) + \
+    ' ' + ','.join(sorted([speaker.get_name() for speaker in self.get_speakers()]))
+    '\n'
   def __str__(self):
     output = 'segment:' + \
     '\n  begin: ' + str(self.get_begin_time()) + \
@@ -119,10 +181,16 @@ class Segment:
 
 class Recording:
   def __init__(self, data):
-    if isinstance(data, list) and len(data) > 0:
+    if isinstance(data, Recording):
+      recording = data
+      self.recording_id = recording.get_recording_id()
+      self.segments = [Segment(segment) for segment in recording.get_segments()]
+      self.frame_shift = 0.01
+    elif isinstance(data, list) and len(data) > 0:
       if isinstance(data[0], Ref_rttm):
         self.recording_id = data[0].get_file()
         self.segments = []
+        self.frame_shift = 0.01
         ref_rttm_list = sorted(data, key = lambda ref_rttm: ref_rttm.get_begin_time())
         timestamps = sorted(set(itertools.chain(*[[ref_rttm.get_begin_time(), ref_rttm.get_end_time()] for ref_rttm in ref_rttm_list])))
         timestamps_pairs = [[timestamps[index], timestamps[index + 1]] for index, _ in enumerate(timestamps[:-1])]
@@ -137,7 +205,39 @@ class Recording:
             self.segments.append(segment)
   def get_recording_id(self):
     return self.recording_id
+  def get_segments(self):
+    return self.segments
+  def add_segment(self, segment):
+    self.segments.append(Segment(segment))
+  def delete_segments(self):
+    self.segments = []
+  def get_frame_shift(self):
+    return self.frame_shift
+  def get_timestamps_speakers(self, begin_time, end_time, begin_index = 0):
+    speakers = []
+    for index, segment in enumerate(self.segments[begin_index:]):
+      segment_index = index + begin_index
+      if segment.get_end_time() <= begin_time:
+        continue
+      if end_time <= segment.get_begin_time():
+        return speakers, segment_index - 1
+      speakers = speakers + segment.get_speakers()
+    return speakers, segment_index - 1
+  def frame_shift_to_decimal_places(self):
+    return len(str(float(self.frame_shift)).split('.')[1])
+  def get_rttm(self):
+    output = ''
+    for segment in self.segments:
+      for speaker in segment.get_speakers():
+        output += 'SPEAKER ' + self.recording_id + ' ' + speaker.get_channel() + \
+        ' ' + str(round(segment.get_begin_time(), self.frame_shift_to_decimal_places())) + \
+        ' ' + str(round(segment.get_duration_time(), self.frame_shift_to_decimal_places())) + \
+        ' <NA> <NA> ' + speaker.get_name() + ' <NA> <NA>\n' 
+    return output
   def __str__(self):
     output = 'recording:'
-    output += '\n  name: ' + self.get_recording_id()
+    output += '\n  name: ' + self.get_recording_id() + '\n'
+    for segment in self.segments:
+      for line in segment.__str__().split('\n'):
+        output += '  ' + line + '\n'
     return output

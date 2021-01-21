@@ -4,6 +4,9 @@
 # Apache 2.0
 
 . ./path.sh
+export CONDA_ROOT=/export/b03/carlosc/miniconda3
+. $CONDA_ROOT/etc/profile.d/conda.sh conda activate
+conda activate wav2vec
 
 callhome_root=/export/corpora5/LDC/LDC2001S97
 prefix=exp000_
@@ -40,6 +43,6 @@ if [ $stage -le 3 ]; then
   for name in callhome1 callhome2; do
     data_dir=data/${prefix}wav2vec_${name}
     output_dir=$data_dir/wav2vec
-    python3 local/extract_wav2vec.py $data_dir $output_dir
+    python local/extract_wav2vec.py $data_dir $output_dir
   done
 fi
