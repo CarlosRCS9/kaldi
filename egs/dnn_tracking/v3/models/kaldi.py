@@ -72,8 +72,12 @@ class Ref_rttm:
     return ' '.join([self.type, self.file, self.chnl, str(self.tbeg), str(self.tdur), self.ortho, self.stype, self.name, self.conf, self.slat])
 
 class Speaker:
-  def __init__(self, data):
-    if isinstance(data, Speaker):
+  def __init__(self, data, channel = 0):
+    if isinstance(data, str):
+      line = data
+      self.channel = channel
+      self.name = line
+    elif isinstance(data, Speaker):
       speaker = data
       self.channel = speaker.get_channel()
       self.name = speaker.get_name()
@@ -92,10 +96,41 @@ class Speaker:
     elif isinstance(data, Ref_rttm):
       ref_rttm = data
       return self.channel == ref_rttm.get_chnl() and self.name == ref_rttm.get_name()
+    
+class Utt2spk:
+  def __init__(self, data):
+    if isinstance(data, str):
+      line = data
+      values = line.split(' ')
+      self.utterance_id = values[0]
+      self.speakers = []
+      for name in values[1].split(','):
+        self.speakers.append(Speaker(name))
+  def get_utterance_id(self):
+    return self.utterance_id
+  def get_speakers(self):
+    return self.speakers
+  def __str__(self):
+    output = 'utt2spk:\n  utterance_id: ' + self.utterance_id
+    if len(self.speakers) > 0:
+      output += '\n  speakers:'
+    for speaker in self.speakers:
+      output += '\n    ' + speaker.get_name()
+    return output
 
 class Segment:
   def __init__(self, data):
-    if isinstance(data, Recording):
+    if isinstance(data, str):
+      line = data
+      values = line.split(' ')
+      self.recording_id = values[1]
+      self.begin_time = np.float32(values[2])
+      self.duration_time = np.float32(values[3]) - self.begin_time
+      self.speakers = []
+      self.frame_shift = 0.01
+      self.features = {}
+      self.utterance_id = values[0]
+    elif isinstance(data, Recording):
       recording = data
       self.recording_id = recording.get_recording_id()
       self.begin_time = 0
@@ -103,6 +138,7 @@ class Segment:
       self.speakers = []
       self.frame_shift = recording.get_frame_shift()
       self.features = {}
+      self.utterance_id = None
     elif isinstance(data, Segment):
       segment = data
       self.recording_id = segment.get_recording_id()
@@ -111,6 +147,7 @@ class Segment:
       self.speakers = [Speaker(speaker) for speaker in segment.get_speakers()]
       self.frame_shift = segment.get_frame_shift()
       self.features = {}
+      self.utterance_id = None
     elif isinstance(data, Ref_rttm):
       ref_rttm = data
       self.recording_id = ref_rttm.get_file()
@@ -119,6 +156,7 @@ class Segment:
       self.speakers = [Speaker(ref_rttm)]
       self.frame_shift = 0.01
       self.features = {}
+      self.utterance_id = None
   def get_recording_id(self):
     return self.recording_id
   def get_begin_time(self):
@@ -151,6 +189,12 @@ class Segment:
       ref_rttm = data
       if not self.has_speaker(ref_rttm):
         self.speakers.append(Speaker(ref_rttm))
+  def add_speakers(self, data):
+    if isinstance(data, list) and len(data) > 0:
+      if isinstance(data[0], Speaker):
+        speakers = data
+        for speaker in speakers:
+          self.add_speaker(speaker)
   def delete_speakers(self):
     self.speakers = []
   def get_frame_shift(self):
@@ -164,10 +208,12 @@ class Segment:
     return begin_time < self.get_end_time() and self.get_begin_time() < end_time
   def frame_shift_to_decimal_places(self):
     return len(str(float(self.frame_shift)).split('.')[1])
-  def get_utterance_id(self, index):
-    return self.recording_id + '_' + str(index).zfill(8) + \
-    '-' + str(round(self.get_begin_time() * 10 ** self.frame_shift_to_decimal_places())).zfill(8) + \
-    '-' + str(round(self.get_end_time() * 10 ** self.frame_shift_to_decimal_places())).zfill(8)
+  def get_utterance_id(self, index = 0):
+    if self.utterance_id is None:
+      self.utterance_id = self.recording_id + '_' + str(index).zfill(8) + \
+      '-' + str(round(self.get_begin_time() * 10 ** self.frame_shift_to_decimal_places())).zfill(8) + \
+      '-' + str(round(self.get_end_time() * 10 ** self.frame_shift_to_decimal_places())).zfill(8)
+    return self.utterance_id
   def get_segments_string(self, index):
     return self.get_utterance_id(index) + ' ' + self.recording_id + \
     ' ' + str(round(self.get_begin_time(), self.frame_shift_to_decimal_places())) + \
@@ -178,13 +224,19 @@ class Segment:
     ' ' + ','.join(sorted([speaker.get_name() for speaker in self.get_speakers()])) + \
     '\n'
   def __str__(self):
-    output = 'segment:' + \
-    '\n  begin: ' + str(self.get_begin_time()) + \
+    output = 'segment:'
+    if self.utterance_id is not None:
+      output += '\n  utterance_id: ' + self.utterance_id
+    output += '\n  begin: ' + str(self.get_begin_time()) + \
     '\n  end: ' + str(self.get_end_time())
     if len(self.speakers) > 0:
       output += '\n  speakers:'
       for speaker in self.speakers:
         output += '\n    ' + speaker.get_name()
+    if len(self.features.keys()) > 0:
+      output += '\n  features:'
+      for key in self.features.keys():
+        output += '\n    ' + key
     return output
 
 class Recording:
