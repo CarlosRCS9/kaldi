@@ -169,3 +169,7 @@ GSYMS
 
 /egs/chime6/s5_track1/CHiME6/
 /egs/chime6/s5_track1/chime6-synchronisation/
+
+**/wav2vec_large.pt
+**/qsub.log
+
