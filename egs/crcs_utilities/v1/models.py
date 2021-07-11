@@ -28,12 +28,12 @@ class Rttm_line:
 
 class Recording_rttm:
   def __init__ (self, data):
-    recording_id = Rttm_line(data[0]).file
+    self.recording_id = Rttm_line(data[0]).file
     self.rttm_lines = []
     for entry in data:
       rttm_line = Rttm_line(entry)
-      if rttm_line.file != recording_id:
-        raise ValueError(f"invalid input data {rttm_line.file} != {recording_id}")
+      if rttm_line.file != self.recording_id:
+        raise ValueError(f"invalid input data {rttm_line.file} != {self.recording_id}")
       self.rttm_lines.append(rttm_line)
   def __str__ (self):
     output = ''
