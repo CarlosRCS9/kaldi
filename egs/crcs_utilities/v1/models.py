@@ -52,6 +52,9 @@ class Rttm:
     self.recording_rttms = {}
     for recording_id in recording_rttm_lines:
       self.recording_rttms[recording_id] = Recording_rttm(recording_rttm_lines[recording_id])
+  def load_durations (self, data):
+    for recording_id in data:
+      print(f"{recording_id} {data[recording_id]}")
   def __str__ (self):
     output = ''
     for recording_id in self.recording_rttms:

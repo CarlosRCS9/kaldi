@@ -25,7 +25,6 @@ def main ():
   with open(args.data_dir + '/ref.rttm', 'r') as f:
     lines = f.readlines()
     rttm = Rttm(lines)
-    print(rttm)
 
 if __name__ == '__main__':
   main()
