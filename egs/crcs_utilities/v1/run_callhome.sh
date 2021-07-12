@@ -17,7 +17,7 @@ vaddir=`pwd`/mfcc
 data_root=/export/corpora5/LDC
 num_components=2048
 ivector_dim=128
-stage=0
+stage=1
 
 # Prepare datasets
 if [ $stage -le 0 ]; then
@@ -43,3 +43,8 @@ if [ $stage -le 0 ]; then
     data/swbd2_phase2_train data/swbd2_phase3_train data/sre
 fi
 
+if [ $stage -le 1 ]; then
+  for name in callhome1 callhome2; do
+    echo $name
+  done
+fi
