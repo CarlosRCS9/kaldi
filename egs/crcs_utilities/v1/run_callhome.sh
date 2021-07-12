@@ -45,6 +45,19 @@ fi
 
 if [ $stage -le 1 ]; then
   for name in callhome1 callhome2; do
-    echo $name
+    data_dir=data/$name
+    out_data_dir=data/${name}_oracle
+    mkdir -p $out_data_dir
+    cp $data_dir/wav.scp $out_data_dir/
+    cat $out_data_dir/wav.scp | awk '{print $1, $1}' > $out_data_dir/spk2utt
+    cp $out_data_dir/spk2utt $out_data_dir/utt2spk
   done
+
+  for name in callhome1 callhome2; do
+    data_dir=data/${name}_oracle
+    steps/make_mfcc.sh --mfcc-config conf/mfcc.conf --nj 40 \
+      --cmd "$train_cmd" --write-utt2num-frames true --write-utt2dur true \
+      $data_dir exp/make_mfcc $mfccdir
+    utils/fix_data_dir.sh $data_dir
+  done 
 fi
