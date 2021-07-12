@@ -35,6 +35,10 @@ class Recording_rttm:
       if rttm_line.file != self.recording_id:
         raise ValueError(f"invalid input data {rttm_line.file} != {self.recording_id}")
       self.rttm_lines.append(rttm_line)
+  def set_duration (self, duration):
+    self.duration = duration
+  def set_number_of_frames (self, number_of_frames):
+    self.number_of_frames = number_of_frames
   def __str__ (self):
     output = ''
     for rttm_line in self.rttm_lines:
@@ -55,6 +59,16 @@ class Rttm:
   def load_durations (self, data):
     for recording_id in data:
       print(f"{recording_id} {data[recording_id]}")
+  def load_utt2dur (self, utt2dur):
+    for recording_id in self.recording_rttms:
+      if recording_id not in utt2dur:
+        raise ValueError(f"{recording_id} missing from utt2dur")
+      self.recording_rttms[recording_id].set_duration(utt2dur[recording_id])
+  def load_utt2num_frames (self, utt2num_frames):
+    for recording_id in self.recording_rttms:
+      if recording_id not in utt2num_frames:
+        raise ValueError(f"{recording_id} missing from utt2num_frames")
+      self.recording_rttms[recording_id].set_number_of_frames(utt2num_frames[recording_id])
   def __str__ (self):
     output = ''
     for recording_id in self.recording_rttms:

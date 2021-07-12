@@ -5,6 +5,7 @@
 
 from models import Rttm
 import argparse, os
+import numpy as np
 
 def get_args():
   parser = argparse.ArgumentParser()
@@ -25,6 +26,21 @@ def main ():
   with open(args.data_dir + '/ref.rttm', 'r') as f:
     lines = f.readlines()
     rttm = Rttm(lines)
+  utt2dur = {}
+  with open(args.data_dir + '/utt2dur', 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+      recording_id, duration = line.strip().split()
+      utt2dur[recording_id] = np.float32(duration)
+  utt2num_frames = {}
+  with open(args.data_dir + '/utt2num_frames', 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+      recording_id, duration = line.strip().split()
+      utt2num_frames[recording_id] = np.int32(duration)
+  rttm.load_utt2dur(utt2dur)
+  rttm.load_utt2num_frames(utt2num_frames)
+  print(rttm)
 
 if __name__ == '__main__':
   main()
