@@ -17,7 +17,7 @@ vaddir=`pwd`/mfcc
 data_root=/export/corpora5/LDC
 num_components=2048
 ivector_dim=128
-stage=0
+stage=1
 
 # Prepare datasets
 if [ $stage -le 0 ]; then
@@ -36,7 +36,7 @@ if [ $stage -le 0 ]; then
                              data/swbd_cellular2_train
 
   # Prepare the Callhome portion of NIST SRE 2000.
-  local/make_callhome.sh /export/corpora/NIST/LDC2001S97/ data/
+  local/make_callhome.sh /export/corpora5/LDC/LDC2001S97/ data/
 
   utils/combine_data.sh data/train \
     data/swbd_cellular1_train data/swbd_cellular2_train \
@@ -49,7 +49,7 @@ if [ $stage -le 1 ]; then
     data_dir=data/${name}
     out_data_dir=data/${name}_oracle
     mkdir -p $out_data_dir
-    cp $data_dir/wav.scp $out_data_dir/
+    cp $data_dir/{reco2num_spk,ref.rttm,wav.scp} $out_data_dir/
     cat $out_data_dir/wav.scp | awk '{print $1, $1}' > $out_data_dir/spk2utt
     cp $out_data_dir/spk2utt $out_data_dir/utt2spk
   done
