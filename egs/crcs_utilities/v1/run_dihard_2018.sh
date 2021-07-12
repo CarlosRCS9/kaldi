@@ -22,7 +22,7 @@ musan_root=/export/corpora5/JHU/musan
 dihard_2018_dev=/export/corpora5/LDC/LDC2018E31
 dihard_2018_eval=/export/corpora5/LDC/LDC2018E32v1.1
 
-stage=1
+stage=0
 
 if [ $stage -le 0 ]; then
   local/make_voxceleb2.pl $voxceleb2_root dev data/voxceleb2_train
@@ -40,9 +40,11 @@ if [ $stage -le 0 ]; then
   utils/combine_data.sh data/train data/voxceleb2_train data/voxceleb2_test data/voxceleb1_train
 
   # Prepare the development and evaluation set for DIHARD 2018.
-  # local/make_dihard_2018_dev.sh $dihard_2018_dev data/dihard_2018_dev
-  # local/make_dihard_2018_eval.sh $dihard_2018_eval data/dihard_2018_eval
+  local/make_dihard_2018_dev.sh $dihard_2018_dev data/dihard_2018_dev
+  local/make_dihard_2018_eval.sh $dihard_2018_eval data/dihard_2018_eval
 fi
+
+exit 0 
 
 if [ $stage -le 1 ]; then
   for name in voxceleb1 voxceleb2; do
