@@ -22,7 +22,7 @@ musan_root=/export/corpora5/JHU/musan
 dihard_2018_dev=/export/corpora5/LDC/LDC2018E31
 dihard_2018_eval=/export/corpora5/LDC/LDC2018E32v1.1
 
-stage=0
+stage=1
 
 if [ $stage -le 0 ]; then
   local/make_voxceleb2.pl $voxceleb2_root dev data/voxceleb2_train
@@ -42,4 +42,23 @@ if [ $stage -le 0 ]; then
   # Prepare the development and evaluation set for DIHARD 2018.
   # local/make_dihard_2018_dev.sh $dihard_2018_dev data/dihard_2018_dev
   # local/make_dihard_2018_eval.sh $dihard_2018_eval data/dihard_2018_eval
+fi
+
+if [ $stage -le 1 ]; then
+  for name in voxceleb1 voxceleb2; do
+    data_dir=data/${name}_test
+    out_data_dir=data/${name}_test_oracle
+    mkdir -p $out_data_dir
+    cp $data_dir/wav.scp $out_data_dir/
+    cat $out_data_dir/wav.scp | awk '{print $1, $1}' > $out_data_dir/spk2utt
+    cp $out_data_dir/spk2utt $out_data_dir/utt2spk
+  done
+
+  for name in voxceleb1 voxceleb2; do
+    data_dir=data/${name}_test_oracle
+    steps/make_mfcc.sh --mfcc-config conf/mfcc.conf --nj 40 \
+      --cmd "$train_cmd" --write-utt2num-frames true --write-utt2dur true \
+      $data_dir exp/make_mfcc $mfccdir
+    utils/fix_data_dir.sh $data_dir
+  done
 fi
