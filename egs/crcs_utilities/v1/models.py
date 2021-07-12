@@ -39,6 +39,8 @@ class Recording_rttm:
     self.duration = duration
   def set_number_of_frames (self, number_of_frames):
     self.number_of_frames = number_of_frames
+  def to_vad(self):
+    return np.zeros(self.number_of_frames, dtype = np.int32)
   def __str__ (self):
     output = ''
     for rttm_line in self.rttm_lines:
@@ -69,6 +71,11 @@ class Rttm:
       if recording_id not in utt2num_frames:
         raise ValueError(f"{recording_id} missing from utt2num_frames")
       self.recording_rttms[recording_id].set_number_of_frames(utt2num_frames[recording_id])
+  def to_vad(self):
+    vad = {}
+    for recording_id in self.recording_rttms:
+      vad[recording_id] = self.recording_rttms[recording_id].to_vad()
+    return vad
   def __str__ (self):
     output = ''
     for recording_id in self.recording_rttms:

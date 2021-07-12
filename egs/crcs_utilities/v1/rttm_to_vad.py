@@ -40,7 +40,7 @@ def main ():
       utt2num_frames[recording_id] = np.int32(duration)
   rttm.load_utt2dur(utt2dur)
   rttm.load_utt2num_frames(utt2num_frames)
-  print(rttm)
+  print(rttm.to_vad())
 
 if __name__ == '__main__':
   main()
