@@ -15,7 +15,7 @@ set -e
 mfccdir=`pwd`/mfcc
 vaddir=`pwd`/mfcc
 
-voxceleb1_root=/export/corpora5/VoxCeleb1
+voxceleb1_root=/export/corpora5/VoxCeleb1_v1
 voxceleb2_root=/export/corpora5/VoxCeleb2
 nnet_dir=exp/xvector_nnet_1a
 musan_root=/export/corpora5/JHU/musan
@@ -31,15 +31,15 @@ if [ $stage -le 0 ]; then
   # Now prepare the VoxCeleb1 train and test data.  If you downloaded the corpus soon
   # after it was first released, you may need to use an older version of the script, which
   # can be invoked as follows:
-  # local/make_voxceleb1.pl $voxceleb1_root data
-  local/make_voxceleb1_v2.pl $voxceleb1_root dev data/voxceleb1_train
-  local/make_voxceleb1_v2.pl $voxceleb1_root test data/voxceleb1_test
+  local/make_voxceleb1.pl $voxceleb1_root data
+  # local/make_voxceleb1_v2.pl $voxceleb1_root dev data/voxceleb1_train
+  # local/make_voxceleb1_v2.pl $voxceleb1_root test data/voxceleb1_test
 
   # We'll train on all of VoxCeleb2, plus the training portion of VoxCeleb1.
   # This should give 7,351 speakers and 1,277,503 utterances.
   utils/combine_data.sh data/train data/voxceleb2_train data/voxceleb2_test data/voxceleb1_train
 
   # Prepare the development and evaluation set for DIHARD 2018.
-  local/make_dihard_2018_dev.sh $dihard_2018_dev data/dihard_2018_dev
-  local/make_dihard_2018_eval.sh $dihard_2018_eval data/dihard_2018_eval
+  # local/make_dihard_2018_dev.sh $dihard_2018_dev data/dihard_2018_dev
+  # local/make_dihard_2018_eval.sh $dihard_2018_eval data/dihard_2018_eval
 fi
